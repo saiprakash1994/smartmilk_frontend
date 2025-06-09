@@ -1,0 +1,63 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --headerHeight: 61px;
+  --headerWidth: 100%;
+
+
+  --appSiderbarWidth: 75px;
+  --appTheam: #000078;
+  --appTextColor: white;
+  --appPageTitleColor: var(--bs-gray-700);
+  --appTitleColor: var(--bs-gray-700);
+  --appSubTitleColor: var(--bs-gray-500);
+  --appPageHeaderHeight: 12%;
+  --appPageHeaderSpace: 20px;
+  --appOrderPending: #FFC107;
+  --appOrderDelivered: #5ead5e;
+
+}
+
+body,
+#root {
+  height: 100vh;
+}
+
+.pageTile {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--appPageTitleColor);
+  display: flex;
+  align-items: center;
+}
+
+.pageTitleSpace {
+  padding-bottom: var(--appPageHeaderSpace);
+  height: var(--appPageHeaderHeight);
+}
+
+button.btn-outline-primary {
+  --bs-btn-color: var(--appTheam);
+  --bs-btn-border-color: var(--appTheam);
+  --bs-btn-hover-color: var(--appTextColor);
+  --bs-btn-hover-bg: var(--appTheam);
+  --bs-btn-hover-border-color: var(--appTheam);
+  --bs-btn-focus-shadow-rgb: 13, 110, 253;
+  --bs-btn-active-color: var(--appTextColor);
+  --bs-btn-active-bg: var(--appTheam);
+  --bs-btn-active-border-color: var(--appTheam);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--appTheam);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: var(--appTheam);
+}

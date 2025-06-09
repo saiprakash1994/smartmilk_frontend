@@ -1,0 +1,76 @@
+.mainHeader {
+    width: var(--headerWidth);
+    height: var(--headerHeight);
+    box-shadow: 0 3px 6px #5038f41a;
+}
+
+img {
+    // width: 50px;
+    border-radius: 20%;
+}
+
+.appNav {
+    // display: flex;
+    width: 100%;
+    justify-content: space-between;
+    height: 100%;
+    // background: var(--appTheam);
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: bold;
+    padding-left: 10px;
+    margin-bottom: 0;
+    color: var(--appTheam);
+}
+
+
+
+.profileName {
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+    margin-bottom: 0;
+    color: var(--appTheam);
+}
+
+.appbrand {
+    padding: 6px 10px;
+    align-items: center;
+}
+
+.profileImage {
+    width: 35px;
+    height: 35px;
+    margin-right: 14%;
+}
+
+.profileOptions {
+    margin-right: 10px;
+}
+
+.notification {
+    font-size: 19px;
+    margin-right: 12px;
+    color: var(--appTheam);
+}
+
+.notificationCount {
+    background: red;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 10px;
+    padding: 0;
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    top: -6px;
+    left: 10px;
+}
+
+#dropdown-split-basic {
+    background: transparent;
+    border: 0px;
+    color: var(--appTheam);
+}

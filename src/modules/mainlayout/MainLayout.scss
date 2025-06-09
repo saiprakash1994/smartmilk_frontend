@@ -1,0 +1,19 @@
+.main {
+    width: 100%;
+    background: #65646466;
+
+    &-container {
+        height: calc(100% - var(--headerHeight));
+        display: flex;
+    }
+
+    &-sidebar {
+        width: var(--appSiderbarWidth);
+    }
+
+    &-placeholder {
+        padding-top: 1% !important;
+        padding-left: 1% !important;
+        overflow-y: scroll;
+    }
+}
