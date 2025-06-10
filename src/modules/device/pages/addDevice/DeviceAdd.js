@@ -45,7 +45,7 @@ const DeviceAdd = () => {
 
     const [errors, setErrors] = useState({});
 
-    const { data: fetchedDevice, isSuccess } = useGetDeviceByIdQuery(id, { skip: !id });
+    const { data: fetchedDevice, isSuccess, refetch } = useGetDeviceByIdQuery(id);
 
     const [createDevice, { isLoading: creating }] = useCreateDeviceMutation();
     const [editDevice, { isLoading: updating }] = useEditDeviceMutation();
@@ -118,6 +118,7 @@ const DeviceAdd = () => {
                 const res = await editDevice({ id, ...payload }).unwrap();
                 dispatch(updateDevice(res?.device));
                 successToast("Device updated successfully");
+                await refetch();
             } else {
                 const res = await createDevice(payload).unwrap();
                 dispatch(addDevice(res?.device));
@@ -141,7 +142,7 @@ const DeviceAdd = () => {
                     <Form onSubmit={submitForm}>
                         <Form.Group>
                             <Form.Label>Dairy Code</Form.Label>
-                            {userType === roles.ADMIN ? (
+                            {(userType === roles.ADMIN && !id) ? (
                                 <Form.Select
                                     value={selectedDairyCode}
                                     onChange={(e) => setSelectedDairyCode(e.target.value)}
@@ -164,7 +165,12 @@ const DeviceAdd = () => {
                                 type="text"
                                 name="deviceIdSuffix"
                                 value={form.deviceIdSuffix}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d{0,4}$/.test(value)) {
+                                        handleChange(e);
+                                    }
+                                }}
                                 placeholder="e.g., 0001"
                                 maxLength={4}
                                 disabled={!!id}

@@ -22,7 +22,8 @@ const DairyAdd = () => {
         isSuccess,
         isLoading: fetching,
         isError,
-    } = useGetDairyByIdQuery(id, { skip: !id });
+        refetch
+    } = useGetDairyByIdQuery(id);
 
     const [createDairy, { isLoading: creating }] = useCreateDairyMutation();
     const [editDairy, { isLoading: updating }] = useEditDairyMutation();
@@ -130,6 +131,7 @@ const DairyAdd = () => {
 
                 await editDairy({ id, ...payload }).unwrap();
                 successToast("Dairy updated successfully.");
+                await refetch()
             } else {
                 await createDairy({
                     dairyCode: form.dairyCode,
