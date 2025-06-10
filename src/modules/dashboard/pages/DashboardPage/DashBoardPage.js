@@ -68,10 +68,11 @@ const DashboardPage = () => {
             .toString()
             .padStart(2, "0")}/${d.getFullYear()}`;
     })();
+    const skipFetch = !deviceCodes || !formattedDate;
 
     const { data, isLoading, isError, error, refetch } = useGetMultipleRecordsQuery(
         { params: { deviceCodes, date: formattedDate, shift: selectedShift } },
-        { skip: !deviceCodes || !formattedDate }
+        { skip: skipFetch }
     );
 
     const totals = data?.totals || [];
@@ -265,6 +266,7 @@ const DashboardPage = () => {
                             )}
                         </>
                     )}
+
                 </Card>
             </div>
         </>

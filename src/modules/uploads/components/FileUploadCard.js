@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -7,9 +7,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faUpload, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import { errorToast, successToast } from "../../../shared/utils/appToaster";
 
-const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => {
+const FileUploadCard = ({
+    title,
+    onUpload,
+    toastMsg = "Upload successful",
+    showDate = false,
+    dateFieldName = "effectiveDate"
+}) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [selectedDate, setSelectedDate] = useState("");
+
+    useEffect(() => {
+        if (showDate) {
+            const today = new Date().toISOString().slice(0, 10);
+            setSelectedDate(today);
+        }
+    }, [showDate]);
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -21,14 +35,26 @@ const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => 
             return;
         }
 
+        if (showDate && !selectedDate) {
+            errorToast("Please select an effective date.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("file", selectedFile);
+        if (showDate) {
+            formData.append(dateFieldName, selectedDate);
+        }
 
         try {
             setUploading(true);
             await onUpload({ formData }).unwrap();
             successToast(toastMsg);
             setSelectedFile(null);
+            if (showDate) {
+                const today = new Date().toISOString().slice(0, 10);
+                setSelectedDate(today);
+            }
         } catch (error) {
             console.error("Upload failed:", error);
             errorToast("Upload failed");
@@ -36,6 +62,7 @@ const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => 
             setUploading(false);
         }
     };
+
     return (
         <Card className="mb-4 shadow-sm border-0">
             <Card.Body>
@@ -46,11 +73,20 @@ const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => 
 
                 <Form.Group controlId="formFile" className="mb-3">
                     <Form.Label><strong>Select a file</strong></Form.Label>
-                    <Form.Control
-                        type="file"
-                        onChange={handleFileChange}
-                    />
+                    <Form.Control type="file" onChange={handleFileChange} />
                 </Form.Group>
+
+                {showDate && (
+                    <Form.Group controlId="effectiveDate" className="mb-3">
+                        <Form.Label><strong>Effective Date</strong></Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={selectedDate}
+                            min={new Date().toISOString().slice(0, 10)}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
+                    </Form.Group>
+                )}
 
                 {selectedFile && (
                     <div className="mb-3 text-muted d-flex align-items-center gap-2">
@@ -60,7 +96,8 @@ const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => 
                 )}
 
                 <Button
-                    variant="outline-primary" onClick={handleUpload}
+                    variant="outline-primary"
+                    onClick={handleUpload}
                     disabled={uploading || !selectedFile}
                 >
                     {uploading ? (
@@ -81,3 +118,4 @@ const FileUploadCard = ({ title, onUpload, toastMsg = "Upload successful" }) => 
 };
 
 export default FileUploadCard;
+

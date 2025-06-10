@@ -7,7 +7,7 @@ export const Admin = [
     { title: 'device', icon: faMicrochip, tooltip: 'Device Creation' },
     { title: 'settings', icon: faCogs, tooltip: 'Device Settings' },
     { title: 'records', icon: faChartLine, tooltip: 'View Records' },
-    { title: 'uploads', icon: faFileUpload, tooltip: 'Upload Files' }
+    // { title: 'uploads', icon: faFileUpload, tooltip: 'Upload Files' }
 ];
 
 export const Dairy = [

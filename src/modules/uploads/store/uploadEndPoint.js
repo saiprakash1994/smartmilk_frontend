@@ -34,7 +34,7 @@ export const uploadDocuments = UploadApi.injectEndpoints({
             query: ({ formData }) => ({
                 url: 'upload/upload-members',
                 method: 'POST',
-                formData
+                body: formData
             }),
         }),
     })
