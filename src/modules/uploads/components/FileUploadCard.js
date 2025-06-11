@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -14,6 +14,7 @@ const FileUploadCard = ({
     showDate = false,
     dateFieldName = "effectiveDate"
 }) => {
+    const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [selectedDate, setSelectedDate] = useState("");
@@ -51,6 +52,11 @@ const FileUploadCard = ({
             await onUpload({ formData }).unwrap();
             successToast(toastMsg);
             setSelectedFile(null);
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+
             if (showDate) {
                 const today = new Date().toISOString().slice(0, 10);
                 setSelectedDate(today);
@@ -73,7 +79,11 @@ const FileUploadCard = ({
 
                 <Form.Group controlId="formFile" className="mb-3">
                     <Form.Label><strong>Select a file</strong></Form.Label>
-                    <Form.Control type="file" onChange={handleFileChange} />
+                    <Form.Control
+                        type="file"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                    />
                 </Form.Group>
 
                 {showDate && (
