@@ -1,27 +1,25 @@
-.DashBoardPage {
-    height: 93%;
+.dashboard-summary-card {
+    transition: transform 0.2s ease-in-out;
 
-    .dashboard-summary-card {
-        transition: transform 0.2s ease-in-out;
-
-        &:hover {
-            transform: translateY(-4px);
-        }
-
-        .badge {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        h5 {
-            font-size: 1.6rem;
-        }
-
-        h6 {
-            font-size: 1.25rem;
-        }
+    &:hover {
+        transform: translateY(-4px);
     }
 
+    .badge {
+        font-weight: 600;
+        font-size: 1rem;
+    }
 
+    h5 {
+        font-size: 1.6rem;
+    }
 
+    h6 {
+        font-size: 1.25rem;
+    }
+
+    .custom-badge {
+        background-color: var(--appTheam) !important;
+        color: var(--appTextColor) !important;
+    }
 }

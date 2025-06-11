@@ -16,9 +16,8 @@ import {
 import { faChartBar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './DashBoardPage.scss';
 import { useGetMultipleRecordsQuery } from "../../../records/store/recordEndPoint";
-
+import './DashBoardPage.scss'
 const shifts = [
     { value: "", label: "All Shifts" },
     { value: "MORNING", label: "Morning" },
@@ -95,7 +94,7 @@ const DashboardPage = () => {
     }, [deviceCodes, formattedDate, selectedShift, refetch]);
 
     return (
-        <>
+        <div className="sai">
             <div className="d-flex justify-content-between pageTitleSpace align-items-center">
                 <PageTitle name="DASHBOARD" />
                 <div className="filters d-flex gap-3 align-items-center">
@@ -161,7 +160,7 @@ const DashboardPage = () => {
                                         <Col md={4} key={idx}>
                                             <Card className="p-3 dashboard-summary-card h-100 border-0 shadow-lg rounded-4">
                                                 <div className="d-flex justify-content-between align-items-center mb-2">
-                                                    <span className="badge bg-primary px-3 py-2 fs-6 rounded-pill">
+                                                    <span className="badge custom-badge px-3 py-2 fs-6 rounded-pill">
                                                         {item._id.milkType}
                                                     </span>
                                                 </div>
@@ -269,7 +268,7 @@ const DashboardPage = () => {
 
                 </Card>
             </div>
-        </>
+        </div>
     );
 };
 

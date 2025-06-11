@@ -47,6 +47,17 @@
                 font-weight: 500;
             }
         }
+
+        .password-toggle-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 2;
+        }
+
     }
 
     @media (max-width: 768px) {

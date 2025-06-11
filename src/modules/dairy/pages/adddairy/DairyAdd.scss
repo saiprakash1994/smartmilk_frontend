@@ -1,45 +1,40 @@
-.DairyAdd {
-    --imageWidht: 146px;
-    padding: 0 270px;
-
-    .img {
-        height: var(--imageWidht);
-        text-align: center;
-
-    }
-
-    .imgWidth {
-        width: var(--imageWidht);
-    }
-
-    .editIcon {
-        position: absolute;
-        font-size: 18px;
-        right: 14px;
-        color: var(--appTheam);
-        bottom: 16px;
-        cursor: pointer;
-    }
-
-    .imgContainer {
-        // border: 1px solid gray;
-        // border-radius: 50%;
-    }
-
-    .fileselection {
-        display: none;
-    }
-
-    .itemDetails {
-        padding: 17px 51px;
-
-        .actionbtn {
-            margin-top: 18px;
-        }
-    }
-
+.img {
+    height: var(--imageWidht);
+    text-align: center;
 
 }
+
+.imgWidth {
+    width: var(--imageWidht);
+}
+
+.editIcon {
+    position: absolute;
+    font-size: 18px;
+    right: 14px;
+    color: var(--appTheam);
+    bottom: 16px;
+    cursor: pointer;
+}
+
+.imgContainer {
+    // border: 1px solid gray;
+    // border-radius: 50%;
+}
+
+.fileselection {
+    display: none;
+}
+
+.itemDetails {
+    padding: 17px 51px;
+
+    .actionbtn {
+        margin-top: 18px;
+    }
+}
+
+
 
 
 
