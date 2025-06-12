@@ -49,15 +49,9 @@ const MemberRecords = () => {
 
     // Set default deviceCode for device user
     useEffect(() => {
-        if (isDevice && deviceid) setDeviceCode(deviceid);
+        if (isDevice && deviceid)
+            setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
-
-    // Set default deviceCode for admin or dairy user
-    useEffect(() => {
-        if ((isAdmin || isDairy) && deviceList.length > 0 && !deviceCode) {
-            setDeviceCode(deviceList[0].deviceid);
-        }
-    }, [isAdmin, isDairy, deviceList, deviceCode]);
 
     // Get selected device and member list
     const selectedDevice = isDevice ? deviceData : deviceList.find(dev => dev.deviceid === deviceCode);
@@ -173,7 +167,7 @@ const MemberRecords = () => {
                                                             <td>{record?.FAT}</td>
                                                             <td>{record?.SNF}</td>
                                                             <td>{record?.RATE}</td>
-                                                            <td>{record?.AMOUNT}</td>
+                                                            <td>{record?.AMOUNT.toFixed(2)}</td>
                                                         </tr>
                                                     ))
                                                 ) : (

@@ -49,13 +49,6 @@ const AbsentMemberRecords = () => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Set default deviceCode for admin or dairy user
-    useEffect(() => {
-        if ((isAdmin || isDairy) && deviceList.length > 0 && !deviceCode) {
-            setDeviceCode(deviceList[0].deviceid);
-        }
-    }, [isAdmin, isDairy, deviceList, deviceCode]);
-
     // Get selected device and member list
 
     const handleSearch = () => {
@@ -73,15 +66,12 @@ const AbsentMemberRecords = () => {
     );
 
     const absent = resultData?.absentMembers || [];
-    const present = resultData?.presentMembers || []
     const {
         totalMembers = 0,
         presentCount = 0,
         absentCount = 0,
         cowAbsentCount = 0,
         bufAbsentCount = 0,
-        cowPresentCount = 0,
-        bufPresentCount = 0,
     } = resultData || {};
     return (
         <>
@@ -120,7 +110,6 @@ const AbsentMemberRecords = () => {
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="TOTALS">Attendance Summary</option>
                             <option value="ABSENT">Absent Members</option>
-                            <option value="PRESENT">Present Members</option>
 
                         </Form.Select>
                         <Button variant="outline-primary" onClick={handleSearch} disabled={isFetching}>
@@ -149,8 +138,6 @@ const AbsentMemberRecords = () => {
                                                     <th>Total Members</th>
                                                     <th>Present Members</th>
                                                     <th>Absent Members</th>
-                                                    <th>Cow Present</th>
-                                                    <th>Buffalo Present</th>
                                                     <th>Cow Absent</th>
                                                     <th>Buffalo Absent</th>
                                                 </tr>
@@ -161,8 +148,6 @@ const AbsentMemberRecords = () => {
                                                     <td>{totalMembers}</td>
                                                     <td>{presentCount}</td>
                                                     <td>{absentCount}</td>
-                                                    <td>{cowPresentCount}</td>
-                                                    <td>{bufPresentCount}</td>
                                                     <td>{cowAbsentCount}</td>
                                                     <td>{bufAbsentCount}</td>
 
@@ -204,38 +189,7 @@ const AbsentMemberRecords = () => {
                                         </Table>
                                     </>
                                 )}
-                                {viewMode === "PRESENT" && (
-                                    <>
-                                        <PageTitle name="Present Members" />
-                                        <Table bordered responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>CODE</th>
-                                                    <th>MILKTYPE</th>
-                                                    <th>MEMBERNAME</th>
 
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {present.length > 0 ? (
-                                                    present.map((present, index) => (
-                                                        <tr key={index}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{present?.CODE}</td>
-                                                            <td>{present?.MILKTYPE == "C" ? "COW" : "BUFF"}</td>
-                                                            <td>{present?.MEMBERNAME}</td>
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="8" className="text-center">No totals available</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-                                    </>
-                                )}
                             </>
                         )}
                     </Card.Body>

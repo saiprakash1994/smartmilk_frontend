@@ -54,13 +54,6 @@ const CumilativeRecords = () => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Set default deviceCode for admin or dairy user
-    useEffect(() => {
-        if ((isAdmin || isDairy) && deviceList.length > 0 && !deviceCode) {
-            setDeviceCode(deviceList[0].deviceid);
-        }
-    }, [isAdmin, isDairy, deviceList, deviceCode]);
-
     // Get selected device and member list
     const selectedDevice = isDevice ? deviceData : deviceList.find(dev => dev.deviceid === deviceCode);
     const memberCodes = selectedDevice?.members || [];
@@ -272,6 +265,7 @@ const CumilativeRecords = () => {
                                         <Table bordered responsive>
                                             <thead>
                                                 <tr>
+                                                    <th>#</th>
                                                     <th>Code</th>
                                                     <th>MILKTYPE</th>
                                                     <th>Total Qty</th>
