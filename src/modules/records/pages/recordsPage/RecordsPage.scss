@@ -1,21 +1,18 @@
-.text-center {
-    text-align: center;
-    vertical-align: middle;
-}
+#records-tabs {
 
-.full-page-spinner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    background: rgba(255, 255, 255, 0.7);
-    z-index: 1050;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.spinner-box {
-    text-align: center;
+    .nav-link {
+
+        background-color: transparent;
+        color: var(--appTheam);
+
+        transition: all 0.3s ease;
+    }
+
+
+    .nav-link.active {
+        background-color: var(--appTheam);
+        color: var(--appTextColor);
+
+    }
 }

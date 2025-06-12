@@ -29,7 +29,24 @@ export const recordDetails = RecordApi.injectEndpoints({
             },
             providesTags: ["membercodereports"],
         }),
-
+        getAbsentMemberReport: builder.query({
+            query: (body) => {
+                const basePath = "reports/absent-members-report";
+                const params = body?.params || {};
+                const queryString = new URLSearchParams(params).toString();
+                return `${basePath}?${queryString}`;
+            },
+            providesTags: ["absentmemberreports"],
+        }),
+        getCumulativeReport: builder.query({
+            query: (body) => {
+                const basePath = "reports/cumulative-report";
+                const params = body?.params || {};
+                const queryString = new URLSearchParams(params).toString();
+                return `${basePath}?${queryString}`;
+            },
+            providesTags: ["cumulativereports"],
+        }),
     }),
 });
 
@@ -38,5 +55,7 @@ export const {
     useGetAllRecordsQuery,
     useLazyGetAllRecordsQuery,
     useGetMultipleRecordsQuery,
-    useGetMemberCodewiseReportQuery
+    useGetMemberCodewiseReportQuery,
+    useGetAbsentMemberReportQuery,
+    useGetCumulativeReportQuery
 } = recordDetails;

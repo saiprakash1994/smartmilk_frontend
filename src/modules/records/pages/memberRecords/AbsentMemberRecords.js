@@ -17,10 +17,9 @@ import {
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
+import { useGetAbsentMemberReportQuery } from "../../store/recordEndPoint";
 
-const MemberRecords = () => {
-    const navigate = useNavigate();
+const AbsentMemberRecords = () => {
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
     const userType = UserTypeHook();
 
@@ -31,21 +30,19 @@ const MemberRecords = () => {
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    // Queries for Admin and Dairy
     const { data: allDevices = [], isLoading: isAdminLoading } = useGetAllDevicesQuery(undefined, { skip: !isAdmin });
     const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
 
-    // Query for Device role to fetch its own data
-    const { data: deviceData, isLoading: isDeviceLoading } = useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
+
 
     const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState("");
-    const [memberCode, setMemberCode] = useState("");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
+    const [date, setDate] = useState("");
+    const [shift, setShift] = useState('');
+
     const [triggerFetch, setTriggerFetch] = useState(false);
-    const [viewMode, setViewMode] = useState('ALL');
+    const [viewMode, setViewMode] = useState('TOTALS');
 
     // Set default deviceCode for device user
     useEffect(() => {
@@ -60,35 +57,37 @@ const MemberRecords = () => {
     }, [isAdmin, isDairy, deviceList, deviceCode]);
 
     // Get selected device and member list
-    const selectedDevice = isDevice ? deviceData : deviceList.find(dev => dev.deviceid === deviceCode);
-    const memberCodes = selectedDevice?.members || [];
 
     const handleSearch = () => {
-        if (!deviceCode || !memberCode || !fromDate || !toDate) {
+        if (!deviceCode || !date || !shift) {
             errorToast("Please fill all required fields");
-            return;
-        }
-        if (new Date(fromDate) > new Date(toDate)) {
-            errorToast("From Date cannot be after To Date");
             return;
         }
         setTriggerFetch(true);
     };
+    const formattedDate = date.split("-").reverse().join("/");
 
-    const { data: resultData, isFetching } = useGetMemberCodewiseReportQuery(
-        { params: { deviceCode, memberCode, fromDate, toDate } },
+    const { data: resultData, isFetching } = useGetAbsentMemberReportQuery(
+        { params: { deviceid: deviceCode, date: formattedDate, shift } },
         { skip: !triggerFetch }
     );
 
-    const records = resultData?.records || [];
-    const totals = resultData?.totals || [];
-    console.log(records, totals)
+    const absent = resultData?.absentMembers || [];
+    const present = resultData?.absentMembers || []
+    const {
+        totalMembers = 0,
+        presentCount = 0,
+        absentCount = 0,
+        cowAbsentCount = 0,
+        bufAbsentCount = 0,
+        cowPresentCount = 0,
+        bufPresentCount = 0,
+    } = resultData || {};
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name="MEMBER RECORDS" pageItems={0} />
+                <PageTitle name="ABESENT MEMBER RECORDS" pageItems={0} />
             </div>
-
             <div className="usersPage">
                 <Card className="h-100">
                     <div className="filters d-flex gap-3 p-3">
@@ -105,27 +104,24 @@ const MemberRecords = () => {
                             )
                         )}
 
-                        {isDevice && (
-                            isDeviceLoading ? (
-                                <Spinner animation="border" size="sm" />
-                            ) : (
-                                <Form.Control type="text" value={deviceCode} readOnly />
-                            )
-                        )}
+                        {isDevice &&
 
-                        <Form.Select value={memberCode} onChange={e => setMemberCode(e.target.value)}>
-                            <option value="">Select Member Code</option>
-                            {memberCodes.map((code, idx) => (
-                                <option key={idx} value={code.CODE}>{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-                            ))}
+                            <Form.Control type="text" value={deviceCode} readOnly />
+
+                        }
+
+                        <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
+                            <option value="">Select Shift</option>
+                            <option value="MORNING">MORNING</option>
+                            <option value="EVENING">EVENING</option>
                         </Form.Select>
 
-                        <Form.Control type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-                        <Form.Control type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
+                        <Form.Control type="date" value={date} onChange={e => setDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
-                            <option value="ALL">Show All Records</option>
-                            <option value="RECORDS">Only Records Summary</option>
-                            <option value="TOTALS">Only Record Totals</option>
+                            <option value="TOTALS">Attendance Summary</option>
+                            <option value="ABSENT">Absent Members</option>
+                            <option value="PRESENT">Present Members</option>
+
                         </Form.Select>
                         <Button variant="outline-primary" onClick={handleSearch} disabled={isFetching}>
                             {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />}
@@ -144,75 +140,91 @@ const MemberRecords = () => {
                         ) : (
                             <>
                                 <hr />
-                                {viewMode !== "TOTALS" && (
+                                {viewMode === "TOTALS" && (
                                     <>
-                                        <PageTitle name="Record Summary" />
+                                        <PageTitle name="Attendance Summary" />
                                         <Table hover responsive>
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Date</th>
-                                                    <th>Milk Type</th>
-                                                    <th>Shift</th>
-                                                    <th>Qty</th>
-                                                    <th>Fat</th>
-                                                    <th>SNF</th>
-                                                    <th>Rate</th>
-                                                    <th>Amount</th>
+                                                    <th>Total Members</th>
+                                                    <th>Present Members</th>
+                                                    <th>Absent Members</th>
+                                                    <th>Cow Present</th>
+                                                    <th>Buffalo Present</th>
+                                                    <th>Cow Absent</th>
+                                                    <th>Buffalo Absent</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {records.length > 0 ? (
-                                                    records.map((record, index) => (
+
+                                                <tr >
+                                                    <td>{totalMembers}</td>
+                                                    <td>{presentCount}</td>
+                                                    <td>{absentCount}</td>
+                                                    <td>{cowPresentCount}</td>
+                                                    <td>{bufPresentCount}</td>
+                                                    <td>{cowAbsentCount}</td>
+                                                    <td>{bufAbsentCount}</td>
+
+                                                </tr>
+
+                                            </tbody>
+                                        </Table>
+                                    </>
+                                )}
+                                {viewMode === "ABSENT" && (
+                                    <>
+                                        <PageTitle name="Absent Members" />
+                                        <Table bordered responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>CODE</th>
+                                                    <th>MILKTYPE</th>
+                                                    <th>MEMBERNAME</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {absent.length > 0 ? (
+                                                    absent.map((absent, index) => (
                                                         <tr key={index}>
                                                             <td>{index + 1}</td>
-                                                            <td>{record?.SAMPLEDATE}</td>
-                                                            <td>{record?.MILKTYPE}</td>
-                                                            <td>{record?.SHIFT}</td>
-                                                            <td>{record?.QTY}</td>
-                                                            <td>{record?.FAT}</td>
-                                                            <td>{record?.SNF}</td>
-                                                            <td>{record?.RATE}</td>
-                                                            <td>{record?.AMOUNT}</td>
+                                                            <td>{absent?.CODE}</td>
+                                                            <td>{absent?.MILKTYPE == "C" ? "COW" : "BUFF"}</td>
+                                                            <td>{absent?.MEMBERNAME}</td>
                                                         </tr>
                                                     ))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="9" className="text-center">No records found</td>
+                                                        <td colSpan="8" className="text-center">No totals available</td>
                                                     </tr>
                                                 )}
                                             </tbody>
                                         </Table>
                                     </>
                                 )}
-                                {viewMode !== "RECORDS" && (
+                                {viewMode === "PRESENT" && (
                                     <>
-                                        <PageTitle name="Total Records" />
+                                        <PageTitle name="Present Members" />
                                         <Table bordered responsive>
                                             <thead>
                                                 <tr>
-                                                    <th>Milk Type</th>
-                                                    <th>Total Qty</th>
-                                                    <th>Total Amount</th>
-                                                    <th>Total Incentive</th>
-                                                    <th>Avg Fat</th>
-                                                    <th>Avg SNF</th>
-                                                    <th>Avg Rate</th>
-                                                    <th>Total Records</th>
+                                                    <th>#</th>
+                                                    <th>CODE</th>
+                                                    <th>MILKTYPE</th>
+                                                    <th>MEMBERNAME</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {totals.length > 0 ? (
-                                                    totals.map((total, index) => (
+                                                {present.length > 0 ? (
+                                                    present.map((present, index) => (
                                                         <tr key={index}>
-                                                            <td>{total._id.milkType}</td>
-                                                            <td>{total.totalQuantity}</td>
-                                                            <td>{total.totalAmount}</td>
-                                                            <td>{total.totalIncentive}</td>
-                                                            <td>{total.averageFat}</td>
-                                                            <td>{total.averageSNF}</td>
-                                                            <td>{total.averageRate}</td>
-                                                            <td>{total.totalRecords}</td>
+                                                            <td>{index + 1}</td>
+                                                            <td>{present?.CODE}</td>
+                                                            <td>{present?.MILKTYPE == "C" ? "COW" : "BUFF"}</td>
+                                                            <td>{present?.MEMBERNAME}</td>
                                                         </tr>
                                                     ))
                                                 ) : (
@@ -230,7 +242,7 @@ const MemberRecords = () => {
                 </Card>
             </div>
         </>
-    );
-};
+    )
+}
 
-export default MemberRecords;
+export default AbsentMemberRecords

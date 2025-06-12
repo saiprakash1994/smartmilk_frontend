@@ -94,7 +94,7 @@ const DashboardPage = () => {
     }, [deviceCodes, formattedDate, selectedShift, refetch]);
 
     return (
-        <div className="sai">
+        <>
             <div className="d-flex justify-content-between pageTitleSpace align-items-center">
                 <PageTitle name="DASHBOARD" />
                 <div className="filters d-flex gap-3 align-items-center">
@@ -268,7 +268,7 @@ const DashboardPage = () => {
 
                 </Card>
             </div>
-        </div>
+        </>
     );
 };
 
