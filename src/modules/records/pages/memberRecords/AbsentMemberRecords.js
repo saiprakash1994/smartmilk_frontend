@@ -73,7 +73,7 @@ const AbsentMemberRecords = () => {
     );
 
     const absent = resultData?.absentMembers || [];
-    const present = resultData?.absentMembers || []
+    const present = resultData?.presentMembers || []
     const {
         totalMembers = 0,
         presentCount = 0,
