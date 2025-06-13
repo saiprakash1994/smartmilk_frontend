@@ -1,4 +1,4 @@
-import { faSearch, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -15,6 +15,11 @@ import { useGetDeviceByCodeQuery, useGetAllDevicesQuery } from "../../../device/
 import { roles } from "../../../../shared/utils/appRoles";
 import './DeviceRecords.scss';
 import { useLazyGetAllRecordsQuery } from "../../store/recordEndPoint";
+import { saveAs } from "file-saver";
+import Papa from "papaparse";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
@@ -97,7 +102,137 @@ const DeviceRecords = () => {
     const filteredTotals = milkTypeFilter === "ALL"
         ? totals.filter(t => t._id.milkType !== "TOTAL")
         : totals.filter(t => t._id.milkType === milkTypeFilter);
-    console.log(filteredTotals, 'sss')
+
+    const handleExportCSV = () => {
+        if (!totals?.length && !records?.length) {
+            alert("No data available to export.");
+            return;
+        }
+
+        let combinedCSV = "";
+        if (records?.length) {
+            const recordsCSVData = records.map((rec, index) => ({
+                SNO: index + 1,
+                MemberCode: rec?.CODE,
+                MilkType: rec?.MILKTYPE,
+                Shift: rec?.SHIFT,
+                Fat: rec?.FAT?.toFixed(1),
+                SNF: rec?.SNF?.toFixed(1),
+                Quantity: rec?.QTY?.toFixed(2) || '0.00',
+                Rate: rec?.RATE?.toFixed(1),
+                Amount: rec?.AMOUNT?.toFixed(2) || '0.00',
+                Incentive: rec?.INCENTIVEAMOUNT?.toFixed(2),
+                Total: rec?.TOTAL?.toFixed(2),
+                AnalyzerMode: rec?.ANALYZERMODE,
+                WeightMode: rec?.WEIGHTMODE,
+                Date: date,
+                DeviceId: rec?.DEVICEID,
+            }));
+
+            combinedCSV += `Milk Records ${date} ${deviceCode}\n`;
+            combinedCSV += Papa.unparse(recordsCSVData);
+            combinedCSV += "\n\n";
+
+        }
+
+
+        if (totals?.length) {
+            const totalsCSVData = totals.map(item => ({
+                MilkType: item._id?.milkType || '',
+                TotalQuantity: item.totalQuantity?.toFixed(2) || '0.00',
+                TotalAmount: item.totalAmount?.toFixed(2) || '0.00',
+                TotalIncentive: item.totalIncentive?.toFixed(2) || '0.00',
+                AverageFat: item.averageFat || '',
+                AverageSNF: item.averageSNF || '',
+                AverageRate: item.averageRate || ''
+            }));
+
+            combinedCSV += `Milk Totals ${date} ${deviceCode}\n`;
+            combinedCSV += Papa.unparse(totalsCSVData);
+        }
+
+
+        // Save the single CSV
+        const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, `Milk_Data_${date}_${deviceCode}.csv`);
+    };
+
+
+    const handleExportPDF = () => {
+        if (!totals?.length && !records?.length) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        let currentY = 10;
+
+        if (records?.length) {
+            doc.setFontSize(12);
+            doc.text(`Milk Records on ${date} ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const recordsTable = records.map((rec, index) => ([
+                index + 1,
+                rec?.CODE,
+                rec?.MILKTYPE,
+                rec?.SHIFT,
+                rec?.FAT?.toFixed(1),
+                rec?.SNF?.toFixed(1),
+                rec?.QTY?.toFixed(2),
+                rec?.RATE?.toFixed(1),
+                rec?.AMOUNT?.toFixed(2),
+                rec?.INCENTIVEAMOUNT?.toFixed(2),
+                rec?.TOTAL?.toFixed(2),
+                rec?.ANALYZERMODE,
+                rec?.WEIGHTMODE,
+                rec?.DEVICEID,
+                date
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "S.No", "MemberCode", "MilkType", "Shift", "Fat", "SNF", "Qty (L)", "Rate",
+                    "Amount", "Incentive", "Total", "Analyzer", "WeightMode", "DeviceID", "Date"
+                ]],
+                body: recordsTable,
+                startY: currentY,
+                theme: "grid",
+                styles: { fontSize: 8 },
+            });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+        }
+
+        if (totals?.length) {
+            doc.setFontSize(12);
+            doc.text(`Milk Totals on ${date} ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const totalsTable = totals.map((total) => ([
+                total?._id?.milkType,
+                total?.totalQuantity?.toFixed(2),
+                total?.totalAmount?.toFixed(2),
+                total?.totalIncentive?.toFixed(2),
+                total?.averageFat,
+                total?.averageSNF,
+                total?.averageRate
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "MilkType", "Total Qty", "Total Amount", "Incentive",
+                    "Avg Fat", "Avg SNF", "Avg Rate"
+                ]],
+                body: totalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+
+        doc.save(`Milk_Data_${date} ${deviceCode}.pdf`);
+    };
+
+
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
@@ -122,7 +257,7 @@ const DeviceRecords = () => {
                             <Form.Control type="text" value={deviceCode} readOnly />
                         )}
 
-                        <Form.Control type="date" value={date} max={date} onChange={e => setDate(e.target.value)} />
+                        <Form.Control type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
 
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
                             <option value="">All Shifts</option>
@@ -205,6 +340,8 @@ const DeviceRecords = () => {
                                                 )}
                                             </tbody>
                                         </Table>
+
+
                                     </>
                                 )}
 
@@ -244,13 +381,21 @@ const DeviceRecords = () => {
                                                     ))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="8" className="text-center">No totals available</td>
+                                                        <td colSpan="9" className="text-center">No totals available</td>
                                                     </tr>
                                                 )}
                                             </tbody>
                                         </Table>
                                     </>
                                 )}
+                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
+                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+
+                                </Button>
+                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
+                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+
+                                </Button>
                             </>
 
                         )}

@@ -1,13 +1,18 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faFilePdf, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Spinner from "react-bootstrap/esm/Spinner";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { saveAs } from "file-saver";
+
+import Papa from "papaparse";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { errorToast } from "../../../../shared/utils/appToaster";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
@@ -48,6 +53,7 @@ const MemberRecords = () => {
     const [triggerFetch, setTriggerFetch] = useState(false);
     const [viewMode, setViewMode] = useState('ALL');
 
+
     useEffect(() => {
         if (isDevice && deviceid)
             setDeviceCode(deviceid);
@@ -75,7 +81,122 @@ const MemberRecords = () => {
 
     const records = resultData?.records || [];
     const totals = resultData?.totals || [];
-    console.log(records, totals)
+    const handleExportCSV = () => {
+        if (!totals?.length && !records?.length) {
+            alert("No data available to export.");
+            return;
+        }
+
+        let combinedCSV = "";
+        if (records?.length) {
+            const recordsCSVData = records.map((rec, index) => ({
+                SNO: index + 1,
+                Date: rec.SAMPLEDATE,
+                MilkType: rec?.MILKTYPE,
+                Shift: rec?.SHIFT,
+                Qty: rec?.QTY,
+                Fat: rec?.FAT,
+                SNF: rec?.SNF,
+                Rate: rec?.RATE,
+                Amount: rec?.AMOUNT?.toFixed(2),
+            }));
+
+            combinedCSV += `Member Records From ${fromDate} to ${toDate}\n`;
+            combinedCSV += Papa.unparse(recordsCSVData);
+            combinedCSV += "\n\n";
+
+        }
+
+
+        if (totals?.length) {
+            const totalsCSVData = totals.map(total => ({
+                MilkType: total?._id.milkType,
+                TotalQuantity: total?.totalQuantity,
+                TotalAmount: total?.totalAmount,
+                TotalIncentive: total?.totalIncentive,
+                AverageFat: total?.averageFat,
+                AverageSNF: total?.averageSNF,
+                AverageRate: total?.averageRate,
+                TotalRecords: total?.totalRecords
+            }));
+
+            combinedCSV += `Member Totals From ${fromDate} to ${toDate}\n`;
+            combinedCSV += Papa.unparse(totalsCSVData);
+        }
+
+        const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, `Member_Data_${getToday()}.csv`);
+    };
+
+
+    const handleExportPDF = () => {
+        if (!totals?.length && !records?.length) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        let currentY = 10;
+        if (records?.length) {
+            doc.setFontSize(12);
+            doc.text(`Member Records From ${fromDate} to ${toDate}`, 14, currentY);
+            currentY += 6;
+            const recordsTable = records.map((record, index) => ([
+                index + 1,
+                record?.SAMPLEDATE,
+                record?.MILKTYPE,
+                record?.SHIFT,
+                record?.QTY,
+                record?.FAT,
+                record?.SNF,
+                record?.RATE,
+                record?.AMOUNT.toFixed(2) || 0
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "S.No", "Date", "Milk Type", "Shift", "Qty",
+                    "Fat", "Snf", "Rate", "Amount"
+                ]],
+                body: recordsTable,
+                startY: currentY,
+                theme: "grid",
+                styles: { fontSize: 8 },
+            });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+        }
+
+        if (totals?.length) {
+            doc.setFontSize(12);
+            doc.text(`Member Totals From ${fromDate} to ${toDate}`, 14, currentY);
+            currentY += 6;
+            const totalsTable = totals.map((total) => ([
+                total._id.milkType,
+                total.totalQuantity,
+                total.totalAmount,
+                total.totalIncentive,
+                total.averageFat,
+                total.averageSNF,
+                total.averageRate,
+                total.totalRecords,
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "Milk Type", "Total Qty", "Total Amount", "Total Incentive",
+                    "Avg Fat", "Avg SNF", "Avg Rate", "Total Records"
+
+                ]],
+                body: totalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+
+        doc.save(`member_data_${getToday()}.pdf`);
+    };
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
@@ -113,8 +234,8 @@ const MemberRecords = () => {
                             ))}
                         </Form.Select>
 
-                        <Form.Control type="date" value={fromDate} max={fromDate} onChange={e => setFromDate(e.target.value)} />
-                        <Form.Control type="date" value={toDate} max={toDate} onChange={e => setToDate(e.target.value)} />
+                        <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
+                        <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="ALL">Show All Records</option>
                             <option value="RECORDS">Only Records Summary</option>
@@ -166,7 +287,7 @@ const MemberRecords = () => {
                                                             <td>{record?.FAT}</td>
                                                             <td>{record?.SNF}</td>
                                                             <td>{record?.RATE}</td>
-                                                            <td>{record?.AMOUNT.toFixed(2)}</td>
+                                                            <td>{record?.AMOUNT.toFixed(2) || 0}</td>
                                                         </tr>
                                                     ))
                                                 ) : (
@@ -217,6 +338,14 @@ const MemberRecords = () => {
                                         </Table>
                                     </>
                                 )}
+                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
+                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+
+                                </Button>
+                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
+                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+
+                                </Button>
                             </>
                         )}
                     </Card.Body>

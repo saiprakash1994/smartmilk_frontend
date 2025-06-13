@@ -1,4 +1,4 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -18,6 +18,11 @@ import {
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetAbsentMemberReportQuery } from "../../store/recordEndPoint";
+import { saveAs } from "file-saver";
+import Papa from "papaparse";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -47,12 +52,10 @@ const AbsentMemberRecords = () => {
     const [triggerFetch, setTriggerFetch] = useState(false);
     const [viewMode, setViewMode] = useState('TOTALS');
 
-    // Set default deviceCode for device user
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Get selected device and member list
 
     const handleSearch = () => {
         if (!deviceCode || !date || !shift) {
@@ -76,6 +79,110 @@ const AbsentMemberRecords = () => {
         cowAbsentCount = 0,
         bufAbsentCount = 0,
     } = resultData || {};
+
+
+    const handleExportCSV = () => {
+        if (totalMembers === 0) {
+            alert("No data available to export.");
+            return;
+        }
+        let combinedCSV = "";
+        if (absent?.length) {
+            const recordsCSVData = absent.map((rec, index) => ({
+                SNO: index + 1,
+                CODE: absent?.CODE,
+                MILKTYPE: absent?.MILKTYPE == "C" ? "COW" : "BUF",
+                MEMBERNAME: absent?.MEMBERNAME,
+            }));
+
+            combinedCSV += `Absent Members Records on ${date} ${shift} Shift in Device ${deviceCode}  \n`;
+            combinedCSV += Papa.unparse(recordsCSVData);
+            combinedCSV += "\n\n";
+        }
+
+
+        if (totalMembers !== 0) {
+            const totalsCSVData = {
+                TotalMembers: totalMembers,
+                PresentMembers: presentCount,
+                AbsentMembers: absentCount,
+                CowAbsent: cowAbsentCount,
+                BuffaloAbsent: bufAbsentCount
+            }
+            combinedCSV += `Absent Members Total List on ${date} ${shift} Shift in Device ${deviceCode}\n`;
+            combinedCSV += Papa.unparse(totalsCSVData);
+        }
+
+
+        // Save the single CSV
+        const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, `absent_members_${date}_${shift}_${deviceCode}.csv`);
+    };
+
+
+    const handleExportPDF = () => {
+        if (totalMembers === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        let currentY = 10;
+
+        if (absent?.length) {
+            doc.setFontSize(12);
+            doc.text(`Absent Members Records on ${date} ${shift} Shift in Device ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const recordsTable = absent.map((absent, index) => ([
+                index + 1,
+                absent?.CODE,
+                absent?.MILKTYPE == "C" ? "COW" : "BUF",
+                absent?.MEMBERNAME,
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "SNO",
+                    "CODE",
+                    "MILKTYPE",
+                    "MEMBERNAME"
+                ]],
+                body: recordsTable,
+                startY: currentY,
+                theme: "grid",
+                styles: { fontSize: 8 },
+            });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+        }
+
+        if (totalMembers !== 0) {
+            doc.setFontSize(12);
+            doc.text(`Absent Members Totals on ${date} ${shift} shift in  DEviceId ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const totalsTable = [
+                totalMembers,
+                presentCount,
+                absentCount,
+                cowAbsentCount,
+                bufAbsentCount
+
+            ]
+
+            autoTable(doc, {
+                head: [[
+                    "TotalMembers", "PresentMembers", "AbsentMembers", "CowAbsent", "BuffaloAbsent"
+                ]],
+                body: totalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+
+        doc.save(`member_absent_${date}_${shift}_${deviceCode}.pdf`);
+    };
+
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
@@ -109,7 +216,7 @@ const AbsentMemberRecords = () => {
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
 
-                        <Form.Control type="date" value={date} max={date} onChange={e => setDate(e.target.value)} />
+                        <Form.Control type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="TOTALS">Attendance Summary</option>
                             <option value="ABSENT">Absent Members</option>
@@ -192,7 +299,14 @@ const AbsentMemberRecords = () => {
                                         </Table>
                                     </>
                                 )}
+                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
+                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
 
+                                </Button>
+                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
+                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+
+                                </Button>
                             </>
                         )}
                     </Card.Body>

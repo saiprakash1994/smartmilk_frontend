@@ -1,4 +1,4 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faFilePdf, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -18,6 +18,10 @@ import {
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetCumulativeReportQuery } from "../../store/recordEndPoint";
+import { saveAs } from "file-saver";
+import Papa from "papaparse";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -100,6 +104,201 @@ const CumilativeRecords = () => {
         grandTotalAmount = 0,
         grandTotal = 0
     } = resultData || {};
+
+    const handleExportCSV = () => {
+        if (totalMembers === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        let combinedCSV = "";
+        if (records?.length) {
+            const recordsCSVData = records.map((record, index) => ({
+                SNO: index + 1,
+                Code: record?.CODE,
+                MILKTYPE: record?.MILKTYPE,
+                TotalQty: record?.totalQty,
+                AvgRate: record?.avgRate,
+                TotalIncentive: record?.totalIncentive,
+                TotalAmount: record?.totalAmount,
+                GrandTotal: record?.grandTotal
+            }));
+
+            combinedCSV += `Cumlitive Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;
+            combinedCSV += Papa.unparse(recordsCSVData);
+            combinedCSV += "\n\n";
+
+        }
+
+        if (cowMilkTypeTotals.length) {
+            const cowTotalsCSVData = cowMilkTypeTotals.map(cow => ({
+                MemberCount: cow?.memberCount,
+                MILKTYPE: cow?.MILKTYPE,
+                TotalQty: cow?.totalQty,
+                TotalAmount: cow?.totalAmount,
+                totalIncentive: cow?.totalIncentive,
+                GrandTotalcow: cow?.grandTotal
+
+            }));
+
+            combinedCSV += `Cumlitive Cow Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
+            combinedCSV += Papa.unparse(cowTotalsCSVData);
+            combinedCSV += "\n\n";
+
+        }
+        if (bufMilkTypeTotals.length) {
+            const cowTotalsCSVData = bufMilkTypeTotals.map(buf => ({
+                MemberCount: buf?.memberCount,
+                MILKTYPE: buf?.MILKTYPE,
+                TotalQty: buf?.totalQty,
+                TotalAmount: buf?.totalAmount,
+                totalIncentive: buf?.totalIncentive,
+                GrandTotalcow: buf?.grandTotal
+
+            }));
+
+            combinedCSV += `Cumlitive Buf Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
+            combinedCSV += Papa.unparse(cowTotalsCSVData);
+            combinedCSV += "\n\n";
+
+        }
+        if (totalMembers !== 0) {
+            const TotalsCSVData = {
+                totalMembers: totalMembers,
+                grandTotalQty: grandTotalQty,
+                grandTotalIncentive: grandTotalIncentive,
+                grandTotalAmount: grandTotalAmount,
+                grandTotal: grandTotal
+
+            }
+
+            combinedCSV += `Cumlitive Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
+            combinedCSV += Papa.unparse(TotalsCSVData);
+
+        }
+
+        // Save the single CSV
+        const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, `Cumlitive_${fromCode}_${toCode}}.csv`);
+    };
+
+
+    const handleExportPDF = () => {
+        if (totalMembers === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        let currentY = 10;
+
+        if (records?.length) {
+            doc.setFontSize(12);
+            doc.text(`Cumlitive Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const recordsTable = records.map((record, index) => ([
+                index + 1,
+                record?.CODE,
+                record?.MILKTYPE,
+                record?.totalQty,
+                record?.avgRate,
+                record?.totalIncentive,
+                record?.totalAmount,
+                record?.grandTotal
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "S.No", "MemberCode", "MilkType", "TotalQty",
+                    "AvgRate", "TotalIncentive",
+                    "TotalAmount", "GrandTotal"
+
+                ]],
+                body: recordsTable,
+                startY: currentY,
+                theme: "grid",
+                styles: { fontSize: 8 },
+            });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+        }
+
+        if (cowMilkTypeTotals.length) {
+            doc.setFontSize(12);
+            doc.text(`Cumlitive cow  Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const cowTotalsTable = cowMilkTypeTotals.map((cow) => ([
+                cow?.memberCount,
+                cow?.MILKTYPE,
+                cow?.totalQty,
+                cow?.totalAmount,
+                cow?.totalIncentive,
+                cow?.grandTotal
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "MemberCount", "MILKTYPE", "TotalQty", "TotalAmount",
+                    "totalIncentive",
+                    "GrandTotalcow"
+                ]],
+                body: cowTotalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+        if (bufMilkTypeTotals.length) {
+            doc.setFontSize(12);
+            doc.text(`Cumlitive buf Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const bufTotalsTable = bufMilkTypeTotals.map((buf) => ([
+                buf?.memberCount,
+                buf?.MILKTYPE,
+                buf?.totalQty,
+                buf?.totalAmount,
+                buf?.totalIncentive,
+                buf?.grandTotal
+            ]));
+
+            autoTable(doc, {
+                head: [[
+                    "MemberCount", "MILKTYPE", "TotalQty", "TotalAmount",
+                    "totalIncentive",
+                    "GrandTotalcow"
+                ]],
+                body: bufTotalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+        if (totalMembers !== 0) {
+            doc.setFontSize(12);
+            doc.text(`Cumlitive  Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            currentY += 6;
+            const TotalsTable = [
+                totalMembers,
+                grandTotalQty,
+                grandTotalIncentive,
+                grandTotalAmount,
+                grandTotal
+            ];
+
+            autoTable(doc, {
+                head: [[
+                    "totalMembers", "grandTotalQty", "grandTotalIncentive", "grandTotalAmount",
+                    "grandTotal",
+                ]],
+                body: TotalsTable,
+                startY: currentY,
+                theme: "striped",
+                styles: { fontSize: 10 },
+            });
+        }
+        doc.save(`cumilative ${deviceCode}.pdf`);
+    };
+
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
@@ -143,8 +342,8 @@ const CumilativeRecords = () => {
                             ))}
                         </Form.Select>
 
-                        <Form.Control type="date" value={fromDate} max={fromDate} onChange={e => setFromDate(e.target.value)} />
-                        <Form.Control type="date" value={toDate} max={toDate} onChange={e => setToDate(e.target.value)} />
+                        <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
+                        <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="TOTALS">All MilkType Totals</option>
                             <option value="COWTOTALS">COW Totals</option>
@@ -204,6 +403,7 @@ const CumilativeRecords = () => {
                                                     <th>MILKTYPE</th>
                                                     <th>Total Qty</th>
                                                     <th>Total Amount</th>
+                                                    <th>total Incentive</th>
                                                     <th>Grand Total</th>
 
                                                 </tr>
@@ -214,6 +414,7 @@ const CumilativeRecords = () => {
                                                         <tr key={index}>
                                                             <td>{cow?.memberCount}</td>
                                                             <td>{cow?.MILKTYPE}</td>
+                                                            <td>{cow?.totalQty}</td>
                                                             <td>{cow?.totalAmount}</td>
                                                             <td>{cow?.totalIncentive}</td>
                                                             <td>{cow?.grandTotal}</td>
@@ -238,6 +439,7 @@ const CumilativeRecords = () => {
                                                     <th>MILKTYPE</th>
                                                     <th>Total Qty</th>
                                                     <th>Total Amount</th>
+                                                    <th>total Incentive</th>
                                                     <th>Grand Total</th>
 
                                                 </tr>
@@ -248,6 +450,7 @@ const CumilativeRecords = () => {
                                                         <tr key={index}>
                                                             <td>{buf?.memberCount}</td>
                                                             <td>{buf?.MILKTYPE}</td>
+                                                            <td>{buf?.totalQty}</td>
                                                             <td>{buf?.totalAmount}</td>
                                                             <td>{buf?.totalIncentive}</td>
                                                             <td>{buf?.grandTotal}</td>
@@ -310,6 +513,7 @@ const CumilativeRecords = () => {
                                                     <th>MILKTYPE</th>
                                                     <th>Total Qty</th>
                                                     <th>Total Amount</th>
+                                                    <th>total Incentive</th>
                                                     <th>Grand Total</th>
 
                                                 </tr>
@@ -320,6 +524,7 @@ const CumilativeRecords = () => {
                                                         <tr key={index}>
                                                             <td>{cow?.memberCount}</td>
                                                             <td>{cow?.MILKTYPE}</td>
+                                                            <td>{cow?.totalQty}</td>
                                                             <td>{cow?.totalAmount}</td>
                                                             <td>{cow?.totalIncentive}</td>
                                                             <td>{cow?.grandTotal}</td>
@@ -341,6 +546,7 @@ const CumilativeRecords = () => {
                                                     <th>MILKTYPE</th>
                                                     <th>Total Qty</th>
                                                     <th>Total Amount</th>
+                                                    <th>total Incentive</th>
                                                     <th>Grand Total</th>
 
                                                 </tr>
@@ -350,6 +556,7 @@ const CumilativeRecords = () => {
                                                     bufMilkTypeTotals.map((buf, index) => (
                                                         <tr key={index}>
                                                             <td>{buf?.memberCount}</td>
+                                                            <td>{buf?.totalQty}</td>
                                                             <td>{buf?.MILKTYPE}</td>
                                                             <td>{buf?.totalAmount}</td>
                                                             <td>{buf?.totalIncentive}</td>
@@ -389,6 +596,14 @@ const CumilativeRecords = () => {
                                     </>
 
                                 )}
+                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
+                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+
+                                </Button>
+                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
+                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+
+                                </Button>
                             </>
                         )}
                     </Card.Body>
