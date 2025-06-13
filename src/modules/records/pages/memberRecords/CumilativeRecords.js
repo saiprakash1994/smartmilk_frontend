@@ -18,7 +18,9 @@ import {
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetCumulativeReportQuery } from "../../store/recordEndPoint";
-
+const getToday = () => {
+    return new Date().toISOString().split("T")[0];
+};
 const CumilativeRecords = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -44,8 +46,8 @@ const CumilativeRecords = () => {
     const [fromCode, setFromCode] = useState("");
     const [toCode, setToCode] = useState("");
 
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
+    const [fromDate, setFromDate] = useState(getToday());
+    const [toDate, setToDate] = useState(getToday());
     const [triggerFetch, setTriggerFetch] = useState(false);
     const [viewMode, setViewMode] = useState('TOTALS');
 
@@ -85,6 +87,7 @@ const CumilativeRecords = () => {
         { params: { deviceid: deviceCode, fromCode, toCode, fromDate: formattedFromDate, toDate: formattedToDate } },
         { skip: !triggerFetch }
     );
+    console.log(resultData, 'data')
 
     const records = resultData?.data || [];
     const cowMilkTypeTotals = resultData?.milkTypeTotals.filter((cow) => cow?.MILKTYPE === "COW") || [];
@@ -140,12 +143,12 @@ const CumilativeRecords = () => {
                             ))}
                         </Form.Select>
 
-                        <Form.Control type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-                        <Form.Control type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
+                        <Form.Control type="date" value={fromDate} max={fromDate} onChange={e => setFromDate(e.target.value)} />
+                        <Form.Control type="date" value={toDate} max={toDate} onChange={e => setToDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="TOTALS">All MilkType Totals</option>
                             <option value="COWTOTALS">COW Totals</option>
-                            <option value="BUFFTOTALS">BUFF Totals</option>
+                            <option value="BUFFTOTALS">BUF Totals</option>
                             <option value="DATA">Members Data </option>
                         </Form.Select>
                         <Button variant="outline-primary" onClick={handleSearch} disabled={isFetching}>
@@ -167,7 +170,7 @@ const CumilativeRecords = () => {
                                 <hr />
                                 {viewMode == "TOTALS" && (
                                     <>
-                                        <PageTitle name="Show All Records" />
+                                        <PageTitle name="All Totals" />
                                         <Table hover responsive>
                                             <thead>
                                                 <tr>
@@ -227,7 +230,7 @@ const CumilativeRecords = () => {
                                 )}
                                 {viewMode == "BUFFTOTALS" && (
                                     <>
-                                        <PageTitle name="Buff Totals" />
+                                        <PageTitle name="Buf Totals" />
                                         <Table bordered responsive>
                                             <thead>
                                                 <tr>
@@ -298,7 +301,93 @@ const CumilativeRecords = () => {
                                                 )}
                                             </tbody>
                                         </Table>
+                                        <hr />
+                                        <PageTitle name="Cow Totals" />
+                                        <Table bordered responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>Member Count</th>
+                                                    <th>MILKTYPE</th>
+                                                    <th>Total Qty</th>
+                                                    <th>Total Amount</th>
+                                                    <th>Grand Total</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {cowMilkTypeTotals.length > 0 ? (
+                                                    cowMilkTypeTotals.map((cow, index) => (
+                                                        <tr key={index}>
+                                                            <td>{cow?.memberCount}</td>
+                                                            <td>{cow?.MILKTYPE}</td>
+                                                            <td>{cow?.totalAmount}</td>
+                                                            <td>{cow?.totalIncentive}</td>
+                                                            <td>{cow?.grandTotal}</td>
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="8" className="text-center">No totals available</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </Table>
+                                        <hr />
+                                        <PageTitle name="Buf Totals" />
+                                        <Table bordered responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>Member Count</th>
+                                                    <th>MILKTYPE</th>
+                                                    <th>Total Qty</th>
+                                                    <th>Total Amount</th>
+                                                    <th>Grand Total</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {bufMilkTypeTotals.length > 0 ? (
+                                                    bufMilkTypeTotals.map((buf, index) => (
+                                                        <tr key={index}>
+                                                            <td>{buf?.memberCount}</td>
+                                                            <td>{buf?.MILKTYPE}</td>
+                                                            <td>{buf?.totalAmount}</td>
+                                                            <td>{buf?.totalIncentive}</td>
+                                                            <td>{buf?.grandTotal}</td>
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="8" className="text-center">No totals available</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </Table>
+                                        <hr />
+                                        <PageTitle name="All Totals" />
+                                        <Table hover responsive>
+                                            <thead>
+                                                <tr>
+                                                    <th>Total Members</th>
+                                                    <th>Grand Total Qty</th>
+                                                    <th>Grand Total Incentive</th>
+                                                    <th>Grand Total Amount</th>
+                                                    <th>Grand Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{totalMembers}</td>
+                                                    <td>{grandTotalQty}</td>
+                                                    <td>{grandTotalIncentive}</td>
+                                                    <td>{grandTotalAmount}</td>
+                                                    <td>{grandTotal}</td>
+                                                </tr>
+                                            </tbody>
+                                        </Table>
+
                                     </>
+
                                 )}
                             </>
                         )}

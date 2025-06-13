@@ -19,6 +19,9 @@ import {
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
 
+const getToday = () => {
+    return new Date().toISOString().split("T")[0];
+};
 const MemberRecords = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -31,29 +34,25 @@ const MemberRecords = () => {
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    // Queries for Admin and Dairy
     const { data: allDevices = [], isLoading: isAdminLoading } = useGetAllDevicesQuery(undefined, { skip: !isAdmin });
     const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
 
-    // Query for Device role to fetch its own data
     const { data: deviceData, isLoading: isDeviceLoading } = useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
 
     const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState("");
     const [memberCode, setMemberCode] = useState("");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
+    const [fromDate, setFromDate] = useState(getToday());
+    const [toDate, setToDate] = useState(getToday());
     const [triggerFetch, setTriggerFetch] = useState(false);
     const [viewMode, setViewMode] = useState('ALL');
 
-    // Set default deviceCode for device user
     useEffect(() => {
         if (isDevice && deviceid)
             setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Get selected device and member list
     const selectedDevice = isDevice ? deviceData : deviceList.find(dev => dev.deviceid === deviceCode);
     const memberCodes = selectedDevice?.members || [];
 
@@ -114,8 +113,8 @@ const MemberRecords = () => {
                             ))}
                         </Form.Select>
 
-                        <Form.Control type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-                        <Form.Control type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
+                        <Form.Control type="date" value={fromDate} max={fromDate} onChange={e => setFromDate(e.target.value)} />
+                        <Form.Control type="date" value={toDate} max={toDate} onChange={e => setToDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="ALL">Show All Records</option>
                             <option value="RECORDS">Only Records Summary</option>

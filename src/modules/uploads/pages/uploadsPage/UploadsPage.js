@@ -23,9 +23,9 @@ const UploadsPage = () => {
             </div>
 
             <FileUploadCard
-                title="SNF BUFF TABLE"
+                title="SNF BUF TABLE"
                 onUpload={uploadSnfBufTable}
-                toastMsg="SNF Buff table uploaded successfully"
+                toastMsg="SNF Buf table uploaded successfully"
                 showDate={true}
                 dateFieldName="snfBufEffectiveDate"
             />
@@ -39,9 +39,9 @@ const UploadsPage = () => {
             />
 
             <FileUploadCard
-                title="FAT BUFF TABLE"
+                title="FAT BUF TABLE"
                 onUpload={uploadFatBufTable}
-                toastMsg="FAT Buff table uploaded successfully"
+                toastMsg="FAT Buf table uploaded successfully"
                 showDate={true}
                 dateFieldName="fatBufEffectiveDate"
             />

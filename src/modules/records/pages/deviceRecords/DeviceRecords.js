@@ -16,6 +16,9 @@ import { roles } from "../../../../shared/utils/appRoles";
 import './DeviceRecords.scss';
 import { useLazyGetAllRecordsQuery } from "../../store/recordEndPoint";
 
+const getToday = () => {
+    return new Date().toISOString().split("T")[0];
+};
 const DeviceRecords = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -35,13 +38,14 @@ const DeviceRecords = () => {
     const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(getToday());
     const [shift, setShift] = useState('');
     const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
     const [records, setRecords] = useState([]);
     const [totals, setTotals] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [viewMode, setViewMode] = useState('ALL');
+
     useEffect(() => {
         if (isDevice && deviceid) {
             setDeviceCode(deviceid);
@@ -57,6 +61,11 @@ const DeviceRecords = () => {
     const handleSearch = async () => {
         if (!deviceCode || !date) {
             errorToast("Please select device code and date");
+            return;
+        }
+        const today = new Date().toISOString().split("T")[0];
+        if (date > today) {
+            errorToast("Future dates are not allowed.");
             return;
         }
 
@@ -113,7 +122,7 @@ const DeviceRecords = () => {
                             <Form.Control type="text" value={deviceCode} readOnly />
                         )}
 
-                        <Form.Control type="date" value={date} onChange={e => setDate(e.target.value)} />
+                        <Form.Control type="date" value={date} max={date} onChange={e => setDate(e.target.value)} />
 
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
                             <option value="">All Shifts</option>
@@ -178,13 +187,13 @@ const DeviceRecords = () => {
                                                             <td>{record?.CODE}</td>
                                                             <td>{record?.MILKTYPE}</td>
                                                             <td>{record?.SHIFT}</td>
-                                                            <td>{record?.FAT}</td>
-                                                            <td>{record?.SNF}</td>
-                                                            <td>{record?.QTY}</td>
-                                                            <td>{record?.RATE}</td>
-                                                            <td>{record?.AMOUNT}</td>
-                                                            <td>{record?.INCENTIVEAMOUNT}</td>
-                                                            <td>{record?.TOTAL}</td>
+                                                            <td>{record?.FAT.toFixed(1)}</td>
+                                                            <td>{record?.SNF.toFixed(1)}</td>
+                                                            <td>{record?.QTY.toFixed(2)}</td>
+                                                            <td>{record?.RATE.toFixed(2)}</td>
+                                                            <td>{record?.AMOUNT.toFixed(2)}</td>
+                                                            <td>{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
+                                                            <td>{record?.TOTAL.toFixed(2)}</td>
                                                             <td>{record?.ANALYZERMODE}</td>
                                                             <td>{record?.WEIGHTMODE}</td>
                                                         </tr>

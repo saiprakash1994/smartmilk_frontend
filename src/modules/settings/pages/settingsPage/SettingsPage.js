@@ -76,7 +76,7 @@ const SettingsPage = () => {
                         server.analyzer === 'U' ? 'Ultra Pro' :
                             'Lactoscan',
                 useCowSN: server.useCowSnf === 'Y',
-                useBuffSN: server.useBufSnf === 'Y',
+                useBufSN: server.useBufSnf === 'Y',
                 highFatAccept: server.highFatAccept === 'Y',
                 lowFatAccept: server.lowFatAccept === 'Y',
                 dpuMemberList: server.dpuMemberList === 'Y',
@@ -127,7 +127,7 @@ const SettingsPage = () => {
                 analyzer: settings.analyzer === 'EKO Ultra' ? 'P' :
                     settings.analyzer === 'Ultra Pro' ? 'U' : 'L',
                 useCowSnf: settings.useCowSN ? 'Y' : 'N',
-                useBufSnf: settings.useBuffSN ? 'Y' : 'N',
+                useBufSnf: settings.useBufSN ? 'Y' : 'N',
                 highFatAccept: settings.highFatAccept ? 'Y' : 'N',
                 lowFatAccept: settings.lowFatAccept ? 'Y' : 'N',
                 dpuMemberList: settings.dpuMemberList ? 'Y' : 'N',
@@ -236,7 +236,7 @@ const SettingsPage = () => {
                             <Col md={4}>
                                 <Form.Check type="switch" label="Server Control" checked={settings.serverControl} onChange={(e) => handleChange('serverControl', e.target.checked)} />
                                 <Form.Check type="switch" label="Use Cow SN" checked={settings.useCowSN} onChange={(e) => handleChange('useCowSN', e.target.checked)} />
-                                <Form.Check type="switch" label="Use Buff SN" checked={settings.useBuffSN} onChange={(e) => handleChange('useBuffSN', e.target.checked)} />
+                                <Form.Check type="switch" label="Use Buf SN" checked={settings.useBufSN} onChange={(e) => handleChange('useBufSN', e.target.checked)} />
                                 <Form.Check type="switch" label="High Fat Accept" checked={settings.highFatAccept} onChange={(e) => handleChange('highFatAccept', e.target.checked)} />
                                 <Form.Check type="switch" label="Low Fat Accept" checked={settings.lowFatAccept} onChange={(e) => handleChange('lowFatAccept', e.target.checked)} />
                                 <Form.Check type="switch" label="DPU Member List" checked={settings.dpuMemberList} onChange={(e) => handleChange('dpuMemberList', e.target.checked)} />

@@ -18,6 +18,9 @@ import {
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetAbsentMemberReportQuery } from "../../store/recordEndPoint";
+const getToday = () => {
+    return new Date().toISOString().split("T")[0];
+};
 
 const AbsentMemberRecords = () => {
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -38,7 +41,7 @@ const AbsentMemberRecords = () => {
     const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState("");
-    const [date, setDate] = useState("");
+    const [date, setDate] = useState(getToday());
     const [shift, setShift] = useState('');
 
     const [triggerFetch, setTriggerFetch] = useState(false);
@@ -106,7 +109,7 @@ const AbsentMemberRecords = () => {
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
 
-                        <Form.Control type="date" value={date} onChange={e => setDate(e.target.value)} />
+                        <Form.Control type="date" value={date} max={date} onChange={e => setDate(e.target.value)} />
                         <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
                             <option value="TOTALS">Attendance Summary</option>
                             <option value="ABSENT">Absent Members</option>
@@ -176,7 +179,7 @@ const AbsentMemberRecords = () => {
                                                         <tr key={index}>
                                                             <td>{index + 1}</td>
                                                             <td>{absent?.CODE}</td>
-                                                            <td>{absent?.MILKTYPE == "C" ? "COW" : "BUFF"}</td>
+                                                            <td>{absent?.MILKTYPE == "C" ? "COW" : "BUF"}</td>
                                                             <td>{absent?.MEMBERNAME}</td>
                                                         </tr>
                                                     ))
