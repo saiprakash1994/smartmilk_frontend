@@ -112,6 +112,7 @@ const CumilativeRecords = () => {
         }
 
         let combinedCSV = "";
+
         if (records?.length) {
             const recordsCSVData = records.map((record, index) => ({
                 SNO: index + 1,
@@ -124,63 +125,58 @@ const CumilativeRecords = () => {
                 GrandTotal: record?.grandTotal
             }));
 
-            combinedCSV += `Cumlitive Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;
+            combinedCSV += `Cumulative Records for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}\n`;
             combinedCSV += Papa.unparse(recordsCSVData);
             combinedCSV += "\n\n";
-
         }
 
-        if (cowMilkTypeTotals.length) {
+        if (cowMilkTypeTotals?.length) {
             const cowTotalsCSVData = cowMilkTypeTotals.map(cow => ({
                 MemberCount: cow?.memberCount,
                 MILKTYPE: cow?.MILKTYPE,
                 TotalQty: cow?.totalQty,
                 TotalAmount: cow?.totalAmount,
                 totalIncentive: cow?.totalIncentive,
-                GrandTotalcow: cow?.grandTotal
-
+                GrandTotalCow: cow?.grandTotal
             }));
 
-            combinedCSV += `Cumlitive Cow Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
+            combinedCSV += `Cumulative Cow Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}\n`;
             combinedCSV += Papa.unparse(cowTotalsCSVData);
             combinedCSV += "\n\n";
-
         }
-        if (bufMilkTypeTotals.length) {
-            const cowTotalsCSVData = bufMilkTypeTotals.map(buf => ({
+
+        if (bufMilkTypeTotals?.length) {
+            const bufTotalsCSVData = bufMilkTypeTotals.map(buf => ({
                 MemberCount: buf?.memberCount,
                 MILKTYPE: buf?.MILKTYPE,
                 TotalQty: buf?.totalQty,
                 TotalAmount: buf?.totalAmount,
                 totalIncentive: buf?.totalIncentive,
-                GrandTotalcow: buf?.grandTotal
-
+                GrandTotalBuf: buf?.grandTotal
             }));
 
-            combinedCSV += `Cumlitive Buf Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
-            combinedCSV += Papa.unparse(cowTotalsCSVData);
+            combinedCSV += `Cumulative Buffalo Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}\n`;
+            combinedCSV += Papa.unparse(bufTotalsCSVData);
             combinedCSV += "\n\n";
-
         }
+
         if (totalMembers !== 0) {
-            const TotalsCSVData = {
+            const TotalsCSVData = [{
                 totalMembers: totalMembers,
                 grandTotalQty: grandTotalQty,
                 grandTotalIncentive: grandTotalIncentive,
                 grandTotalAmount: grandTotalAmount,
                 grandTotal: grandTotal
+            }];
 
-            }
-
-            combinedCSV += `Cumlitive Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}\n`;;
+            combinedCSV += `Cumulative Overall Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}\n`;
             combinedCSV += Papa.unparse(TotalsCSVData);
-
         }
 
-        // Save the single CSV
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `Cumlitive_${fromCode}_${toCode}}.csv`);
+        saveAs(blob, `Cumulative_${fromCode}_${toCode}.csv`);
     };
+
 
 
     const handleExportPDF = () => {
@@ -194,8 +190,9 @@ const CumilativeRecords = () => {
 
         if (records?.length) {
             doc.setFontSize(12);
-            doc.text(`Cumlitive Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            doc.text(`Cumulative Records for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
             currentY += 6;
+
             const recordsTable = records.map((record, index) => ([
                 index + 1,
                 record?.CODE,
@@ -208,12 +205,7 @@ const CumilativeRecords = () => {
             ]));
 
             autoTable(doc, {
-                head: [[
-                    "S.No", "MemberCode", "MilkType", "TotalQty",
-                    "AvgRate", "TotalIncentive",
-                    "TotalAmount", "GrandTotal"
-
-                ]],
+                head: [["S.No", "Member Code", "Milk Type", "Total Qty", "Avg Rate", "Total Incentive", "Total Amount", "Grand Total"]],
                 body: recordsTable,
                 startY: currentY,
                 theme: "grid",
@@ -225,8 +217,9 @@ const CumilativeRecords = () => {
 
         if (cowMilkTypeTotals.length) {
             doc.setFontSize(12);
-            doc.text(`Cumlitive cow  Records for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            doc.text(`Cumulative Cow Records for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
             currentY += 6;
+
             const cowTotalsTable = cowMilkTypeTotals.map((cow) => ([
                 cow?.memberCount,
                 cow?.MILKTYPE,
@@ -237,21 +230,21 @@ const CumilativeRecords = () => {
             ]));
 
             autoTable(doc, {
-                head: [[
-                    "MemberCount", "MILKTYPE", "TotalQty", "TotalAmount",
-                    "totalIncentive",
-                    "GrandTotalcow"
-                ]],
+                head: [["Member Count", "Milk Type", "Total Qty", "Total Amount", "Total Incentive", "Grand Total"]],
                 body: cowTotalsTable,
                 startY: currentY,
                 theme: "striped",
                 styles: { fontSize: 10 },
             });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
         }
+
         if (bufMilkTypeTotals.length) {
             doc.setFontSize(12);
-            doc.text(`Cumlitive buf Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            doc.text(`Cumulative Buffalo Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
             currentY += 6;
+
             const bufTotalsTable = bufMilkTypeTotals.map((buf) => ([
                 buf?.memberCount,
                 buf?.MILKTYPE,
@@ -262,42 +255,41 @@ const CumilativeRecords = () => {
             ]));
 
             autoTable(doc, {
-                head: [[
-                    "MemberCount", "MILKTYPE", "TotalQty", "TotalAmount",
-                    "totalIncentive",
-                    "GrandTotalcow"
-                ]],
+                head: [["Member Count", "Milk Type", "Total Qty", "Total Amount", "Total Incentive", "Grand Total"]],
                 body: bufTotalsTable,
                 startY: currentY,
                 theme: "striped",
                 styles: { fontSize: 10 },
             });
+
+            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
         }
+
         if (totalMembers !== 0) {
             doc.setFontSize(12);
-            doc.text(`Cumlitive  Totals for ${fromCode} to ${toCode} members from  ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
+            doc.text(`Cumulative Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`, 14, currentY);
             currentY += 6;
-            const TotalsTable = [
+
+            const TotalsTable = [[
                 totalMembers,
                 grandTotalQty,
                 grandTotalIncentive,
                 grandTotalAmount,
                 grandTotal
-            ];
+            ]];
 
             autoTable(doc, {
-                head: [[
-                    "totalMembers", "grandTotalQty", "grandTotalIncentive", "grandTotalAmount",
-                    "grandTotal",
-                ]],
+                head: [["Total Members", "Total Qty", "Total Incentive", "Total Amount", "Grand Total"]],
                 body: TotalsTable,
                 startY: currentY,
                 theme: "striped",
                 styles: { fontSize: 10 },
             });
         }
-        doc.save(`cumilative ${deviceCode}.pdf`);
+
+        doc.save(`cumulative_${deviceCode}.pdf`);
     };
+
 
     return (
         <>

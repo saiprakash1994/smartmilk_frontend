@@ -86,35 +86,35 @@ const AbsentMemberRecords = () => {
             alert("No data available to export.");
             return;
         }
+
         let combinedCSV = "";
-        if (absent?.length) {
+
+        if (Array.isArray(absent) && absent.length) {
             const recordsCSVData = absent.map((rec, index) => ({
                 SNO: index + 1,
-                CODE: absent?.CODE,
-                MILKTYPE: absent?.MILKTYPE == "C" ? "COW" : "BUF",
-                MEMBERNAME: absent?.MEMBERNAME,
+                CODE: rec?.CODE,
+                MILKTYPE: rec?.MILKTYPE === "C" ? "COW" : "BUF",
+                MEMBERNAME: rec?.MEMBERNAME,
             }));
 
-            combinedCSV += `Absent Members Records on ${date} ${shift} Shift in Device ${deviceCode}  \n`;
+            combinedCSV += `Absent Members Records on ${date} ${shift} Shift in Device ${deviceCode}\n`;
             combinedCSV += Papa.unparse(recordsCSVData);
             combinedCSV += "\n\n";
         }
 
-
         if (totalMembers !== 0) {
-            const totalsCSVData = {
+            const totalsCSVData = [{
                 TotalMembers: totalMembers,
                 PresentMembers: presentCount,
                 AbsentMembers: absentCount,
                 CowAbsent: cowAbsentCount,
                 BuffaloAbsent: bufAbsentCount
-            }
-            combinedCSV += `Absent Members Total List on ${date} ${shift} Shift in Device ${deviceCode}\n`;
+            }];
+
+            combinedCSV += `Absent Members Totals on ${date} ${shift} Shift in Device ${deviceCode}\n`;
             combinedCSV += Papa.unparse(totalsCSVData);
         }
 
-
-        // Save the single CSV
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
         saveAs(blob, `absent_members_${date}_${shift}_${deviceCode}.csv`);
     };
@@ -129,24 +129,20 @@ const AbsentMemberRecords = () => {
         const doc = new jsPDF();
         let currentY = 10;
 
-        if (absent?.length) {
+        if (Array.isArray(absent) && absent.length) {
             doc.setFontSize(12);
-            doc.text(`Absent Members Records on ${date} ${shift} Shift in Device ${deviceCode}`, 14, currentY);
+            doc.text(`Absent Members Records on ${date} (${shift} Shift) in Device ${deviceCode}`, 14, currentY);
             currentY += 6;
-            const recordsTable = absent.map((absent, index) => ([
+
+            const recordsTable = absent.map((record, index) => ([
                 index + 1,
-                absent?.CODE,
-                absent?.MILKTYPE == "C" ? "COW" : "BUF",
-                absent?.MEMBERNAME,
+                record?.CODE,
+                record?.MILKTYPE === "C" ? "COW" : "BUFFALO",
+                record?.MEMBERNAME,
             ]));
 
             autoTable(doc, {
-                head: [[
-                    "SNO",
-                    "CODE",
-                    "MILKTYPE",
-                    "MEMBERNAME"
-                ]],
+                head: [["S.No", "Code", "Milk Type", "Member Name"]],
                 body: recordsTable,
                 startY: currentY,
                 theme: "grid",
@@ -158,21 +154,19 @@ const AbsentMemberRecords = () => {
 
         if (totalMembers !== 0) {
             doc.setFontSize(12);
-            doc.text(`Absent Members Totals on ${date} ${shift} shift in  DEviceId ${deviceCode}`, 14, currentY);
+            doc.text(`Absent Members Summary on ${date} (${shift} Shift) in Device ID ${deviceCode}`, 14, currentY);
             currentY += 6;
-            const totalsTable = [
+
+            const totalsTable = [[
                 totalMembers,
                 presentCount,
                 absentCount,
                 cowAbsentCount,
-                bufAbsentCount
-
-            ]
+                bufAbsentCount,
+            ]];
 
             autoTable(doc, {
-                head: [[
-                    "TotalMembers", "PresentMembers", "AbsentMembers", "CowAbsent", "BuffaloAbsent"
-                ]],
+                head: [["Total Members", "Present", "Absent", "Cow Absent", "Buffalo Absent"]],
                 body: totalsTable,
                 startY: currentY,
                 theme: "striped",
@@ -182,6 +176,7 @@ const AbsentMemberRecords = () => {
 
         doc.save(`member_absent_${date}_${shift}_${deviceCode}.pdf`);
     };
+
 
     return (
         <>
