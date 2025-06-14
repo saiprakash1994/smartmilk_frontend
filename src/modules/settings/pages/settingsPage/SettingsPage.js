@@ -75,13 +75,13 @@ const SettingsPage = () => {
         weightMode: server.weightMode === "1" ? "AUTO" : "MANUAL",
         fatMode: server.fatMode === "1" ? "AUTO" : "MANUAL",
         analyzer:
-          server.analyzer === "P"
+          server.analyzer === "U"
             ? "EKO Ultra"
-            : server.analyzer === "U"
+            : server.analyzer === "P"
             ? "Ultra Pro"
             : "Lactoscan",
-        useCowSNF: server.useCowSnf === "Y",
-        useBufSNF: server.useBufSnf === "Y",
+        useCowSnf: server.useCowSnf === "Y",
+        useBufSnf: server.useBufSnf === "Y",
         highFatAccept: server.highFatAccept === "Y",
         lowFatAccept: server.lowFatAccept === "Y",
         dpuMemberList: server.dpuMemberList === "Y",
@@ -92,9 +92,12 @@ const SettingsPage = () => {
         mixedMilk: server.mixedMilk === "Y",
         machineLock: server.machineLock === "Y",
         normalCommission: server.normalCommission || "00.00",
+        // specialCommission: Array.isArray(server.specialCommission)
+        //   ? server.specialCommission
+        //   : [server.specialCommission || "00.00"],
         specialCommission: Array.isArray(server.specialCommission)
-          ? server.specialCommission
-          : [server.specialCommission || "00.00"],
+          ? [...server.specialCommission, ...Array(9).fill("00.00")].slice(0, 9)
+          : Array(9).fill(server.specialCommission || "00.00"),
       };
 
       setSettings(mapped);
@@ -135,12 +138,12 @@ const SettingsPage = () => {
         fatMode: settings.fatMode === "AUTO" ? "1" : "0",
         analyzer:
           settings.analyzer === "EKO Ultra"
-            ? "P"
-            : settings.analyzer === "Ultra Pro"
             ? "U"
+            : settings.analyzer === "Ultra Pro"
+            ? "P"
             : "L",
-        useCowSnf: settings.useCowSN ? "Y" : "N",
-        useBufSnf: settings.useBufSN ? "Y" : "N",
+        useCowSnf: settings.useCowSnf ? "Y" : "N",
+        useBufSnf: settings.useBufSnf ? "Y" : "N",
         highFatAccept: settings.highFatAccept ? "Y" : "N",
         lowFatAccept: settings.lowFatAccept ? "Y" : "N",
         dpuMemberList: settings.dpuMemberList ? "Y" : "N",
@@ -258,14 +261,14 @@ const SettingsPage = () => {
                 <Form.Check
                   type="switch"
                   label="Use Cow SNF"
-                  checked={settings.useCowSN}
-                  onChange={(e) => handleChange("useCowSNF", e.target.checked)}
+                  checked={settings.useCowSnf}
+                  onChange={(e) => handleChange("useCowSnf", e.target.checked)}
                 />
                 <Form.Check
                   type="switch"
                   label="Use Buf SNF"
-                  checked={settings.useBufSN}
-                  onChange={(e) => handleChange("useBufSNF", e.target.checked)}
+                  checked={settings.useBufSnf}
+                  onChange={(e) => handleChange("useBufSnf", e.target.checked)}
                 />
                 <Form.Check
                   type="switch"
