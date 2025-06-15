@@ -47,6 +47,24 @@ export const recordDetails = RecordApi.injectEndpoints({
             },
             providesTags: ["cumulativereports"],
         }),
+        getDatewiseDetailedReport: builder.query({
+            query: (body) => {
+                const basePath = "reports/datewise-detailed-report";
+                const params = body?.params || {};
+                const queryString = new URLSearchParams(params).toString();
+                return `${basePath}?${queryString}`;
+            },
+            providesTags: ["datewisedetailedreports"],
+        }),
+        getDatewiseSummaryReport: builder.query({
+            query: (body) => {
+                const basePath = "reports/datewise-summary-report";
+                const params = body?.params || {};
+                const queryString = new URLSearchParams(params).toString();
+                return `${basePath}?${queryString}`;
+            },
+            providesTags: ["datewisesummaryreports"],
+        }),
     }),
 });
 
@@ -57,5 +75,7 @@ export const {
     useGetMultipleRecordsQuery,
     useGetMemberCodewiseReportQuery,
     useGetAbsentMemberReportQuery,
-    useGetCumulativeReportQuery
+    useGetCumulativeReportQuery,
+    useGetDatewiseDetailedReportQuery,
+    useGetDatewiseSummaryReportQuery
 } = recordDetails;

@@ -87,34 +87,33 @@ const AbsentMemberRecords = () => {
 
     let combinedCSV = "";
 
-    if (Array.isArray(absent) && absent.length) {
-      const recordsCSVData = absent.map((rec, index) => ({
-        SNO: index + 1,
-        CODE: rec?.CODE,
-        MILKTYPE: rec?.MILKTYPE === "C" ? "COW" : "BUF",
-        MEMBERNAME: rec?.MEMBERNAME,
+    // Section: Absent Member Details
+    if (absent.length > 0) {
+      const memberCSV = absent.map((rec, index) => ({
+        "S.No": index + 1,
+        "Member Code": rec?.CODE,
+        "Milk Type": rec?.MILKTYPE === "C" ? "COW" : "BUFFALO",
+        "Member Name": rec?.MEMBERNAME || "",
       }));
 
-      combinedCSV += `Date: ${date}, Shift: ${shift}\n`;
-      combinedCSV += `Device Code: ${deviceCode}\n`;
-      combinedCSV += Papa.unparse(recordsCSVData);
+      combinedCSV += `Absent Members Report\nDate: ${date}, Shift: ${shift}, Device Code: ${deviceCode}\n`;
+      combinedCSV += Papa.unparse(memberCSV);
       combinedCSV += "\n\n";
     }
 
-    if (totalMembers !== 0) {
-      const totalsCSVData = [
-        {
-          TotalMembers: totalMembers,
-          PresentMembers: presentCount,
-          AbsentMembers: absentCount,
-          CowAbsent: cowAbsentCount,
-          BuffaloAbsent: bufAbsentCount,
-        },
-      ];
+    // Section: Summary
+    const summaryCSV = [
+      {
+        "Total Members": totalMembers,
+        "Present Members": presentCount,
+        "Absent Members": absentCount,
+        "Cow Absent": cowAbsentCount,
+        "Buffalo Absent": bufAbsentCount,
+      },
+    ];
 
-      combinedCSV += `Summary:\n`;
-      combinedCSV += Papa.unparse(totalsCSVData);
-    }
+    combinedCSV += `Summary\n`;
+    combinedCSV += Papa.unparse(summaryCSV);
 
     const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
     saveAs(blob, `${deviceCode}_Absent_Members_Report_${date}_${shift}.csv`);
@@ -127,83 +126,74 @@ const AbsentMemberRecords = () => {
     }
 
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
     let currentY = 10;
 
-    if (Array.isArray(absent) && absent.length) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const text = "Absent Members Report";
-      const textWidth = doc.getTextWidth(text);
-      const x = (pageWidth - textWidth) / 2;
+    // Report title centered
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    const title = "Absent Members Report";
+    const titleWidth = doc.getTextWidth(title);
+    doc.text(title, (pageWidth - titleWidth) / 2, currentY);
+    currentY += 10;
 
-      doc.text(text, x, currentY);
-      currentY += 10;
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date: ${date}`, 14, currentY);
+    doc.text(`Shift: ${shift}`, pageWidth - 50, currentY);
+    currentY += 6;
+    doc.text(`Device Code: ${deviceCode}`, 14, currentY);
+    currentY += 8;
 
-      doc.setFontSize(16);
-      doc.text(`Date: ${date}`, 14, currentY);
-
-      // Right side: Shift
-      const shiftText = `Shift: ${shift}`;
-      const shiftTextWidth = doc.getTextWidth(shiftText);
-      doc.text(shiftText, pageWidth - 14 - shiftTextWidth, currentY);
-      currentY += 8;
-
-      doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-      currentY += 2;
-
-      const recordsTable = absent.map((record, index) => [
-        index + 1,
-        record?.CODE,
-        record?.MILKTYPE === "C" ? "COW" : "BUFFALO",
-        record?.MEMBERNAME,
+    // Table: Absent Members
+    if (absent.length > 0) {
+      const tableData = absent.map((rec, i) => [
+        i + 1,
+        rec?.CODE,
+        rec?.MILKTYPE === "C" ? "COW" : "BUFFALO",
+        rec?.MEMBERNAME || "",
       ]);
 
       autoTable(doc, {
-        head: [["S.No", "Code", "Milk Type", "Member Name"]],
-        body: recordsTable,
         startY: currentY,
-        theme: "grid",
-        styles: { fontSize: 12 },
-      });
-
-      currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
-    }
-
-    if (totalMembers !== 0) {
-      doc.setFontSize(12);
-      doc.text(`Summary:`, 14, currentY);
-      currentY += 2;
-
-      const totalsTable = [
-        [
-          totalMembers,
-          presentCount,
-          absentCount,
-          cowAbsentCount,
-          bufAbsentCount,
-        ],
-      ];
-
-      autoTable(doc, {
-        head: [
-          [
-            "Total Members",
-            "Present",
-            "Absent",
-            "Cow Absent",
-            "Buffalo Absent",
-          ],
-        ],
-        body: totalsTable,
-        startY: currentY,
-        theme: "striped",
+        head: [["S.No", "Member Code", "Milk Type", "Member Name"]],
+        body: tableData,
         styles: { fontSize: 10 },
+        theme: "grid",
       });
+
+      currentY = doc.lastAutoTable.finalY + 10;
     }
+
+    // Summary Table
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Summary", 14, currentY);
+    currentY += 6;
+
+    const summaryTable = [
+      [
+        totalMembers,
+        presentCount,
+        absentCount,
+        cowAbsentCount,
+        bufAbsentCount,
+      ],
+    ];
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [["Total Members", "Present", "Absent", "Cow Absent", "Buffalo Absent"]],
+      body: summaryTable,
+      styles: { fontSize: 10 },
+      theme: "striped",
+    });
 
     doc.save(`${deviceCode}_Absent_Members_Report_${date}_${shift}.pdf`);
   };
+
+
+
 
   return (
     <>
@@ -310,7 +300,7 @@ const AbsentMemberRecords = () => {
                 {viewMode === "ABSENT" && (
                   <>
                     <PageTitle name="Absent Members" />
-                    <Table bordered responsive>
+                    <Table hover responsive>
                       <thead>
                         <tr>
                           <th>#</th>

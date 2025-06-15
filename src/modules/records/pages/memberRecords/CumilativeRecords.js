@@ -130,13 +130,20 @@ const CumilativeRecords = () => {
       return;
     }
 
-    let combinedCSV = "";
+    let csvSections = [];
 
+    // Header
+    csvSections.push(`Device Code: ${deviceCode}`);
+    csvSections.push(`Members: ${fromCode} to ${toCode}`);
+    csvSections.push(`Date Range: ${fromDate} to ${toDate}`);
+    csvSections.push(""); // spacer
+
+    // Member Records
     if (records?.length) {
       const recordsCSVData = records.map((record, index) => ({
         SNO: index + 1,
-        Code: record?.CODE,
-        MILKTYPE: record?.MILKTYPE,
+        MemberCode: record?.CODE,
+        MilkType: record?.MILKTYPE,
         TotalQty: record?.totalQty,
         AvgRate: record?.avgRate,
         TotalAmount: record?.totalAmount,
@@ -144,57 +151,61 @@ const CumilativeRecords = () => {
         GrandTotal: record?.grandTotal,
       }));
 
-      combinedCSV += `Device Code: ${deviceCode}\n`;
-      combinedCSV += `Members:${fromCode} to ${toCode} \n`;
-      combinedCSV += `Records from ${fromDate} to ${toDate}\n`;
-      combinedCSV += Papa.unparse(recordsCSVData);
-      combinedCSV += "\n\n";
+      csvSections.push("=== Member-wise Records ===");
+      csvSections.push(Papa.unparse(recordsCSVData));
+      csvSections.push(""); // spacer
     }
-    let finalCSVData = [];
 
+    // COW Totals
     if (cowMilkTypeTotals?.length) {
-      cowMilkTypeTotals.forEach((cow) => {
-        finalCSVData.push({
-          //Type: "COW",
-          MilkType: cow?.MILKTYPE,
-          MemberCount: cow?.memberCount,
-          TotalQty: cow?.totalQty,
-          TotalAmount: cow?.totalAmount,
-          TotalIncentive: cow?.totalIncentive,
-          GrandTotal: cow?.grandTotal,
-        });
-      });
+      const cowData = cowMilkTypeTotals.map((cow) => ({
+        MilkType: cow?.MILKTYPE,
+        MemberCount: cow?.memberCount,
+        TotalQty: cow?.totalQty,
+        TotalAmount: cow?.totalAmount,
+        TotalIncentive: cow?.totalIncentive,
+        GrandTotal: cow?.grandTotal,
+      }));
+
+      csvSections.push("=== COW Totals ===");
+      csvSections.push(Papa.unparse(cowData));
+      csvSections.push("");
     }
 
+    // BUF Totals
     if (bufMilkTypeTotals?.length) {
-      bufMilkTypeTotals.forEach((buf) => {
-        finalCSVData.push({
-          // Type: "BUF",
-          MilkType: buf?.MILKTYPE,
-          MemberCount: buf?.memberCount,
+      const bufData = bufMilkTypeTotals.map((buf) => ({
+        MilkType: buf?.MILKTYPE,
+        MemberCount: buf?.memberCount,
+        TotalQty: buf?.totalQty,
+        TotalAmount: buf?.totalAmount,
+        TotalIncentive: buf?.totalIncentive,
+        GrandTotal: buf?.grandTotal,
+      }));
 
-          TotalQty: buf?.totalQty,
-          TotalAmount: buf?.totalAmount,
-          TotalIncentive: buf?.totalIncentive,
-          GrandTotal: buf?.grandTotal,
-        });
-      });
+      csvSections.push("=== BUF Totals ===");
+      csvSections.push(Papa.unparse(bufData));
+      csvSections.push("");
     }
 
-    if (totalMembers !== 0) {
-      finalCSVData.push({
-        //Type: "TOTAL",
-        MilkType: "TOTAL",
-        MemberCount: totalMembers,
-        TotalQty: grandTotalQty,
-        TotalAmount: grandTotalAmount,
-        TotalIncentive: grandTotalIncentive,
-        GrandTotal: grandTotal,
-      });
-    }
-    combinedCSV += Papa.unparse(finalCSVData);
+    // Grand Total
+    csvSections.push("=== Overall Totals ===");
+    csvSections.push(
+      Papa.unparse([
+        {
+          MilkType: "TOTAL",
+          MemberCount: totalMembers,
+          TotalQty: grandTotalQty,
+          TotalAmount: grandTotalAmount,
+          TotalIncentive: grandTotalIncentive,
+          GrandTotal: grandTotal,
+        },
+      ])
+    );
 
-    const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
+    const blob = new Blob([csvSections.join("\n")], {
+      type: "text/csv;charset=utf-8",
+    });
     saveAs(blob, `${deviceCode}_Payment_Register.csv`);
   };
 
@@ -207,30 +218,28 @@ const CumilativeRecords = () => {
     const doc = new jsPDF();
     let currentY = 10;
 
-    if (records?.length) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const text = "Payment Register";
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const centerText = (text, y) => {
       const textWidth = doc.getTextWidth(text);
       const x = (pageWidth - textWidth) / 2;
+      doc.text(text, x, y);
+    };
 
-      doc.text(text, x, currentY);
-      currentY += 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    centerText("Payment Register", currentY);
+    currentY += 8;
 
-      doc.setFontSize(16);
-      doc.text(`Device Code: ${deviceCode}`, 14, currentY);
+    doc.setFontSize(12);
+    doc.text(`Device Code: ${deviceCode}`, 14, currentY);
+    doc.text(`Members: ${fromCode} to ${toCode}`, pageWidth - 90, currentY);
+    currentY += 6;
+    doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, currentY);
+    currentY += 6;
 
-      // Right side: Shift
-      const memberText = `Members: ${fromCode} to ${toCode}`;
-      const memberTextWidth = doc.getTextWidth(memberText);
-      doc.text(memberText, pageWidth - 14 - memberTextWidth, currentY);
-      currentY += 8;
-
-      doc.text(`Records from ${fromDate} to ${toDate}`, 14, currentY);
-      currentY += 2;
-
-      const recordsTable = records.map((record, index) => [
+    // Member-wise Table
+    if (records?.length) {
+      const memberTable = records.map((record, index) => [
         index + 1,
         record?.CODE,
         record?.MILKTYPE,
@@ -238,7 +247,6 @@ const CumilativeRecords = () => {
         record?.avgRate,
         record?.totalAmount,
         record?.totalIncentive,
-
         record?.grandTotal,
       ]);
 
@@ -250,36 +258,34 @@ const CumilativeRecords = () => {
             "Milk Type",
             "Total Qty",
             "Avg Rate",
-            "Total Incentive",
             "Total Amount",
+            "Total Incentive",
             "Grand Total",
           ],
         ],
-        body: recordsTable,
+        body: memberTable,
         startY: currentY,
-        theme: "grid",
         styles: { fontSize: 8 },
+        theme: "striped",
       });
 
-      currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+      currentY = doc.lastAutoTable.finalY + 8;
     }
 
-    if (cowMilkTypeTotals.length) {
-      doc.setFontSize(12);
-      //   doc.text(
-      //     `Cumulative Cow Records for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`,
-      //     14,
-      //     currentY
-      //   );
-      //   currentY += 6;
+    const renderSection = (title, data, startY) => {
+      if (!data.length) return startY;
 
-      const cowTotalsTable = cowMilkTypeTotals.map((cow) => [
-        cow?.memberCount,
-        cow?.MILKTYPE,
-        cow?.totalQty,
-        cow?.totalAmount,
-        cow?.totalIncentive,
-        cow?.grandTotal,
+      doc.setFontSize(11);
+      doc.text(title, 14, startY);
+      startY += 4;
+
+      const tableData = data.map((item) => [
+        item.memberCount,
+        item.MILKTYPE,
+        item.totalQty,
+        item.totalAmount,
+        item.totalIncentive,
+        item.grandTotal,
       ]);
 
       autoTable(doc, {
@@ -293,64 +299,33 @@ const CumilativeRecords = () => {
             "Grand Total",
           ],
         ],
-        body: cowTotalsTable,
-        startY: currentY,
-        theme: "striped",
-        styles: { fontSize: 10 },
+        body: tableData,
+        startY,
+        styles: { fontSize: 9 },
+        theme: "grid",
       });
 
-      currentY = (doc.lastAutoTable?.finalY || currentY) + 5;
-    }
+      return doc.lastAutoTable.finalY + 8;
+    };
 
-    if (bufMilkTypeTotals.length) {
-      doc.setFontSize(12);
-      //   doc.text(
-      //     `Cumulative Buffalo Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`,
-      //     14,
-      //     currentY
-      //   );
-      //   currentY += 6;
+    currentY = renderSection("COW Totals", cowMilkTypeTotals, currentY);
+    currentY = renderSection("BUF Totals", bufMilkTypeTotals, currentY);
 
-      const bufTotalsTable = bufMilkTypeTotals.map((buf) => [
-        buf?.memberCount,
-        buf?.MILKTYPE,
-        buf?.totalQty,
-        buf?.totalAmount,
-        buf?.totalIncentive,
-        buf?.grandTotal,
-      ]);
+    // Grand Total
+    doc.text("Overall Totals", 14, currentY);
+    currentY += 4;
 
-      autoTable(doc, {
-        head: [
-          [
-            "Member Count",
-            "Milk Type",
-            "Total Qty",
-            "Total Amount",
-            "Total Incentive",
-            "Grand Total",
-          ],
+    autoTable(doc, {
+      head: [
+        [
+          "Total Members",
+          "Total Qty",
+          "Total Incentive",
+          "Total Amount",
+          "Grand Total",
         ],
-        body: bufTotalsTable,
-        startY: currentY,
-        theme: "striped",
-        styles: { fontSize: 10 },
-      });
-
-      currentY = (doc.lastAutoTable?.finalY || currentY) + 5;
-    }
-
-    if (totalMembers !== 0) {
-      //   doc.setFontSize(12);
-
-      //   doc.text(
-      //     `Cumulative Totals for ${fromCode} to ${toCode} members from ${fromDate} to ${toDate} in device ${deviceCode}`,
-      //     14,
-      //     currentY
-      //   );
-      //   currentY += 6;
-
-      const TotalsTable = [
+      ],
+      body: [
         [
           totalMembers,
           grandTotalQty,
@@ -358,24 +333,11 @@ const CumilativeRecords = () => {
           grandTotalAmount,
           grandTotal,
         ],
-      ];
-
-      autoTable(doc, {
-        head: [
-          [
-            "Total Members",
-            "Total Qty",
-            "Total Incentive",
-            "Total Amount",
-            "Grand Total",
-          ],
-        ],
-        body: TotalsTable,
-        startY: currentY,
-        theme: "striped",
-        styles: { fontSize: 10 },
-      });
-    }
+      ],
+      startY: currentY,
+      styles: { fontSize: 9 },
+      theme: "grid",
+    });
 
     doc.save(`${deviceCode}_Payment_Register.pdf`);
   };

@@ -95,56 +95,54 @@ const MemberRecords = () => {
     }
 
     let combinedCSV = "";
+
+    // Header Info
+    combinedCSV += `Device Code:,${deviceCode}\n`;
+    combinedCSV += `Member Code:,${memberCode.padStart(4, "0")}\n`;
+    combinedCSV += `Member Records From,${fromDate},To,${toDate}\n\n`;
+
+    // Records
     if (records?.length) {
       const recordsCSVData = records.map((rec, index) => ({
-        SNO: index + 1,
-        Date: rec.SAMPLEDATE,
-        Shift: rec?.SHIFT,
-        MilkType: rec?.MILKTYPE,
-        Fat: rec?.FAT,
-        SNF: rec?.SNF,
-        Qty: rec?.QTY,
-        Rate: rec?.RATE,
-        Amount: rec?.AMOUNT?.toFixed(2),
-        Incentive: rec?.INCENTIVEAMOUNT?.toFixed(2),
-        GrandTotal: rec?.TOTAL?.toFixed(2),
+        "S.No": index + 1,
+        Date: rec.SAMPLEDATE || "",
+        Shift: rec.SHIFT || "",
+        "Milk Type": rec.MILKTYPE || "",
+        Fat: rec.FAT ?? "",
+        SNF: rec.SNF ?? "",
+        Qty: rec.QTY ?? "",
+        Rate: rec.RATE ?? "",
+        Amount: rec.AMOUNT?.toFixed(2) ?? "0.00",
+        Incentive: rec.INCENTIVEAMOUNT?.toFixed(2) ?? "0.00",
+        "Grand Total": rec.TOTAL?.toFixed(2) ?? "0.00",
       }));
-
-      combinedCSV += `Device Code:${deviceCode}\n`;
-
-      combinedCSV += `Member Code:${memberCode.padStart(4, "0")}\n`;
-
-      combinedCSV += `Member Records From ${fromDate} to ${toDate}\n`;
-
+      combinedCSV += "Record Summary:\n";
       combinedCSV += Papa.unparse(recordsCSVData);
       combinedCSV += "\n\n";
     }
 
+    // Totals
     if (totals?.length) {
       const totalsCSVData = totals.map((total) => ({
-        MilkType: total?._id.milkType,
-        Samples: total?.totalRecords,
-        AverageFat: total?.averageFat,
-        AverageSNF: total?.averageSNF,
-        AverageRate: total?.averageRate,
-        TotalQuantity: total?.totalQuantity,
-        TotalAmount: total?.totalAmount,
-        TotalIncentive: total?.totalIncentive,
-        GrandTotal: `${(
+        "Milk Type": total?._id?.milkType || "",
+        "Total Samples": total?.totalRecords ?? "",
+        "Avg FAT": total?.averageFat ?? "",
+        "Avg SNF": total?.averageSNF ?? "",
+        "Total Qty": total?.totalQuantity ?? "",
+        "Avg Rate": total?.averageRate ?? "",
+        "Total Amount": total?.totalAmount ?? "0.00",
+        "Total Incentive": total?.totalIncentive ?? "0.00",
+        "Grand Total": `${(
           parseFloat(total?.totalAmount || 0) +
           parseFloat(total?.totalIncentive || 0)
         ).toFixed(2)}`,
       }));
-
-      combinedCSV += `Summary:\n`;
+      combinedCSV += "Total Summary:\n";
       combinedCSV += Papa.unparse(totalsCSVData);
     }
 
     const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-    saveAs(
-      blob,
-      `${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.csv`
-    );
+    saveAs(blob, `${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.csv`);
   };
 
   const handleExportPDF = () => {
@@ -155,110 +153,85 @@ const MemberRecords = () => {
 
     const doc = new jsPDF();
     let currentY = 10;
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    const title = "MEMBERWISE REPORT";
+    const titleX = (pageWidth - doc.getTextWidth(title)) / 2;
+    doc.text(title, titleX, currentY);
+
+    currentY += 10;
+    doc.setFontSize(12);
+    doc.text(`Device Code: ${deviceCode}`, 14, currentY);
+    const memberCodeText = `Member Code: ${memberCode.padStart(4, "0")}`;
+    doc.text(memberCodeText, pageWidth - 14 - doc.getTextWidth(memberCodeText), currentY);
+
+    currentY += 7;
+    doc.text(`Records From: ${fromDate} To: ${toDate}`, 14, currentY);
+
     if (records?.length) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const text = "MEMBERWISE REPORT";
-      const textWidth = doc.getTextWidth(text);
-      const x = (pageWidth - textWidth) / 2;
-
-      doc.text(text, x, currentY);
-      currentY += 8;
-
-      doc.setFontSize(16);
-      doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-
-      // Right side: Shift
-      const memberText = `Member Code: ${memberCode.padStart(4, "0")}`;
-      const memberTextWidth = doc.getTextWidth(memberText);
-      doc.text(memberText, pageWidth - 14 - memberTextWidth, currentY);
-      currentY += 8;
-
-      doc.text(`Records From ${fromDate} to ${toDate}`, 14, currentY);
-      currentY += 1; // ⬅️ Add more space before table or next section
       const recordsTable = records.map((record, index) => [
         index + 1,
-        record?.SAMPLEDATE,
-        record?.MILKTYPE,
-        record?.SHIFT,
-        record?.QTY,
-        record?.FAT,
-        record?.SNF,
-        record?.RATE,
-        record?.AMOUNT.toFixed(2) || 0,
-        record?.INCENTIVEAMOUNT.toFixed(2) || 0,
-        record?.TOTAL.toFixed(2) || 0,
+        record?.SAMPLEDATE || "",
+        record?.SHIFT || "",
+        record?.MILKTYPE || "",
+        record?.FAT ?? "",
+        record?.SNF ?? "",
+        record?.QTY ?? "",
+        record?.RATE ?? "",
+        record?.AMOUNT?.toFixed(2) ?? "0.00",
+        record?.INCENTIVEAMOUNT?.toFixed(2) ?? "0.00",
+        record?.TOTAL?.toFixed(2) ?? "0.00",
       ]);
 
       autoTable(doc, {
-        head: [
-          [
-            "S.No",
-            "Date",
-            "Shift",
-            "Milk Type",
-            "Fat",
-            "Snf",
-            "Qty",
-            "Rate",
-            "Amount",
-            "Incentive",
-            "Grand Total",
-          ],
-        ],
+        startY: currentY + 6,
+        head: [[
+          "S.No", "Date", "Shift", "Milk Type", "Fat", "Snf", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
+        ]],
         body: recordsTable,
-        startY: currentY,
         theme: "grid",
-        styles: { fontSize: 10 },
+        styles: { fontSize: 9 },
       });
 
-      currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+      currentY = doc.lastAutoTable.finalY + 10;
     }
 
     if (totals?.length) {
       doc.setFontSize(12);
-      doc.text(`Summary:`, 14, currentY);
-      currentY += 1;
+      doc.text("Summary:", 14, currentY);
+
       const totalsTable = totals.map((total) => [
-        total._id.milkType,
-        total.totalRecords,
-        total.averageFat,
-        total.averageSNF,
-        total.totalQuantity,
-        total.averageRate,
-        total.totalAmount,
-        total.totalIncentive,
-        `${(
-          parseFloat(total.totalAmount) + parseFloat(total.totalIncentive)
-        ).toFixed(2)}`,
+        total?._id?.milkType || "",
+        total?.totalRecords ?? "",
+        total?.averageFat ?? "",
+        total?.averageSNF ?? "",
+        total?.totalQuantity ?? "",
+        total?.averageRate ?? "",
+        total?.totalAmount ?? "0.00",
+        total?.totalIncentive ?? "0.00",
+        (
+          parseFloat(total?.totalAmount || 0) +
+          parseFloat(total?.totalIncentive || 0)
+        ).toFixed(2),
       ]);
 
       autoTable(doc, {
-        head: [
-          [
-            "Milk Type",
-            "Total Samples",
-            "Avg FAT",
-            "Avg SNF",
-            "Total Qty",
-            "Avg Rate",
-            "Total Amount",
-            "Total Incentive",
-            "Grand Total",
-          ],
-        ],
+        startY: currentY + 6,
+        head: [[
+          "Milk Type", "Total Samples", "Avg FAT", "Avg SNF", "Total Qty", "Avg Rate",
+          "Total Amount", "Total Incentive", "Grand Total",
+        ]],
         body: totalsTable,
-        startY: currentY,
         theme: "striped",
-        styles: { fontSize: 10 },
+        styles: { fontSize: 9 },
       });
     }
 
-    doc.save(
-      `${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.pdf`
-    );
+    doc.save(`${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.pdf`);
   };
+
   return (
     <>
       <div className="d-flex justify-content-between pageTitleSpace">

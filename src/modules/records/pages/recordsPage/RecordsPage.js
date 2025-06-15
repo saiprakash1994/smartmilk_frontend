@@ -5,6 +5,8 @@ import MemberRecords from "../memberRecords/MemberRecords";
 import "./RecordsPage.scss";
 import AbsentMemberRecords from "../memberRecords/AbsentMemberRecords";
 import CumilativeRecords from "../memberRecords/CumilativeRecords";
+import DatewiseDetailedRecords from "../memberRecords/DatewiseDetailedRecords";
+import DatewiseSummaryRecords from "../memberRecords/DatewiseSummaryRecords";
 const RecordsPage = () => {
   const [activeTab, setActiveTab] = useState("records");
 
@@ -27,6 +29,12 @@ const RecordsPage = () => {
         </Tab>
         <Tab eventKey="cumilativeRecords" title="Payment Register">
           <CumilativeRecords />
+        </Tab>
+        <Tab eventKey="datewiseDetailed" title="Datewise Detailed">
+          <DatewiseDetailedRecords />
+        </Tab>
+        <Tab eventKey="datewiseSummary" title="Datewise Summary">
+          <DatewiseSummaryRecords />
         </Tab>
       </Tabs>
     </>

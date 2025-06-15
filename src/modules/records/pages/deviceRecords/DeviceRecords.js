@@ -110,54 +110,52 @@ const DeviceRecords = () => {
         }
 
         let combinedCSV = "";
+
+        // Records Section
         if (records?.length) {
             const recordsCSVData = records.map((rec, index) => ({
-                SNO: index + 1,
-                MemberCode: rec?.CODE,
-                MilkType: rec?.MILKTYPE,
-                Shift: rec?.SHIFT,
-                Fat: rec?.FAT?.toFixed(1),
-                SNF: rec?.SNF?.toFixed(1),
-                Quantity: rec?.QTY?.toFixed(2) || '0.00',
-                Rate: rec?.RATE?.toFixed(1),
-                Amount: rec?.AMOUNT?.toFixed(2) || '0.00',
-                Incentive: rec?.INCENTIVEAMOUNT?.toFixed(2),
-                Total: rec?.TOTAL?.toFixed(2),
-                AnalyzerMode: rec?.ANALYZERMODE,
-                WeightMode: rec?.WEIGHTMODE,
-                Date: date,
-                DeviceId: rec?.DEVICEID,
+                "S.No": index + 1,
+                "Member Code": rec?.CODE,
+                "Milk Type": rec?.MILKTYPE,
+                "Shift": rec?.SHIFT,
+                "FAT": rec?.FAT?.toFixed(1),
+                "SNF": rec?.SNF?.toFixed(1),
+                "Qty (L)": rec?.QTY?.toFixed(2) || '0.00',
+                "Rate": rec?.RATE?.toFixed(2),
+                "Amount": rec?.AMOUNT?.toFixed(2) || '0.00',
+                "Incentive": rec?.INCENTIVEAMOUNT?.toFixed(2),
+                "Total": rec?.TOTAL?.toFixed(2),
+                "Analyzer": rec?.ANALYZERMODE,
+                "Weight Mode": rec?.WEIGHTMODE,
+                "Device ID": rec?.DEVICEID,
+                "Date": date
             }));
 
-            combinedCSV += `Milk Records ${date} ${deviceCode}\n`;
+            combinedCSV += `Milk Records for ${deviceCode} on ${date}\n`;
             combinedCSV += Papa.unparse(recordsCSVData);
             combinedCSV += "\n\n";
-
         }
 
-
+        // Totals Section
         if (totals?.length) {
             const totalsCSVData = totals.map(item => ({
-                MilkType: item._id?.milkType || '',
-                TotalQuantity: item.totalQuantity?.toFixed(2) || '0.00',
-                TotalAmount: item.totalAmount?.toFixed(2) || '0.00',
-                TotalIncentive: item.totalIncentive?.toFixed(2) || '0.00',
-                AverageFat: item.averageFat || '',
-                AverageSNF: item.averageSNF || '',
-                AverageRate: item.averageRate || ''
+                "Milk Type": item._id?.milkType || '',
+                "Total Records": item.totalRecords,
+                "Total Quantity": item.totalQuantity?.toFixed(2) || '0.00',
+                "Total Amount": item.totalAmount?.toFixed(2) || '0.00',
+                "Total Incentive": item.totalIncentive?.toFixed(2) || '0.00',
+                "Average FAT": item.averageFat,
+                "Average SNF": item.averageSNF,
+                "Average Rate": item.averageRate
             }));
 
-            combinedCSV += `Milk Totals ${date} ${deviceCode}\n`;
+            combinedCSV += `Milk Totals for ${deviceCode} on ${date}\n`;
             combinedCSV += Papa.unparse(totalsCSVData);
         }
 
-
-        // Save the single CSV
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `Milk_Data_${date}_${deviceCode}.csv`);
+        saveAs(blob, `Milk_Data_${deviceCode}_${date}.csv`);
     };
-
-
     const handleExportPDF = () => {
         if (!totals?.length && !records?.length) {
             alert("No data available to export.");
@@ -167,69 +165,79 @@ const DeviceRecords = () => {
         const doc = new jsPDF();
         let currentY = 10;
 
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Milk Data Report - ${deviceCode}`, 14, currentY);
+        currentY += 8;
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Date: ${date} | Shift: ${shift || 'ALL'} | Milk Type: ${milkTypeFilter}`, 14, currentY);
+        currentY += 8;
+
+        // Records Table
         if (records?.length) {
-            doc.setFontSize(12);
-            doc.text(`Milk Records on ${date} ${deviceCode}`, 14, currentY);
-            currentY += 6;
-            const recordsTable = records.map((rec, index) => ([
-                index + 1,
+            const recordTable = records.map((rec, i) => [
+                i + 1,
                 rec?.CODE,
                 rec?.MILKTYPE,
                 rec?.SHIFT,
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
                 rec?.QTY?.toFixed(2),
-                rec?.RATE?.toFixed(1),
+                rec?.RATE?.toFixed(2),
                 rec?.AMOUNT?.toFixed(2),
                 rec?.INCENTIVEAMOUNT?.toFixed(2),
-                rec?.TOTAL?.toFixed(2),
-                rec?.ANALYZERMODE,
-                rec?.WEIGHTMODE,
-                rec?.DEVICEID,
-                date
-            ]));
+                rec?.TOTAL?.toFixed(2)
+            ]);
 
             autoTable(doc, {
-                head: [[
-                    "S.No", "MemberCode", "MilkType", "Shift", "Fat", "SNF", "Qty (L)", "Rate",
-                    "Amount", "Incentive", "Total", "Analyzer", "WeightMode", "DeviceID", "Date"
-                ]],
-                body: recordsTable,
                 startY: currentY,
-                theme: "grid",
+                head: [[
+                    "S.No", "Code", "Milk Type", "Shift", "FAT", "SNF", "Qty (L)",
+                    "Rate", "Amount", "Incentive", "Total"
+                ]],
+                body: recordTable,
                 styles: { fontSize: 8 },
+                theme: "grid"
             });
 
-            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
+            currentY = doc.lastAutoTable.finalY + 10;
         }
 
+        // Totals Table
         if (totals?.length) {
             doc.setFontSize(12);
-            doc.text(`Milk Totals on ${date} ${deviceCode}`, 14, currentY);
+            doc.setFont("helvetica", "bold");
+            doc.text("Milk Totals", 14, currentY);
             currentY += 6;
-            const totalsTable = totals.map((total) => ([
+
+            const totalsTable = totals.map(total => [
                 total?._id?.milkType,
-                total?.totalQuantity?.toFixed(2),
-                total?.totalAmount?.toFixed(2),
-                total?.totalIncentive?.toFixed(2),
+                total?.totalRecords,
                 total?.averageFat,
                 total?.averageSNF,
-                total?.averageRate
-            ]));
+                total?.totalQuantity?.toFixed(2),
+                total?.averageRate,
+                total?.totalAmount?.toFixed(2),
+                total?.totalIncentive?.toFixed(2),
+                (
+                    (Number(total?.totalAmount || 0) + Number(total?.totalIncentive || 0))
+                ).toFixed(2)
+            ]);
 
             autoTable(doc, {
+                startY: currentY,
                 head: [[
-                    "MilkType", "Total Qty", "Total Amount", "Incentive",
-                    "Avg Fat", "Avg SNF", "Avg Rate"
+                    "Milk Type", "Total Records", "Avg FAT", "Avg SNF", "Total Qty",
+                    "Avg Rate", "Total Amount", "Incentive", "Grand Total"
                 ]],
                 body: totalsTable,
-                startY: currentY,
                 theme: "striped",
-                styles: { fontSize: 10 },
+                styles: { fontSize: 9 },
             });
         }
 
-        doc.save(`Milk_Data_${date} ${deviceCode}.pdf`);
+        doc.save(`Milk_Data_${deviceCode}_${date}.pdf`);
     };
 
 
