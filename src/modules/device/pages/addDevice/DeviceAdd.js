@@ -45,7 +45,7 @@ const DeviceAdd = () => {
 
     const [errors, setErrors] = useState({});
 
-    const { data: fetchedDevice, isSuccess, refetch } = useGetDeviceByIdQuery(id);
+    const { data: fetchedDevice, isSuccess, refetch } = useGetDeviceByIdQuery(id, { skip: !id });
 
     const [createDevice, { isLoading: creating }] = useCreateDeviceMutation();
     const [editDevice, { isLoading: updating }] = useEditDeviceMutation();

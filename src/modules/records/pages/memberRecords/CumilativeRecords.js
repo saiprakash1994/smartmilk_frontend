@@ -60,7 +60,10 @@ const CumilativeRecords = () => {
   const [fromDate, setFromDate] = useState(getToday());
   const [toDate, setToDate] = useState(getToday());
   const [triggerFetch, setTriggerFetch] = useState(false);
-  const [viewMode, setViewMode] = useState("TOTALS");
+  const [viewMode, setViewMode] = useState("ALL");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
 
   // Set default deviceCode for device user
   useEffect(() => {
@@ -92,6 +95,8 @@ const CumilativeRecords = () => {
       return;
     }
     setTriggerFetch(true);
+    setCurrentPage(1);
+
   };
   const formattedFromDate = fromDate.split("-").reverse().join("/");
   const formattedToDate = toDate.split("-").reverse().join("/");
@@ -104,13 +109,17 @@ const CumilativeRecords = () => {
         toCode,
         fromDate: formattedFromDate,
         toDate: formattedToDate,
+        page: currentPage,
+        limit: recordsPerPage,
       },
     },
     { skip: !triggerFetch }
   );
-  console.log(resultData, "data");
 
   const records = resultData?.data || [];
+  const totalCount = resultData?.pagination?.totalRecords;
+
+  console.log(totalCount, recordsPerPage, 'sai')
   const cowMilkTypeTotals =
     resultData?.milkTypeTotals.filter((cow) => cow?.MILKTYPE === "COW") || [];
   const bufMilkTypeTotals =
@@ -416,6 +425,7 @@ const CumilativeRecords = () => {
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value)}
             >
+              <option value="ALL">All DATA</option>
               <option value="TOTALS">All MilkType Totals</option>
               <option value="COWTOTALS">COW Totals</option>
               <option value="BUFFTOTALS">BUF Totals</option>
@@ -447,107 +457,7 @@ const CumilativeRecords = () => {
             ) : (
               <>
                 <hr />
-                {viewMode == "TOTALS" && (
-                  <>
-                    <PageTitle name="All Totals" />
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Total Members</th>
-                          <th>Grand Total Qty</th>
-                          <th>Grand Total Incentive</th>
-                          <th>Grand Total Amount</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{totalMembers}</td>
-                          <td>{grandTotalQty}</td>
-                          <td>{grandTotalIncentive}</td>
-                          <td>{grandTotalAmount}</td>
-                          <td>{grandTotal}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-
-                {viewMode == "COWTOTALS" && (
-                  <>
-                    <PageTitle name="Cow Totals" />
-                    <Table bordered responsive>
-                      <thead>
-                        <tr>
-                          <th>Member Count</th>
-                          <th>MILKTYPE</th>
-                          <th>Total Qty</th>
-                          <th>Total Amount</th>
-                          <th>total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cowMilkTypeTotals.length > 0 ? (
-                          cowMilkTypeTotals.map((cow, index) => (
-                            <tr key={index}>
-                              <td>{cow?.memberCount}</td>
-                              <td>{cow?.MILKTYPE}</td>
-                              <td>{cow?.totalQty}</td>
-                              <td>{cow?.totalAmount}</td>
-                              <td>{cow?.totalIncentive}</td>
-                              <td>{cow?.grandTotal}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {viewMode == "BUFFTOTALS" && (
-                  <>
-                    <PageTitle name="Buf Totals" />
-                    <Table bordered responsive>
-                      <thead>
-                        <tr>
-                          <th>Member Count</th>
-                          <th>MILKTYPE</th>
-                          <th>Total Qty</th>
-                          <th>Total Amount</th>
-                          <th>total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bufMilkTypeTotals.length > 0 ? (
-                          bufMilkTypeTotals.map((buf, index) => (
-                            <tr key={index}>
-                              <td>{buf?.memberCount}</td>
-                              <td>{buf?.MILKTYPE}</td>
-                              <td>{buf?.totalQty}</td>
-                              <td>{buf?.totalAmount}</td>
-                              <td>{buf?.totalIncentive}</td>
-                              <td>{buf?.grandTotal}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {viewMode == "DATA" && (
+                {(viewMode == "DATA" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="Members Data" />
                     <Table bordered responsive>
@@ -586,7 +496,13 @@ const CumilativeRecords = () => {
                         )}
                       </tbody>
                     </Table>
-                    <hr />
+
+                  </>
+                )}
+
+
+                {(viewMode == "COWTOTALS" || viewMode == "ALL") && (
+                  <>
                     <PageTitle name="Cow Totals" />
                     <Table bordered responsive>
                       <thead>
@@ -620,7 +536,10 @@ const CumilativeRecords = () => {
                         )}
                       </tbody>
                     </Table>
-                    <hr />
+                  </>
+                )}
+                {(viewMode == "BUFFTOTALS" || viewMode == "ALL") && (
+                  <>
                     <PageTitle name="Buf Totals" />
                     <Table bordered responsive>
                       <thead>
@@ -654,15 +573,18 @@ const CumilativeRecords = () => {
                         )}
                       </tbody>
                     </Table>
-                    <hr />
+                  </>
+                )}
+                {(viewMode == "TOTALS" || viewMode == "ALL") && (
+                  <>
                     <PageTitle name="All Totals" />
                     <Table hover responsive>
                       <thead>
                         <tr>
                           <th>Total Members</th>
                           <th>Grand Total Qty</th>
-                          <th>Grand Total Amount</th>
                           <th>Grand Total Incentive</th>
+                          <th>Grand Total Amount</th>
                           <th>Grand Total</th>
                         </tr>
                       </thead>
@@ -670,8 +592,8 @@ const CumilativeRecords = () => {
                         <tr>
                           <td>{totalMembers}</td>
                           <td>{grandTotalQty}</td>
-                          <td>{grandTotalAmount}</td>
                           <td>{grandTotalIncentive}</td>
+                          <td>{grandTotalAmount}</td>
                           <td>{grandTotal}</td>
                         </tr>
                       </tbody>
@@ -692,10 +614,56 @@ const CumilativeRecords = () => {
                 >
                   <FontAwesomeIcon icon={faFilePdf} /> Export PDF
                 </Button>
+                {(viewMode === "DATA" || viewMode === "ALL") && totalCount > 0 && (
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="text-muted">Rows per page:</span>
+                      <Form.Select
+                        size="sm"
+                        value={recordsPerPage}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setRecordsPerPage(parseInt(value));
+                          setCurrentPage(1);
+                        }}
+                        style={{ width: "auto" }}
+                      >
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </Form.Select>
+                    </div>
+
+                    {totalCount > recordsPerPage && (
+                      <div className="d-flex align-items-center gap-2">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          « Prev
+                        </Button>
+                        <span className="fw-semibold">
+                          Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                        </span>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev + 1)}
+                          disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                        >
+                          Next »
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </Card.Body>
         </Card>
+
       </div>
     </>
   );

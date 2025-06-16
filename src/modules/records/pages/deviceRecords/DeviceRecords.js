@@ -51,6 +51,9 @@ const DeviceRecords = () => {
     const [hasSearched, setHasSearched] = useState(false);
     const [viewMode, setViewMode] = useState('ALL');
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [recordsPerPage, setRecordsPerPage] = useState(10);
+    const [totalCount, setTotalCount] = useState(0);
     useEffect(() => {
         if (isDevice && deviceid) {
             setDeviceCode(deviceid);
@@ -62,6 +65,12 @@ const DeviceRecords = () => {
             handleSearch();
         }
     }, [isDevice, deviceCode, date]);
+
+    useEffect(() => {
+        if (hasSearched) {
+            handleSearch();
+        }
+    }, [currentPage, recordsPerPage]);
 
     const handleSearch = async () => {
         if (!deviceCode || !date) {
@@ -82,12 +91,16 @@ const DeviceRecords = () => {
                     date: formattedDate,
                     deviceCode,
                     ...(shift && { shift }),
+                    page: currentPage,
+                    limit: recordsPerPage,
                 },
             }).unwrap();
+            console.log(result, 'saiii')
 
             setHasSearched(true);
             setRecords(result.records || []);
             setTotals(result.totals || []);
+            setTotalCount(result.pagination?.totalRecords || 0);
             successToast("Data loaded successfully!");
         } catch (err) {
             console.error(err);
@@ -240,7 +253,7 @@ const DeviceRecords = () => {
         doc.save(`Milk_Data_${deviceCode}_${date}.pdf`);
     };
 
-
+    console.log(totalCount, recordsPerPage, 'saii')
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
@@ -404,6 +417,55 @@ const DeviceRecords = () => {
                                     <FontAwesomeIcon icon={faFilePdf} /> Export PDF
 
                                 </Button>
+
+                                {totalCount > 0 && (
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                                        {/* Page size selector */}
+                                        <div className="d-flex align-items-center gap-2">
+                                            <span className="text-muted">Rows per page:</span>
+                                            <Form.Select
+                                                size="sm"
+                                                value={recordsPerPage}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setRecordsPerPage(parseInt(value));
+                                                    setCurrentPage(1);
+
+                                                }}
+                                                style={{ width: "auto" }}
+                                            >
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                            </Form.Select>
+                                        </div>
+
+                                        {/* Page navigation */}
+                                        {totalCount > recordsPerPage(
+                                            <div className="d-flex align-items-center gap-2">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage(prev => prev - 1)}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    « Prev
+                                                </Button>
+                                                <span className="fw-semibold">Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}</span>
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                                >
+                                                    Next »
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+
                             </>
 
                         )}

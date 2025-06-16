@@ -47,10 +47,13 @@ const AbsentMemberRecords = () => {
 
   const [deviceCode, setDeviceCode] = useState("");
   const [date, setDate] = useState(getToday());
-  const [shift, setShift] = useState("");
+  const [shift, setShift] = useState("MORNING");
 
   const [triggerFetch, setTriggerFetch] = useState(false);
-  const [viewMode, setViewMode] = useState("TOTALS");
+  const [viewMode, setViewMode] = useState("ALL");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -62,15 +65,24 @@ const AbsentMemberRecords = () => {
       return;
     }
     setTriggerFetch(true);
+    setCurrentPage(1);
+
   };
   const formattedDate = date.split("-").reverse().join("/");
 
   const { data: resultData, isFetching } = useGetAbsentMemberReportQuery(
-    { params: { deviceid: deviceCode, date: formattedDate, shift } },
+    {
+      params: {
+        deviceid: deviceCode, date: formattedDate, shift, page: currentPage,
+        limit: recordsPerPage,
+      }
+    },
     { skip: !triggerFetch }
   );
 
   const absent = resultData?.absentMembers || [];
+  const totalCount = resultData?.totalRecords;
+
   const {
     totalMembers = 0,
     presentCount = 0,
@@ -228,7 +240,6 @@ const AbsentMemberRecords = () => {
               value={shift}
               onChange={(e) => setShift(e.target.value)}
             >
-              <option value="">Select Shift</option>
               <option value="MORNING">MORNING</option>
               <option value="EVENING">EVENING</option>
             </Form.Select>
@@ -243,6 +254,8 @@ const AbsentMemberRecords = () => {
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value)}
             >
+              <option value="ALL">All Data</option>
+
               <option value="TOTALS">Attendance Summary</option>
               <option value="ABSENT">Absent Members</option>
             </Form.Select>
@@ -272,32 +285,8 @@ const AbsentMemberRecords = () => {
             ) : (
               <>
                 <hr />
-                {viewMode === "TOTALS" && (
-                  <>
-                    <PageTitle name="Attendance Summary" />
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Total Members</th>
-                          <th>Present Members</th>
-                          <th>Absent Members</th>
-                          <th>Cow Absent</th>
-                          <th>Buffalo Absent</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{totalMembers}</td>
-                          <td>{presentCount}</td>
-                          <td>{absentCount}</td>
-                          <td>{cowAbsentCount}</td>
-                          <td>{bufAbsentCount}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {viewMode === "ABSENT" && (
+
+                {(viewMode === "ABSENT" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="Absent Members" />
                     <Table hover responsive>
@@ -330,6 +319,31 @@ const AbsentMemberRecords = () => {
                     </Table>
                   </>
                 )}
+                {(viewMode === "TOTALS" || viewMode == "ALL") && (
+                  <>
+                    <PageTitle name="Attendance Summary" />
+                    <Table hover responsive>
+                      <thead>
+                        <tr>
+                          <th>Total Members</th>
+                          <th>Present Members</th>
+                          <th>Absent Members</th>
+                          <th>Cow Absent</th>
+                          <th>Buffalo Absent</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{totalMembers}</td>
+                          <td>{presentCount}</td>
+                          <td>{absentCount}</td>
+                          <td>{cowAbsentCount}</td>
+                          <td>{bufAbsentCount}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </>
+                )}
                 <Button
                   variant="outline-primary"
                   className="mb-3 me-2"
@@ -344,6 +358,52 @@ const AbsentMemberRecords = () => {
                 >
                   <FontAwesomeIcon icon={faFilePdf} /> Export PDF
                 </Button>
+
+                {(viewMode === "ABSENT" || viewMode === "ALL") && totalCount > 0 && (
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="text-muted">Rows per page:</span>
+                      <Form.Select
+                        size="sm"
+                        value={recordsPerPage}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setRecordsPerPage(parseInt(value));
+                          setCurrentPage(1);
+                        }}
+                        style={{ width: "auto" }}
+                      >
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </Form.Select>
+                    </div>
+
+                    {totalCount > recordsPerPage && (
+                      <div className="d-flex align-items-center gap-2">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          « Prev
+                        </Button>
+                        <span className="fw-semibold">
+                          Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                        </span>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev + 1)}
+                          disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                        >
+                          Next »
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </Card.Body>

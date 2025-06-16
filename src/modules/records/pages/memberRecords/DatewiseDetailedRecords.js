@@ -56,18 +56,16 @@ const DatewiseDetailedRecords = () => {
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
     const [toCode, setToCode] = useState("");
-    const [shift, setShift] = useState('');
+    const [shift, setShift] = useState('MORNING');
     const [fromDate, setFromDate] = useState(getToday());
     const [toDate, setToDate] = useState(getToday());
     const [triggerFetch, setTriggerFetch] = useState(false);
-    const [viewMode, setViewMode] = useState("All");
-
-    // Set default deviceCode for device user
+    const [currentPage, setCurrentPage] = useState(1);
+    const [recordsPerPage, setRecordsPerPage] = useState(5);
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Get selected device and member list
     const selectedDevice = isDevice
         ? deviceData
         : deviceList.find((dev) => dev.deviceid === deviceCode);
@@ -92,6 +90,8 @@ const DatewiseDetailedRecords = () => {
             return;
         }
         setTriggerFetch(true);
+        setCurrentPage(1);
+
     };
     const formattedFromDate = fromDate.split("-").reverse().join("/");
     const formattedToDate = toDate.split("-").reverse().join("/");
@@ -104,7 +104,9 @@ const DatewiseDetailedRecords = () => {
                 toCode,
                 fromDate: formattedFromDate,
                 toDate: formattedToDate,
-                shift
+                shift,
+                page: currentPage,
+                limit: recordsPerPage,
 
             },
         },
@@ -112,71 +114,70 @@ const DatewiseDetailedRecords = () => {
     );
     console.log(resultData, "data");
 
-    const records = resultData?.records || [];
-    const totals = resultData?.summary || [];
+    const records = resultData?.data || [];
+    const totalCount = resultData?.totalCount;
 
     const handleExportCSV = () => {
-        if (!totals?.length && !records?.length) {
+        if (!records?.length) {
             alert("No data available to export.");
             return;
         }
 
-        const deviceHeader = [
+        let combinedCSV = "";
+
+        // Header Info
+        const header = [
             [`Device Code: ${deviceCode}`],
             [`Members: ${fromCode} to ${toCode}`],
             [`Records from ${fromDate} to ${toDate}`],
             [],
         ];
+        combinedCSV += Papa.unparse(header, { quotes: true }) + "\n";
 
-        let combinedCSV = "";
+        records.forEach((day, dayIndex) => {
+            combinedCSV += `Date: ${day.date}, Shift: ${day.shift}, Device: ${deviceCode}\n\n`;
 
-        // Convert header to CSV
-        combinedCSV += Papa.unparse(deviceHeader, { quotes: true }) + "\n";
+            // Individual Member Records
+            if (day.records?.length) {
+                const dailyMemberRows = day.records.map((stat) => ({
+                    Code: stat.CODE,
+                    MilkType: stat.MILKTYPE,
+                    FAT: stat.FAT,
+                    SNF: stat.SNF,
+                    Rate: stat.RATE,
+                    Quantity: stat.QTY,
+                    IncentiveAmount: stat.INCENTIVEAMOUNT,
+                    TotalAmount: stat.TOTALAMOUNT,
+                }));
 
-        if (records?.length) {
-            const recordsCSVData = records.map((record, index) => ({
-                SNO: index + 1,
-                Code: record?.CODE,
-                Date: record?.SAMPLEDATE,
-                Shift: record?.SHIFT,
-                Fat: record?.FAT,
-                SNF: record?.SNF,
-                Rate: record?.RATE,
-                Qty: record?.QTY,
-                Incentive: record?.INCENTIVEAMOUNT,
-                AnalyzerMode: record?.ANALYZERMODE,
-                WeightMode: record?.WEIGHTMODE,
-                Water: record?.WATER?.toFixed(1),
-            }));
+                combinedCSV += "Member Records:\n";
+                combinedCSV += Papa.unparse(dailyMemberRows) + "\n\n";
+            }
 
-            combinedCSV += "Member Records:\n";
-            combinedCSV += Papa.unparse(recordsCSVData) + "\n\n";
-        }
+            // Milk Type Summary
+            if (day.milktypeStats?.length) {
+                const summaryRows = day.milktypeStats.map((stat) => ({
+                    MilkType: stat.milktype,
+                    Samples: stat.totalSamples,
+                    AvgFAT: stat.avgFat.toFixed(2),
+                    AvgSNF: stat.avgSnf.toFixed(2),
+                    AvgRate: stat.avgRate.toFixed(2),
+                    TotalQty: stat.totalQty.toFixed(2),
+                    TotalAmount: stat.totalAmount.toFixed(2),
+                    Incentive: stat.totalIncentive.toFixed(2),
+                    GrandTotal: stat.grandTotal.toFixed(2),
+                }));
 
-        if (totals?.length) {
-            const totalsCSVData = totals.map((total) => ({
-                Shift: total?.shift,
-                Samples: total?.samples,
-                AvgFat: total?.avgFat?.toFixed(2),
-                AvgSnf: total?.avgSnf?.toFixed(2),
-                AvgRate: total?.avgRate?.toFixed(2),
-                TotalQty: total?.totalQty?.toFixed(2),
-                TotalAmount: total?.totalAmount?.toFixed(2),
-                Incentive: total?.totalIncentive?.toFixed(2),
-                GrandTotal: total?.grandTotal?.toFixed(2),
-            }));
-
-            combinedCSV += "Summary Totals:\n";
-            combinedCSV += Papa.unparse(totalsCSVData);
-        }
+                combinedCSV += "Summary Totals:\n";
+                combinedCSV += Papa.unparse(summaryRows) + "\n\n";
+            }
+        });
 
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
         saveAs(blob, `${getToday()}_${deviceCode}_datewise_detailed.csv`);
     };
-
-
     const handleExportPDF = () => {
-        if (!totals?.length && !records?.length) {
+        if (!records?.length) {
             alert("No data available to export.");
             return;
         }
@@ -186,84 +187,85 @@ const DatewiseDetailedRecords = () => {
         let currentY = 10;
 
         // Title
-        const title = "Payment Register";
         doc.setFont("helvetica", "bold");
         doc.setFontSize(18);
+        const title = "Datewise Detailed";
         doc.text(title, (pageWidth - doc.getTextWidth(title)) / 2, currentY);
         currentY += 10;
 
-        // Header Info
+        // Header
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
         doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-        const memberRange = `Members: ${fromCode} to ${toCode}`;
-        doc.text(memberRange, pageWidth - doc.getTextWidth(memberRange) - 14, currentY);
+        doc.text(`Members: ${fromCode} to ${toCode}`, pageWidth - 80, currentY);
         currentY += 8;
+        doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, currentY);
+        currentY += 10;
 
-        doc.text(`Records from ${fromDate} to ${toDate}`, 14, currentY);
-        currentY += 6;
+        records.forEach((day) => {
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Date: ${day.date} | Shift: ${day.shift}`, 14, currentY);
+            currentY += 6;
 
-        // Records Table
-        if (records?.length) {
-            const recordsTable = records.map((rec, index) => [
-                index + 1,
-                rec?.CODE,
-                rec?.SAMPLEDATE,
-                rec?.SHIFT,
-                rec?.FAT,
-                rec?.SNF,
-                rec?.RATE,
-                rec?.QTY,
-                rec?.INCENTIVEAMOUNT,
-                rec?.ANALYZERMODE,
-                rec?.WEIGHTMODE,
-                rec?.WATER?.toFixed(1),
-            ]);
+            if (day.records?.length) {
+                const memberTable = day.records.map((stat) => [
+                    stat.CODE,
+                    stat.MILKTYPE,
+                    stat.FAT,
+                    stat.SNF,
+                    stat.RATE,
+                    stat.QTY,
+                    stat.INCENTIVEAMOUNT,
+                    stat.TOTALAMOUNT,
+                ]);
 
-            autoTable(doc, {
-                head: [[
-                    "S.No", "Code", "Date", "Shift", "Fat", "SNF",
-                    "Rate", "Qty", "Incentive", "Analyzer Mode", "Weight Mode", "Water",
-                ]],
-                body: recordsTable,
-                startY: currentY,
-                theme: "grid",
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [41, 128, 185] },
-            });
+                autoTable(doc, {
+                    head: [[
+                        "Code", "Milk Type", "FAT", "SNF", "Rate", "Qty", "Incentive", "Total"
+                    ]],
+                    body: memberTable,
+                    startY: currentY,
+                    styles: { fontSize: 8 },
+                    headStyles: { fillColor: [41, 128, 185] },
+                    theme: "grid",
+                });
 
-            currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
-        }
+                currentY = doc.lastAutoTable.finalY + 8;
+            }
 
-        // Summary Table
-        if (totals?.length) {
-            const summaryTable = totals.map((total) => [
-                total?.shift,
-                total?.samples,
-                total?.avgFat?.toFixed(2),
-                total?.avgSnf?.toFixed(2),
-                total?.avgRate?.toFixed(2),
-                total?.totalQty?.toFixed(2),
-                total?.totalAmount?.toFixed(2),
-                total?.totalIncentive?.toFixed(2),
-                total?.grandTotal?.toFixed(2),
-            ]);
+            if (day.milktypeStats?.length) {
+                const summaryTable = day.milktypeStats.map((stat) => [
+                    stat.milktype,
+                    stat.totalSamples,
+                    stat.avgFat.toFixed(2),
+                    stat.avgSnf.toFixed(2),
+                    stat.avgRate.toFixed(2),
+                    stat.totalQty.toFixed(2),
+                    stat.totalAmount.toFixed(2),
+                    stat.totalIncentive.toFixed(2),
+                    stat.grandTotal.toFixed(2),
+                ]);
 
-            autoTable(doc, {
-                head: [[
-                    "Shift", "Samples", "Avg Fat", "Avg SNF", "Avg Rate",
-                    "Total Qty", "Total Amount", "Incentive", "Grand Total",
-                ]],
-                body: summaryTable,
-                startY: currentY,
-                theme: "striped",
-                styles: { fontSize: 9 },
-                headStyles: { fillColor: [39, 174, 96] },
-            });
-        }
+                autoTable(doc, {
+                    head: [[
+                        "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg Rate", "Total Qty",
+                        "Total Amount", "Incentive", "Grand Total"
+                    ]],
+                    body: summaryTable,
+                    startY: currentY,
+                    styles: { fontSize: 8 },
+                    headStyles: { fillColor: [39, 174, 96] },
+                    theme: "striped",
+                });
+
+                currentY = doc.lastAutoTable.finalY + 10;
+            }
+        });
 
         doc.save(`${getToday()}_${deviceCode}_datewise_detailed.pdf`);
     };
+
 
 
 
@@ -339,19 +341,10 @@ const DatewiseDetailedRecords = () => {
                             onChange={(e) => setToDate(e.target.value)}
                         />
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="">Select Shift</option>
                             <option value="MORNING">MORNING</option>
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
-                        <Form.Select
-                            value={viewMode}
-                            onChange={(e) => setViewMode(e.target.value)}
-                        >
-                            <option value="ALL">All Records</option>
-                            <option value="RECORDS">Detailed Records</option>
-                            <option value="Totals">Record Summary </option>
 
-                        </Form.Select>
                         <Button
                             variant="outline-primary"
                             onClick={handleSearch}
@@ -378,99 +371,81 @@ const DatewiseDetailedRecords = () => {
                         ) : (
                             <>
                                 <hr />
-                                {viewMode !== "TOTALS" && (
-                                    <>
-                                        <PageTitle name="Record Summary" />
-                                        <Table hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Code</th>
-                                                    <th>Date</th>
-                                                    <th>Shift</th>
-                                                    <th>Fat</th>
-                                                    <th>SNF</th>
-                                                    <th>Rate</th>
-                                                    <th>Qty</th>
-                                                    <th>Incentive</th>
-                                                    <th>AnalyzerMode</th>
-                                                    <th>WeightMode</th>
-                                                    <th>Water</th>
+                                {records.length === 0 ? (
+                                    <div className="text-center text-muted">No summary data available.</div>
+                                ) : (
+                                    records.map((record, index) => (
+                                        <div key={index} className="mb-4">
+                                            <h5 className="mb-3">
+                                                <strong>Date:</strong> {record.date} &nbsp; | &nbsp;
+                                                <strong>Shift:</strong> {record.shift}&nbsp; | &nbsp;
+                                                <strong>Shift:</strong> {deviceCode}
 
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {records?.length > 0 ? (
-                                                    records.map((record, index) => (
-                                                        <tr key={record._id}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{record?.CODE}</td>
-                                                            <td>{record?.SAMPLEDATE}</td>
-                                                            <td>{record?.SHIFT}</td>
-                                                            <td>{record?.FAT}</td>
-                                                            <td>{record?.SNF}</td>
-                                                            <td>{record?.RATE}</td>
-                                                            <td>{record?.QTY}</td>
-                                                            <td>{record?.INCENTIVEAMOUNT}</td>
-                                                            <td>{record?.ANALYZERMODE}</td>
-                                                            <td>{record?.WEIGHTMODE}</td>
-                                                            <td>{record?.WATER?.toFixed(1)}</td>
+                                            </h5>
+                                            <Table hover responsive>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Code</th>
+
+                                                        <th>Milk Type</th>
+                                                        <th>FAT</th>
+                                                        <th>SNF</th>
+                                                        <th>Rate</th>
+                                                        <th>Qty</th>
+                                                        <th>Incentive Amount</th>
+                                                        <th>Total Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {record.records.map((stat, statIndex) => (
+                                                        <tr key={statIndex}>
+                                                            <td>{stat.CODE}</td>
+
+                                                            <td>{stat.MILKTYPE}</td>
+                                                            <td>{stat.FAT}</td>
+                                                            <td>{stat.SNF}</td>
+                                                            <td>{stat.RATE}</td>
+                                                            <td>{stat.QTY}</td>
+                                                            <td>{stat.INCENTIVEAMOUNT}</td>
+                                                            <td>{stat.TOTALAMOUNT}</td>
 
                                                         </tr>
-                                                    ))
-                                                ) : (
+                                                    ))}
+                                                </tbody>
+                                            </Table>
+                                            <Table hover responsive>
+                                                <thead>
                                                     <tr>
-                                                        <td colSpan="12" className="text-center">No records found</td>
+                                                        <th>Milk Type</th>
+                                                        <th>Samples</th>
+                                                        <th>Avg FAT</th>
+                                                        <th>Avg SNF</th>
+                                                        <th>Avg Rate</th>
+                                                        <th>Total Qty</th>
+                                                        <th>Total Amount</th>
+                                                        <th>Incentive</th>
+                                                        <th>Grand Total</th>
                                                     </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-
-
-                                    </>
-                                )}
-                                {viewMode !== "RECORDS" && (
-                                    <>
-                                        <PageTitle name="Total Summary" />
-                                        <Table hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>Shift</th>
-                                                    <th>Samples</th>
-                                                    <th>Avg FAT</th>
-                                                    <th>Avg SNF</th>
-                                                    <th>Avg Rate</th>
-                                                    <th>Total Qty</th>
-                                                    <th>Total Amount</th>
-                                                    <th>Incentive</th>
-                                                    <th>Grand Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {totals?.length > 0 ? (
-                                                    totals.map((total, index) => (
-                                                        <tr key={index}>
-                                                            <td>{total.shift}</td>
-                                                            <td>{total.samples}</td>
-                                                            <td>{total.avgFat.toFixed(2)}</td>
-                                                            <td>{total.avgSnf.toFixed(2)}</td>
-                                                            <td>{total.avgRate.toFixed(2)}</td>
-                                                            <td>{total.totalQty.toFixed(2)}</td>
-                                                            <td>{total.totalAmount.toFixed(2)}</td>
-                                                            <td>{total.totalIncentive.toFixed(2)}</td>
-                                                            <td>{total.grandTotal.toFixed(2)}</td>
+                                                </thead>
+                                                <tbody>
+                                                    {record.milktypeStats.map((stat, statIndex) => (
+                                                        <tr key={statIndex}>
+                                                            <td>{stat.milktype}</td>
+                                                            <td>{stat.totalSamples}</td>
+                                                            <td>{stat.avgFat.toFixed(2)}</td>
+                                                            <td>{stat.avgSnf.toFixed(2)}</td>
+                                                            <td>{stat.avgRate.toFixed(2)}</td>
+                                                            <td>{stat.totalQty.toFixed(2)}</td>
+                                                            <td>{stat.totalAmount.toFixed(2)}</td>
+                                                            <td>{stat.totalIncentive.toFixed(2)}</td>
+                                                            <td>{stat.grandTotal.toFixed(2)}</td>
                                                         </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="12" className="text-center">No records found</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
+                                                    ))}
+                                                </tbody>
+                                            </Table>
 
-
-                                    </>
+                                        </div>
+                                    ))
                                 )}
                                 <Button
                                     variant="outline-primary"
@@ -486,6 +461,52 @@ const DatewiseDetailedRecords = () => {
                                 >
                                     <FontAwesomeIcon icon={faFilePdf} /> Export PDF
                                 </Button>
+                                {totalCount > 0 && (
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                                        <div className="d-flex align-items-center gap-2">
+                                            <span className="text-muted">Rows per page:</span>
+                                            <Form.Select
+                                                size="sm"
+                                                value={recordsPerPage}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setRecordsPerPage(parseInt(value));
+                                                    setCurrentPage(1);
+                                                }}
+                                                style={{ width: "auto" }}
+                                            >
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                            </Form.Select>
+                                        </div>
+
+                                        {totalCount > recordsPerPage && (
+                                            <div className="d-flex align-items-center gap-2">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    « Prev
+                                                </Button>
+                                                <span className="fw-semibold">
+                                                    Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                                                </span>
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                                >
+                                                    Next »
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </>
                         )}
                     </Card.Body>

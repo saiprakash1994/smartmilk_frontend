@@ -59,6 +59,8 @@ const MemberRecords = () => {
   const [toDate, setToDate] = useState(getToday());
   const [triggerFetch, setTriggerFetch] = useState(false);
   const [viewMode, setViewMode] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -79,15 +81,25 @@ const MemberRecords = () => {
       return;
     }
     setTriggerFetch(true);
+    setCurrentPage(1);
+
   };
 
   const { data: resultData, isFetching } = useGetMemberCodewiseReportQuery(
-    { params: { deviceCode, memberCode, fromDate, toDate } },
+    {
+      params: {
+        deviceCode, memberCode, fromDate, toDate, page: currentPage,
+        limit: recordsPerPage,
+      }
+    },
     { skip: !triggerFetch }
   );
 
   const records = resultData?.records || [];
   const totals = resultData?.totals || [];
+  const totalCount = resultData?.totalRecords;
+
+
   const handleExportCSV = () => {
     if (!totals?.length && !records?.length) {
       alert("No data available to export.");
@@ -433,6 +445,51 @@ const MemberRecords = () => {
                 >
                   <FontAwesomeIcon icon={faFilePdf} /> Export PDF
                 </Button>
+                {viewMode !== "TOTALS" && totalCount > 0 && (
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="text-muted">Rows per page:</span>
+                      <Form.Select
+                        size="sm"
+                        value={recordsPerPage}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setRecordsPerPage(parseInt(value));
+                          setCurrentPage(1);
+                        }}
+                        style={{ width: "auto" }}
+                      >
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </Form.Select>
+                    </div>
+
+                    {totalCount > recordsPerPage && (
+                      <div className="d-flex align-items-center gap-2">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          « Prev
+                        </Button>
+                        <span className="fw-semibold">
+                          Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                        </span>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => setCurrentPage((prev) => prev + 1)}
+                          disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                        >
+                          Next »
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </Card.Body>

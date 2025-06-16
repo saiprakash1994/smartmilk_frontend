@@ -57,11 +57,12 @@ const DatewiseSummaryRecords = () => {
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
     const [toCode, setToCode] = useState("");
-    const [shift, setShift] = useState('');
+    const [shift, setShift] = useState('MORNING');
     const [fromDate, setFromDate] = useState(getToday());
     const [toDate, setToDate] = useState(getToday());
     const [triggerFetch, setTriggerFetch] = useState(false);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [recordsPerPage, setRecordsPerPage] = useState(5);
     // Set default deviceCode for device user
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -92,6 +93,8 @@ const DatewiseSummaryRecords = () => {
             return;
         }
         setTriggerFetch(true);
+        setCurrentPage(1);
+
     };
     const formattedFromDate = fromDate.split("-").reverse().join("/");
     const formattedToDate = toDate.split("-").reverse().join("/");
@@ -104,7 +107,9 @@ const DatewiseSummaryRecords = () => {
                 toCode,
                 fromDate: formattedFromDate,
                 toDate: formattedToDate,
-                shift
+                shift,
+                page: currentPage,
+                limit: recordsPerPage,
 
             },
         },
@@ -113,6 +118,7 @@ const DatewiseSummaryRecords = () => {
     console.log(resultData, "data");
 
     const records = resultData?.data || [];
+    const totalCount = resultData?.totalCount;
 
     const handleExportCSV = () => {
         if (!records?.length) {
@@ -278,7 +284,6 @@ const DatewiseSummaryRecords = () => {
                             onChange={(e) => setToDate(e.target.value)}
                         />
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="">Select Shift</option>
                             <option value="MORNING">MORNING</option>
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
@@ -367,6 +372,52 @@ const DatewiseSummaryRecords = () => {
                                 >
                                     <FontAwesomeIcon icon={faFilePdf} /> Export PDF
                                 </Button>
+                                {totalCount > 0 && (
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                                        <div className="d-flex align-items-center gap-2">
+                                            <span className="text-muted">Rows per page:</span>
+                                            <Form.Select
+                                                size="sm"
+                                                value={recordsPerPage}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setRecordsPerPage(parseInt(value));
+                                                    setCurrentPage(1);
+                                                }}
+                                                style={{ width: "auto" }}
+                                            >
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                            </Form.Select>
+                                        </div>
+
+                                        {totalCount > recordsPerPage && (
+                                            <div className="d-flex align-items-center gap-2">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    « Prev
+                                                </Button>
+                                                <span className="fw-semibold">
+                                                    Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                                                </span>
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                                >
+                                                    Next »
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </>
                         )}
                     </Card.Body>

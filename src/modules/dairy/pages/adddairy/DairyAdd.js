@@ -23,7 +23,7 @@ const DairyAdd = () => {
         isLoading: fetching,
         isError,
         refetch
-    } = useGetDairyByIdQuery(id);
+    } = useGetDairyByIdQuery(id, { skip: !id });
 
     const [createDairy, { isLoading: creating }] = useCreateDairyMutation();
     const [editDairy, { isLoading: updating }] = useEditDairyMutation();
