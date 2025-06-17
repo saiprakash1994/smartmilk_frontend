@@ -127,7 +127,7 @@ const DeviceAdd = () => {
             navigate("/device");
         } catch (err) {
             console.error("RTK Error:", err);
-            errorToast(err?.data?.message || `Failed to ${id ? "update" : "create"} device`);
+            errorToast(err?.data?.error || `Failed to ${id ? "update" : "create"} device`);
         }
     };
 
