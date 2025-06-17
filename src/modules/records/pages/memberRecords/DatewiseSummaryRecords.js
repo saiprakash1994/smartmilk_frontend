@@ -110,6 +110,18 @@ const DatewiseSummaryRecords = () => {
             setSearchParams((prev) => ({ ...prev }));
         }
     }, [currentPage, recordsPerPage]);
+    useEffect(() => {
+        if (memberCodes.length > 0) {
+            const firstMember = memberCodes[0];
+            const lastMember = memberCodes[memberCodes.length - 1];
+
+            setFromCode(firstMember.CODE);
+            setToCode(lastMember.CODE);
+        } else {
+            setFromCode("");
+            setToCode("");
+        }
+    }, [deviceCode, memberCodes]);
     const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
     const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
@@ -129,7 +141,6 @@ const DatewiseSummaryRecords = () => {
             }
             : skipToken
     );
-    console.log(resultData, "data");
 
     const records = resultData?.data || [];
     const totalCount = resultData?.totalCount;

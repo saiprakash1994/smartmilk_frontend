@@ -84,7 +84,6 @@ const MemberRecords = () => {
     setSearchParams({
       deviceCode,
       memberCode,
-
       fromDate,
       toDate,
     });
@@ -96,6 +95,14 @@ const MemberRecords = () => {
       setSearchParams((prev) => ({ ...prev }));
     }
   }, [currentPage, recordsPerPage]);
+  useEffect(() => {
+    if (memberCodes.length > 0) {
+      const firstMember = memberCodes[0];
+      setMemberCode(firstMember.CODE);
+    } else {
+      setMemberCode('')
+    }
+  }, [memberCodes, deviceCode]);
 
   const { data: resultData, isFetching } = useGetMemberCodewiseReportQuery(
     searchParams
@@ -380,10 +387,10 @@ const MemberRecords = () => {
                               <td>{record?.SAMPLEDATE}</td>
                               <td>{record?.MILKTYPE}</td>
                               <td>{record?.SHIFT}</td>
-                              <td>{record?.QTY}</td>
-                              <td>{record?.FAT}</td>
-                              <td>{record?.SNF}</td>
-                              <td>{record?.RATE}</td>
+                              <td>{record?.FAT?.toFixed(1)}</td>
+                              <td>{record?.SNF?.toFixed(1)}</td>
+                              <td>{record?.QTY?.toFixed(2)}</td>
+                              <td>{record?.RATE?.toFixed(2)}</td>
                               <td>{record?.AMOUNT.toFixed(2) || 0}</td>
                               <td>{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
                               <td>{record?.TOTAL.toFixed(2)}</td>

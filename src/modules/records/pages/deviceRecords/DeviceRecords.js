@@ -253,7 +253,6 @@ const DeviceRecords = () => {
         doc.save(`Milk_Data_${deviceCode}_${date}.pdf`);
     };
 
-    console.log(totalCount, recordsPerPage, 'saii')
     return (
         <>
             <div className="d-flex justify-content-between pageTitleSpace">
