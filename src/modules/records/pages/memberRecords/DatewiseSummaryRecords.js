@@ -21,11 +21,12 @@ import {
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetDatewiseSummaryReportQuery } from "../../store/recordEndPoint";
+import { useGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { skipToken } from "@reduxjs/toolkit/query";
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -57,12 +58,13 @@ const DatewiseSummaryRecords = () => {
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
     const [toCode, setToCode] = useState("");
-    const [shift, setShift] = useState('MORNING');
+    const [shift, setShift] = useState('BOTH');
     const [fromDate, setFromDate] = useState(getToday());
     const [toDate, setToDate] = useState(getToday());
-    const [triggerFetch, setTriggerFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
+    const [searchParams, setSearchParams] = useState(null);
+
     // Set default deviceCode for device user
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -92,28 +94,40 @@ const DatewiseSummaryRecords = () => {
             );
             return;
         }
-        setTriggerFetch(true);
+        setSearchParams({
+            deviceCode,
+            fromCode,
+            toCode,
+            fromDate,
+            toDate,
+            shift
+        });
         setCurrentPage(1);
 
     };
-    const formattedFromDate = fromDate.split("-").reverse().join("/");
-    const formattedToDate = toDate.split("-").reverse().join("/");
+    useEffect(() => {
+        if (searchParams) {
+            setSearchParams((prev) => ({ ...prev }));
+        }
+    }, [currentPage, recordsPerPage]);
+    const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
+    const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
-    const { data: resultData, isFetching } = useGetDatewiseSummaryReportQuery(
-        {
-            params: {
-                deviceId: deviceCode,
-                fromCode,
-                toCode,
-                fromDate: formattedFromDate,
-                toDate: formattedToDate,
-                shift,
-                page: currentPage,
-                limit: recordsPerPage,
-
-            },
-        },
-        { skip: !triggerFetch }
+    const { data: resultData, isFetching } = useGetDatewiseDetailedReportQuery(
+        searchParams
+            ? {
+                params: {
+                    deviceId: searchParams?.deviceCode,
+                    fromCode: searchParams?.fromCode,
+                    toCode: searchParams?.toCode,
+                    fromDate: formattedFromDate,
+                    toDate: formattedToDate,
+                    shift: searchParams?.shift,
+                    page: currentPage,
+                    limit: recordsPerPage,
+                },
+            }
+            : skipToken
     );
     console.log(resultData, "data");
 
@@ -284,6 +298,8 @@ const DatewiseSummaryRecords = () => {
                             onChange={(e) => setToDate(e.target.value)}
                         />
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
+                            <option value="BOTH">ALL Shifts</option>
+
                             <option value="MORNING">MORNING</option>
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
@@ -302,7 +318,7 @@ const DatewiseSummaryRecords = () => {
                     </div>
 
                     <Card.Body className="cardbodyCss">
-                        {!triggerFetch ? (
+                        {!searchParams ? (
                             <div className="text-center my-5 text-muted">
                                 Please apply filters and click <strong>Search</strong> to view
                                 records.

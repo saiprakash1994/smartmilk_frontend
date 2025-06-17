@@ -441,7 +441,7 @@ const DeviceRecords = () => {
                                         </div>
 
                                         {/* Page navigation */}
-                                        {totalCount > recordsPerPage(
+                                        {totalCount > recordsPerPage && (
                                             <div className="d-flex align-items-center gap-2">
                                                 <Button
                                                     variant="outline-primary"

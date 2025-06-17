@@ -26,6 +26,7 @@ import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { skipToken } from "@reduxjs/toolkit/query";
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -56,12 +57,13 @@ const DatewiseDetailedRecords = () => {
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
     const [toCode, setToCode] = useState("");
-    const [shift, setShift] = useState('MORNING');
+    const [shift, setShift] = useState('BOTH');
     const [fromDate, setFromDate] = useState(getToday());
     const [toDate, setToDate] = useState(getToday());
-    const [triggerFetch, setTriggerFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
+    const [searchParams, setSearchParams] = useState(null);
+
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
@@ -89,30 +91,42 @@ const DatewiseDetailedRecords = () => {
             );
             return;
         }
-        setTriggerFetch(true);
         setCurrentPage(1);
-
+        setSearchParams({
+            deviceCode,
+            fromCode,
+            toCode,
+            fromDate,
+            toDate,
+            shift
+        });
     };
-    const formattedFromDate = fromDate.split("-").reverse().join("/");
-    const formattedToDate = toDate.split("-").reverse().join("/");
+
+    useEffect(() => {
+        if (searchParams) {
+            setSearchParams((prev) => ({ ...prev }));
+        }
+    }, [currentPage, recordsPerPage]);
+    const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
+    const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
     const { data: resultData, isFetching } = useGetDatewiseDetailedReportQuery(
-        {
-            params: {
-                deviceId: deviceCode,
-                fromCode,
-                toCode,
-                fromDate: formattedFromDate,
-                toDate: formattedToDate,
-                shift,
-                page: currentPage,
-                limit: recordsPerPage,
+        searchParams
+            ? {
+                params: {
+                    deviceId: deviceCode,
+                    fromCode,
+                    toCode,
+                    fromDate: formattedFromDate,
+                    toDate: formattedToDate,
+                    shift,
+                    page: currentPage,
+                    limit: recordsPerPage,
 
-            },
-        },
-        { skip: !triggerFetch }
+                },
+            }
+            : skipToken
     );
-    console.log(resultData, "data");
 
     const records = resultData?.data || [];
     const totalCount = resultData?.totalCount;
@@ -341,6 +355,8 @@ const DatewiseDetailedRecords = () => {
                             onChange={(e) => setToDate(e.target.value)}
                         />
                         <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
+                            <option value="BOTH">ALL Shifts</option>
+
                             <option value="MORNING">MORNING</option>
                             <option value="EVENING">EVENING</option>
                         </Form.Select>
@@ -359,7 +375,7 @@ const DatewiseDetailedRecords = () => {
                     </div>
 
                     <Card.Body className="cardbodyCss">
-                        {!triggerFetch ? (
+                        {!searchParams ? (
                             <div className="text-center my-5 text-muted">
                                 Please apply filters and click <strong>Search</strong> to view
                                 records.
@@ -379,35 +395,39 @@ const DatewiseDetailedRecords = () => {
                                             <h5 className="mb-3">
                                                 <strong>Date:</strong> {record.date} &nbsp; | &nbsp;
                                                 <strong>Shift:</strong> {record.shift}&nbsp; | &nbsp;
-                                                <strong>Shift:</strong> {deviceCode}
+                                                <strong>Device Id:</strong> {deviceCode}
 
                                             </h5>
                                             <Table hover responsive>
                                                 <thead>
                                                     <tr>
                                                         <th>Code</th>
-
+                                                        {shift === "BOTH" && <th>Shift</th>}
                                                         <th>Milk Type</th>
                                                         <th>FAT</th>
                                                         <th>SNF</th>
                                                         <th>Rate</th>
                                                         <th>Qty</th>
-                                                        <th>Incentive Amount</th>
-                                                        <th>Total Amount</th>
+                                                        <th>Total</th>
+                                                        <th>Incentive</th>
+                                                        <th>Grand Total</th>
+
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {record.records.map((stat, statIndex) => (
                                                         <tr key={statIndex}>
                                                             <td>{stat.CODE}</td>
-
+                                                            {shift === "BOTH" && <td>{stat.SHIFT}</td>}
                                                             <td>{stat.MILKTYPE}</td>
                                                             <td>{stat.FAT}</td>
                                                             <td>{stat.SNF}</td>
                                                             <td>{stat.RATE}</td>
                                                             <td>{stat.QTY}</td>
-                                                            <td>{stat.INCENTIVEAMOUNT}</td>
                                                             <td>{stat.TOTALAMOUNT}</td>
+                                                            <td>{stat.INCENTIVEAMOUNT}</td>
+                                                            <td>{stat.TOTALAMOUNT + stat.INCENTIVEAMOUNT}</td>
+
 
                                                         </tr>
                                                     ))}

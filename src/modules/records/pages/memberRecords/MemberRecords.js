@@ -27,6 +27,7 @@ import {
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
@@ -57,10 +58,10 @@ const MemberRecords = () => {
   const [memberCode, setMemberCode] = useState("");
   const [fromDate, setFromDate] = useState(getToday());
   const [toDate, setToDate] = useState(getToday());
-  const [triggerFetch, setTriggerFetch] = useState(false);
   const [viewMode, setViewMode] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [searchParams, setSearchParams] = useState(null);
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -80,19 +81,35 @@ const MemberRecords = () => {
       errorToast("From Date cannot be after To Date");
       return;
     }
-    setTriggerFetch(true);
+    setSearchParams({
+      deviceCode,
+      memberCode,
+
+      fromDate,
+      toDate,
+    });
     setCurrentPage(1);
 
   };
+  useEffect(() => {
+    if (searchParams) {
+      setSearchParams((prev) => ({ ...prev }));
+    }
+  }, [currentPage, recordsPerPage]);
 
   const { data: resultData, isFetching } = useGetMemberCodewiseReportQuery(
-    {
-      params: {
-        deviceCode, memberCode, fromDate, toDate, page: currentPage,
-        limit: recordsPerPage,
+    searchParams
+      ? {
+        params: {
+          deviceCode: searchParams?.deviceCode,
+          memberCode: searchParams?.memberCode,
+          fromDate: searchParams?.fromDate,
+          toDate: searchParams?.toDate,
+          page: currentPage,
+          limit: recordsPerPage,
+        },
       }
-    },
-    { skip: !triggerFetch }
+      : skipToken
   );
 
   const records = resultData?.records || [];
@@ -324,7 +341,7 @@ const MemberRecords = () => {
           </div>
 
           <Card.Body className="cardbodyCss">
-            {!triggerFetch ? (
+            {!searchParams ? (
               <div className="text-center my-5 text-muted">
                 Please apply filters and click <strong>Search</strong> to view
                 records.

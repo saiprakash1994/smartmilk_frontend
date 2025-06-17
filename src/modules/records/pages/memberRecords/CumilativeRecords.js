@@ -26,6 +26,8 @@ import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { skipToken } from "@reduxjs/toolkit/query";
+
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
 };
@@ -59,13 +61,12 @@ const CumilativeRecords = () => {
 
   const [fromDate, setFromDate] = useState(getToday());
   const [toDate, setToDate] = useState(getToday());
-  const [triggerFetch, setTriggerFetch] = useState(false);
   const [viewMode, setViewMode] = useState("ALL");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [searchParams, setSearchParams] = useState(null);
 
-  // Set default deviceCode for device user
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
   }, [isDevice, deviceid]);
@@ -94,32 +95,44 @@ const CumilativeRecords = () => {
       );
       return;
     }
-    setTriggerFetch(true);
+    setSearchParams({
+      deviceCode,
+      fromCode,
+      toCode,
+      fromDate,
+      toDate,
+    });
     setCurrentPage(1);
 
   };
-  const formattedFromDate = fromDate.split("-").reverse().join("/");
-  const formattedToDate = toDate.split("-").reverse().join("/");
+
+  useEffect(() => {
+    if (searchParams) {
+      setSearchParams((prev) => ({ ...prev }));
+    }
+  }, [currentPage, recordsPerPage]);
+  const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
+  const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
   const { data: resultData, isFetching } = useGetCumulativeReportQuery(
-    {
-      params: {
-        deviceid: deviceCode,
-        fromCode,
-        toCode,
-        fromDate: formattedFromDate,
-        toDate: formattedToDate,
-        page: currentPage,
-        limit: recordsPerPage,
-      },
-    },
-    { skip: !triggerFetch }
+    searchParams
+      ? {
+        params: {
+          deviceid: searchParams?.deviceCode,
+          fromCode: searchParams?.fromCode,
+          toCode: searchParams?.toCode,
+          fromDate: formattedFromDate,
+          toDate: formattedToDate,
+          page: currentPage,
+          limit: recordsPerPage,
+        },
+      }
+      : skipToken
   );
 
   const records = resultData?.data || [];
   const totalCount = resultData?.pagination?.totalRecords;
 
-  console.log(totalCount, recordsPerPage, 'sai')
   const cowMilkTypeTotals =
     resultData?.milkTypeTotals.filter((cow) => cow?.MILKTYPE === "COW") || [];
   const bufMilkTypeTotals =
@@ -445,7 +458,7 @@ const CumilativeRecords = () => {
           </div>
 
           <Card.Body className="cardbodyCss">
-            {!triggerFetch ? (
+            {!searchParams ? (
               <div className="text-center my-5 text-muted">
                 Please apply filters and click <strong>Search</strong> to view
                 records.
