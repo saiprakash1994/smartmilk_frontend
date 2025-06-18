@@ -30,7 +30,8 @@ import {
     FaIndustry,
     FaMapMarkerAlt,
     FaDesktop,
-    FaUsers
+    FaUsers,
+    FaExchangeAlt
 } from "react-icons/fa";
 import './DairyPage.scss';
 
@@ -40,6 +41,7 @@ const DairyPage = () => {
     const { data: dairies = [], isLoading, isError } = useGetAllDairysQuery();
     const { data: allDevices = [] } = useGetAllDevicesQuery();
     const [deleteDairy] = useDeleteDairyMutation();
+    const [selectedDairy, setSelectedDairy] = useState("");
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this dairy?")) return;
@@ -280,6 +282,30 @@ const DairyPage = () => {
                         )}
                     </Card.Body>
                 </Card>
+
+                {/* Selected Dairy Bar */}
+                {selectedDairy && (
+                    <div className="selected-dairy-bar mb-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <Badge bg="primary" className="selected-dairy-badge-lg">
+                                <FaBuilding className="me-2" />
+                                {selectedDairy}
+                            </Badge>
+                        </div>
+                        <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            className="change-dairy-btn"
+                            onClick={() => {
+                                setSelectedDairy("");
+                                setSearchTerm("");
+                            }}
+                        >
+                            <FaExchangeAlt className="me-1" />
+                            Change Dairy
+                        </Button>
+                    </div>
+                )}
             </Container>
         </div>
     );

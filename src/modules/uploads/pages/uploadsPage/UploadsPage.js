@@ -99,10 +99,6 @@ const UploadsPage = () => {
 
     return (
         <div className="uploads-page">
-            <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name="UPLOADS" pageItems={0} />
-            </div>
-
             <Container fluid className="uploads-container">
                 {/* Header Section */}
                 <Card className="uploads-header-card mb-4">

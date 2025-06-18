@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Row, Col, Container, Button, Spinner, Card, Nav, Tab } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, Row, Col, Container, Button, Spinner, Card, Nav, Tab, Badge } from "react-bootstrap";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { successToast, errorToast } from "../../../../shared/utils/appToaster";
 import "./SettingsPage.scss";
@@ -36,6 +36,7 @@ import {
 const SettingsPage = () => {
   const userType = UserTypeHook();
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
+  const location = useLocation();
   const isDairy = userType === roles.DAIRY;
   const isDevice = userType === roles.DEVICE;
   const isAdmin = userType === roles.ADMIN;
@@ -43,8 +44,12 @@ const SettingsPage = () => {
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
 
-  const [selectedDairyCode, setSelectedDairyCode] = useState("");
-  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  // Get pre-selected device from navigation state
+  const preSelectedDevice = location.state?.selectedDeviceId;
+  const preSelectedDairy = location.state?.selectedDairyCode;
+
+  const [selectedDairyCode, setSelectedDairyCode] = useState(preSelectedDairy || "");
+  const [selectedDeviceId, setSelectedDeviceId] = useState(preSelectedDevice || "");
   const [originalSettings, setOriginalSettings] = useState({});
   const [settings, setSettings] = useState({});
 
@@ -127,6 +132,14 @@ const SettingsPage = () => {
       setOriginalSettings(mapped);
     }
   }, [deviceData]);
+
+  // Handle pre-selected device from devices page
+  useEffect(() => {
+    if (preSelectedDevice && preSelectedDairy) {
+      // Show success message when coming from devices page
+      successToast(`Device ${preSelectedDevice} selected for configuration`);
+    }
+  }, [preSelectedDevice, preSelectedDairy]);
 
   const handleChange = (field, value) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
@@ -222,13 +235,9 @@ const SettingsPage = () => {
 
   return (
     <div className="settings-page">
-      <div className="d-flex justify-content-between pageTitleSpace">
-        <PageTitle name="SETTINGS" pageItems={0} />
-      </div>
-      
       <Container fluid className="settings-container">
-        {/* Device Selection Card */}
-        {(isAdmin || isDairy) && (
+        {/* Device Selection Card - Only show when no device is selected */}
+        {(isAdmin || isDairy) && !selectedDeviceId && (
           <Card className="device-selection-card mb-4">
             <Card.Header className="device-selection-header">
               <FaBuilding className="me-2" />
@@ -333,11 +342,33 @@ const SettingsPage = () => {
         )}
 
         {/* Settings Tabs */}
-        {!isLoading && deviceData && (
+        {!isLoading && deviceData && selectedDeviceId && (
           <Card className="settings-main-card">
             <Card.Header className="settings-header">
-              <FaCog className="me-2" />
-              <span>Device Configuration</span>
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <FaCog className="me-2" />
+                  <span>Device Configuration</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  {selectedDeviceId && (
+                    <Badge bg="primary" className="me-3 device-id-badge">
+                      {selectedDeviceId}
+                    </Badge>
+                  )}
+                  {(isAdmin || isDairy) && selectedDeviceId && (
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => setSelectedDeviceId("")}
+                      className="change-device-btn"
+                    >
+                      <FaDesktop className="me-1" />
+                      Change Device
+                    </Button>
+                  )}
+                </div>
+              </div>
             </Card.Header>
             <Card.Body className="p-0">
               <Tab.Container id="settings-tabs" defaultActiveKey="general">
@@ -690,20 +721,38 @@ const SettingsPage = () => {
           </Card>
         )}
 
-        {/* Save Button */}
-        {!isLoading && deviceData && (
-          <div className="save-button-container">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleSave}
-              disabled={areSettingsEqual(settings, originalSettings)}
-              className="save-button"
-            >
-              <FaSave className="me-2" />
-              Save Settings
-            </Button>
-          </div>
+        {/* Save Settings Card */}
+        {!isLoading && deviceData && selectedDeviceId && (
+          <Card className="save-settings-card mt-4">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="save-settings-info">
+                  <h6 className="save-settings-title">
+                    <FaSave className="me-2" />
+                    Save Configuration
+                  </h6>
+                  <p className="save-settings-description">
+                    {areSettingsEqual(settings, originalSettings) 
+                      ? "No changes detected. Settings are up to date."
+                      : "You have unsaved changes. Click save to apply your configuration."
+                    }
+                  </p>
+                </div>
+                <div className="save-settings-actions">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={handleSave}
+                    disabled={areSettingsEqual(settings, originalSettings)}
+                    className="save-button"
+                  >
+                    <FaSave className="me-2" />
+                    Save Settings
+                  </Button>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
         )}
       </Container>
     </div>

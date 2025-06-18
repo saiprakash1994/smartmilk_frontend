@@ -103,6 +103,43 @@
       padding: 20px 25px;
       font-weight: 600;
       font-size: 1.1rem;
+
+      .device-id-badge {
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+      }
+
+      .change-device-btn {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.5);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+      }
     }
   }
 
@@ -442,6 +479,57 @@
 
         &:hover {
           background: #a8a8a8;
+        }
+      }
+    }
+  }
+
+  // Save Settings Card
+  .save-settings-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #28a745;
+
+    .save-settings-info {
+      .save-settings-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+      }
+
+      .save-settings-description {
+        color: #6c757d;
+        margin: 0;
+        font-size: 0.95rem;
+      }
+    }
+
+    .save-settings-actions {
+      .save-button {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+          background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+        }
+
+        &:disabled {
+          background: #6c757d;
+          transform: none;
+          box-shadow: none;
+          cursor: not-allowed;
         }
       }
     }

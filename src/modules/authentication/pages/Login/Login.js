@@ -14,7 +14,7 @@ import smatrchipLogo from "../../../../assets/smatrchipLogo.png";
 import loginImage from "../../../../assets/login-rounded-right.png";
 import "./Login.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faEnvelope, faLock, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -62,7 +62,17 @@ const Login = () => {
 
             const { message, token, role, dairyName, dairyCode, deviceName, deviceid } = response.data;
 
-            successToast(message);
+            // Simple success message
+            let successMessage = "Login successful!";
+            if (role === roles?.ADMIN) {
+                successMessage = "Welcome back, Admin! 🎉";
+            } else if (role === roles?.DAIRY) {
+                successMessage = `Welcome to ${dairyName || 'Dairy Management'}! 🐄`;
+            } else {
+                successMessage = `Welcome to ${deviceName || 'Device Management'}! 📱`;
+            }
+
+            successToast(successMessage);
 
             const userInfo = {
                 token,
@@ -77,72 +87,108 @@ const Login = () => {
             setItemToLocalStorage(AppConstants?.userInfo, userInfo);
 
             setLoginInfo({ email: "", password: "" });
-            setTimeout(() => navigate("/"), 500);
+            
+            // Smooth redirect after success message
+            setTimeout(() => navigate("/"), 1500);
         } catch (err) {
             console.error("Login error:", err);
-            errorToast("An unexpected error occurred");
+            errorToast("Login failed. Please check your credentials and try again.");
         }
     };
 
     return (
-        <section className="login-wrapper">
-            <div className="login-card">
-                <div className="login-image-section">
-                    <img src={loginImage} alt="Login Visual" />
-                </div>
-                <div className="login-form-section">
-                    <div className="text-center mb-4">
-                        <img src={smatrchipLogo} alt="SmartChip Logo" className="logo" />
-                        <h4 className="text-secondary mt-2">Sign in to your account</h4>
+        <div className="modern-login-container">
+            <div className="login-background">
+                <div className="login-background-overlay"></div>
+            </div>
+            
+            <div className="login-content">
+                <div className="login-card">
+                    <div className="login-header">
+                        <div className="logo-container">
+                            <img src={smatrchipLogo} alt="SmartChip Logo" className="logo" />
+                        </div>
+                        <h1 className="welcome-text">Welcome Back</h1>
+                        <p className="subtitle">Sign in to your SmartMilk account</p>
                     </div>
 
-                    <Form onSubmit={handleLogin}>
-                        <FloatingLabel controlId="email" label="User Name" className="mb-3">
-                            <Form.Control
-                                type="email"
-                                name="email"
-                                placeholder="Enter your email"
-                                value={loginInfo?.email}
-                                onChange={handleChange}
-                                autoFocus
-                                disabled={isLoading}
-                            />
-                        </FloatingLabel>
-
-                        <FloatingLabel controlId="password" label="Password" className="mb-3 position-relative">
-                            <Form.Control
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                placeholder="Enter your password"
-                                value={loginInfo?.password}
-                                onChange={handleChange}
-                                disabled={isLoading}
-                                autoComplete="off"
-                            />
-                            <FontAwesomeIcon
-                                icon={showPassword ? faEye : faEyeSlash}
-                                className="password-toggle-icon"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                            />
-                        </FloatingLabel>
-
-                        <div className="d-grid my-3">
-                            <Button
-                                variant="outline-primary"
-                                type="submit"
-                                className="loginButton"
-                                disabled={isLoading}
-                            >
-                                {isLoading && (
-                                    <Spinner animation="border" size="sm" className="me-2" />
-                                )}
-                                Log in
-                            </Button>
+                    <Form onSubmit={handleLogin} className="login-form">
+                        <div className="form-group">
+                            <div className="input-wrapper">
+                                <div className="input-icon">
+                                    <FontAwesomeIcon icon={faEnvelope} />
+                                </div>
+                                <FloatingLabel controlId="email" label="Email Address" className="custom-floating-label">
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        placeholder="Enter your email"
+                                        value={loginInfo?.email}
+                                        onChange={handleChange}
+                                        autoFocus
+                                        disabled={isLoading}
+                                        className="custom-input"
+                                    />
+                                </FloatingLabel>
+                            </div>
                         </div>
+
+                        <div className="form-group">
+                            <div className="input-wrapper">
+                                <div className="input-icon">
+                                    <FontAwesomeIcon icon={faLock} />
+                                </div>
+                                <FloatingLabel controlId="password" label="Password" className="custom-floating-label">
+                                    <Form.Control
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        placeholder="Enter your password"
+                                        value={loginInfo?.password}
+                                        onChange={handleChange}
+                                        disabled={isLoading}
+                                        autoComplete="off"
+                                        className="custom-input"
+                                    />
+                                </FloatingLabel>
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    disabled={isLoading}
+                                >
+                                    <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="login-button"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <Spinner animation="border" size="sm" className="me-2" />
+                                    Signing In...
+                                </>
+                            ) : (
+                                <>
+                                    <FontAwesomeIcon icon={faSignInAlt} className="me-2" />
+                                    Sign In
+                                </>
+                            )}
+                        </Button>
                     </Form>
+
+                    <div className="login-footer">
+                        <p className="footer-text">
+                            Secure login powered by SmartChip Technology
+                        </p>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
     );
 };
 

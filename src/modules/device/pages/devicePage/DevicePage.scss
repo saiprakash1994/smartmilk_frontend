@@ -8,27 +8,39 @@
     max-width: 1400px;
   }
 
-  // Page Title Section
-  .pageTitleSpace {
-    padding: 20px 0;
-    margin: 20px 0 30px 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+  // Device Header Section
+  .device-header {
+    .device-title {
+      color: #2c3e50;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .device-subtitle {
+      color: #6c757d;
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 400;
+    }
   }
 
   .add-device-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 12px 24px;
     font-weight: 600;
+    font-size: 1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+      background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
     }
   }
 
@@ -145,8 +157,8 @@
     }
   }
 
-  // Devices Table Card
-  .devices-table-card {
+  // Devices Grid Card
+  .devices-grid-card {
     border: none;
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.95);
@@ -154,12 +166,12 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 
-    .table-header {
+    .grid-header {
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       border: none;
       padding: 20px 25px;
 
-      .table-title {
+      .grid-title {
         color: #2c3e50;
         font-weight: 700;
         margin: 0;
@@ -167,110 +179,232 @@
         display: flex;
         align-items: center;
       }
+
+      .grid-actions {
+        .device-count-badge {
+          font-weight: 600;
+          font-size: 0.9rem;
+          padding: 8px 16px;
+          border-radius: 20px;
+          background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%) !important;
+        }
+      }
     }
 
-    .devices-table {
-      margin: 0;
-      table-layout: fixed;
-      width: 100%;
+    .device-card.advanced {
+      border: none;
+      border-radius: 15px;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
 
-      thead {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-
-        th {
-          border: none;
-          padding: 15px 10px;
-          font-weight: 600;
-          color: #2c3e50;
-          font-size: 1rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          min-width: 0;
-          text-align: left;
-          vertical-align: middle;
-        }
-
-        th:nth-child(1) { 
-          width: 8%; 
-          text-align: center;
-        }   /* # */
-        th:nth-child(2) { width: 20%; }  /* Device ID */
-        th:nth-child(3) { width: 15%; }  /* Dairy Code */
-        th:nth-child(4) { width: 25%; }  /* Email */
-        th:nth-child(5) { width: 15%; }  /* Status */
-        th:nth-child(6) { width: 17%; }  /* Actions */
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
       }
 
-      tbody {
-        tr {
-          transition: all 0.3s ease;
-          border-bottom: 1px solid #f8f9fa;
+      .device-card-status-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+        z-index: 2;
 
-          &:hover {
-            background: rgba(102, 126, 234, 0.05);
-            transform: scale(1.01);
-          }
-
-          td {
-            border: none;
-            padding: 15px 10px;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
-          }
-
-          td:nth-child(1) { width: 8%; text-align: center; }   /* # */
-          td:nth-child(2) { width: 20%; }  /* Device ID */
-          td:nth-child(3) { width: 15%; }  /* Dairy Code */
-          td:nth-child(4) { width: 25%; }  /* Email */
-          td:nth-child(5) { width: 15%; }  /* Status */
-          td:nth-child(6) { width: 17%; }  /* Actions */
-        }
-      }
-
-      .device-index {
-        font-weight: 600;
-        color: #6c757d;
-        text-align: center;
-      }
-
-      .device-id {
-        font-weight: 600;
-        color: #2c3e50;
-      }
-
-      .device-dairy {
-        .dairy-badge {
-          font-weight: 600;
-          font-size: 0.8rem;
-          padding: 6px 12px;
-        }
-      }
-
-      .device-email {
-        color: #6c757d;
-      }
-
-      .device-status {
         .status-indicator {
+          display: none;
+        }
+      }
+
+      .device-card-header {
+        margin-bottom: 20px;
+        padding-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .device-icon-container {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 15px;
+          flex: 1;
+
+          .device-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+          }
+
+          .device-info {
+            flex: 1;
+
+            .device-name {
+              color: #2c3e50;
+              font-weight: 700;
+              margin: 0 0 6px 0;
+              font-size: 1rem;
+              line-height: 1.2;
+            }
+
+            .device-meta {
+              .device-dairy {
+                color: #6c757d;
+                font-size: 0.8rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+              }
+            }
+          }
+        }
+
+        .device-status-badge {
+          .badge {
+            font-weight: 600;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
         }
       }
 
-      .device-actions {
-        .action-btn {
-          border-radius: 8px;
-          padding: 8px 12px;
-          transition: all 0.3s ease;
+      .device-card-content {
+        margin-bottom: 16px;
 
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        .device-details {
+          .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: #e9ecef;
+              transform: translateX(4px);
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .detail-icon {
+              color: #667eea;
+              font-size: 0.9rem;
+              min-width: 16px;
+            }
+
+            .detail-content {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+
+              .detail-label {
+                font-size: 0.75rem;
+                color: #6c757d;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              }
+
+              .detail-value {
+                font-size: 0.9rem;
+                color: #2c3e50;
+                font-weight: 600;
+                word-break: break-word;
+
+                &.status-active {
+                  color: #28a745;
+                }
+
+                &.status-deactive {
+                  color: #6c757d;
+                }
+
+                &.status-maintenance {
+                  color: #ffc107;
+                }
+
+                &.status-offline {
+                  color: #dc3545;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .device-card-footer {
+        .device-actions {
+          display: flex;
+          gap: 6px;
+          justify-content: space-between;
+          margin-top: 8px;
+
+          .action-btn {
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            flex: 1;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            &.primary {
+              &:hover {
+                background: #007bff;
+                border-color: #007bff;
+                color: white;
+              }
+            }
+
+            &.secondary {
+              &:hover {
+                background: #17a2b8;
+                border-color: #17a2b8;
+                color: white;
+              }
+            }
+
+            &.danger {
+              &:hover {
+                background: #dc3545;
+                border-color: #dc3545;
+                color: white;
+              }
+            }
           }
         }
       }
@@ -338,45 +472,26 @@
       }
     }
 
-    .devices-table-card {
-      .table-header {
-        .table-title {
+    .devices-grid-card {
+      .grid-header {
+        .grid-title {
           font-size: 1rem;
-        }
-      }
-
-      .devices-table {
-        thead th {
-          font-size: 0.9rem;
-          padding: 10px 5px;
-        }
-
-        tbody td {
-          padding: 10px 5px;
-          font-size: 0.8rem;
-        }
-
-        .device-dairy {
-          .dairy-badge {
-            font-size: 0.7rem;
-            padding: 4px 8px;
-          }
         }
       }
     }
   }
 
   @media (max-width: 576px) {
-    .devices-table-card {
-      .devices-table {
-        thead th {
-          font-size: 0.8rem;
-          padding: 8px 3px;
-        }
-
-        tbody td {
-          padding: 8px 3px;
-          font-size: 0.75rem;
+    .devices-grid-card {
+      .device-card {
+        .device-card-header {
+          .device-card-title {
+            .device-info {
+              .device-name {
+                font-size: 1rem;
+              }
+            }
+          }
         }
       }
     }
@@ -385,7 +500,7 @@
   // Animation for page load
   .stats-card,
   .filters-card,
-  .devices-table-card {
+  .devices-grid-card {
     animation: slideInUp 0.6s ease-out;
   }
 
@@ -437,4 +552,146 @@
 .text-center {
   text-align: center;
   vertical-align: middle;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+// Dairy Selection Styles
+.dairy-selection-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.dairy-selection-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  .selection-header {
+    text-align: center;
+    margin-bottom: 40px;
+
+    .selection-title {
+      color: #2c3e50;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .selection-subtitle {
+      color: #6c757d;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .dairy-selection-card-item {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .dairy-card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+
+      .dairy-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .dairy-info {
+        flex: 1;
+
+        .dairy-name {
+          color: #2c3e50;
+          font-weight: 700;
+          margin: 0 0 8px 0;
+          font-size: 1.2rem;
+        }
+
+        .dairy-code {
+          font-weight: 600;
+          font-size: 0.8rem;
+          padding: 4px 10px;
+          border-radius: 8px;
+        }
+      }
+    }
+
+    .dairy-card-content {
+      margin-bottom: 20px;
+
+      p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .dairy-card-footer {
+      .select-dairy-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+          background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+        }
+      }
+    }
+  }
+}
+
+// Selected Dairy Badge
+.selected-dairy-badge {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.9rem;
 }

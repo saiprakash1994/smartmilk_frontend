@@ -160,10 +160,6 @@ const DashboardPage = () => {
 
   return (
     <div className="dashboard-page">
-      <div className="d-flex justify-content-between pageTitleSpace align-items-center">
-        <PageTitle name=" DASHBOARD" />
-      </div>
-
       <Container fluid className="dashboard-container">
         {/* Filters Section */}
         <Card className="filters-card mb-4">
@@ -330,7 +326,7 @@ const DashboardPage = () => {
             {/* Milk Type Cards */}
             <Row className="g-4 mb-4">
               {totals?.map((item, idx) => (
-                <Col lg={6} key={idx}>
+                <Col lg={4} key={idx}>
                   <Card className="milk-type-card">
                     <Card.Body className="p-4">
                       <div className="milk-type-header">
@@ -358,13 +354,13 @@ const DashboardPage = () => {
                         </Col>
                         <Col md={4}>
                           <div className="metric-item">
-                            <div className="metric-value">₹{Number(item?.totalAmount).toFixed(2)}</div>
+                            <div className="metric-value">₹{item?.totalAmount.toFixed(2)}</div>
                             <div className="metric-label">Amount</div>
                           </div>
                         </Col>
                         <Col md={4}>
                           <div className="metric-item">
-                            <div className="metric-value">₹{Number(item?.totalIncentive).toFixed(2)}</div>
+                            <div className="metric-value">₹{item?.totalIncentive.toFixed(2)}</div>
                             <div className="metric-label">Incentive</div>
                           </div>
                         </Col>
