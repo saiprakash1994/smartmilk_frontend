@@ -9,6 +9,7 @@ import Button from "react-bootstrap/Button";
 import './DairyPage.scss';
 import { useDeleteDairyMutation, useGetAllDairysQuery } from "../../store/dairyEndPoint";
 import { Spinner } from "react-bootstrap";
+import DairySkeletonRow from "../../../../shared/utils/skeleton/DairySkeletonRow";
 
 const DairyPage = () => {
     const navigate = useNavigate();
@@ -50,12 +51,8 @@ const DairyPage = () => {
                             </thead>
                             <tbody>
                                 {isLoading ? (
-                                    <tr>
-                                        <td colSpan="5" className="text-center">
-                                            <Spinner animation="border" className="me-2" />
-                                            <span className="visually-hidden">Loading...</span>
-                                        </td>
-                                    </tr>
+                                    Array.from({ length: 10 }).map((_, i) => <DairySkeletonRow key={i} />)
+
                                 ) : isError ? (
                                     <tr>
                                         <td colSpan="5" className="text-danger text-center">Error loading devices</td>

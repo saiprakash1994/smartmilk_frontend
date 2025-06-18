@@ -18,6 +18,7 @@ import { UserTypeHook } from "../../../../shared/hooks/userTypeHook"
 import { roles } from "../../../../shared/utils/appRoles"
 import { deleteDevice, setDevices } from "../../store/deviceSlice"
 import { Spinner } from "react-bootstrap"
+import DairySkeletonRow from "../../../../shared/utils/skeleton/DairySkeletonRow"
 
 const DevicePage = () => {
     const navigate = useNavigate();
@@ -92,12 +93,8 @@ const DevicePage = () => {
                             </thead>
                             <tbody>
                                 {isLoading ? (
-                                    <tr>
-                                        <td colSpan="5" className="text-center">
-                                            <Spinner animation="border" className="me-2" />
-                                            <span className="visually-hidden">Loading...</span>
-                                        </td>
-                                    </tr>
+                                    Array.from({ length: 10 }).map((_, i) => <DairySkeletonRow key={i} />)
+
                                 ) : isError ? (
                                     <tr>
                                         <td colSpan="5" className="text-danger text-center">Error loading devices</td>

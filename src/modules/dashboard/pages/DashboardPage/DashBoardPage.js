@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
-import Spinner from "react-bootstrap/Spinner";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -30,6 +29,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGetMultipleRecordsQuery } from "../../../records/store/recordEndPoint";
 import "./DashBoardPage.scss";
+import SkeletonHome from "../../../../shared/utils/skeleton/SkeletonHome";
+
 const shifts = [
   { value: "", label: "All Shifts" },
   { value: "MORNING", label: "Morning" },
@@ -43,7 +44,6 @@ const DashboardPage = () => {
 
   const isAdmin = userType === roles.ADMIN;
   const isDairy = userType === roles.DAIRY;
-  const isDevice = userType === roles.DEVICE;
 
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
@@ -62,48 +62,60 @@ const DashboardPage = () => {
     skip: !isDairy,
   });
 
-  const deviceList = isAdmin
-    ? allDevices
-    : isDairy
-    ? dairyDevices
-    : deviceid
-    ? [{ deviceid }]
-    : [];
+  const deviceList = useMemo(() => {
+    if (isAdmin) return allDevices;
+    if (isDairy) return dairyDevices;
+    return deviceid ? [{ deviceid }] : [];
+  }, [isAdmin, isDairy, allDevices, dairyDevices, deviceid]);
 
-  const deviceCodes =
-    isAdmin || isDairy
-      ? selectedDeviceId
-        ? selectedDeviceId
-        : deviceList.map((dev) => dev.deviceid).join(",")
-      : deviceid || "";
+  const deviceCodes = useMemo(() => {
+    if (isAdmin || isDairy) {
+      return selectedDeviceId || deviceList.map((d) => d.deviceid).join(",");
+    }
+    return deviceid || "";
+  }, [isAdmin, isDairy, selectedDeviceId, deviceList, deviceid]);
 
-  const formattedDate = (() => {
+  const formattedDate = useMemo(() => {
     if (!selectedDate) return "";
     const d = new Date(selectedDate);
     return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
       .toString()
       .padStart(2, "0")}/${d.getFullYear()}`;
-  })();
+  }, [selectedDate]);
+
+  // IMPORTANT: Track if fetch should be skipped
   const skipFetch = !deviceCodes || !formattedDate;
 
-  const { data, isLoading, isError, error, refetch } =
-    useGetMultipleRecordsQuery(
-      { params: { deviceCodes, date: formattedDate, shift: selectedShift } },
-      { skip: skipFetch }
-    );
+  // Track if fetch has started, to control when to show no records message
+  const [hasFetched, setHasFetched] = useState(false);
+
+  useEffect(() => {
+    if (!skipFetch) {
+      setHasFetched(true);
+    } else {
+      setHasFetched(false);
+    }
+  }, [skipFetch]);
+
+  const { data, isLoading, isError, error, refetch } = useGetMultipleRecordsQuery(
+    { params: { deviceCodes, date: formattedDate, shift: selectedShift } },
+    { skip: skipFetch }
+  );
 
   const totals = data?.totals || [];
 
-  // Extract cow and buffalo quantities for pie chart
   const cowQuantity =
     totals.find((item) => item._id.milkType === "COW")?.totalQuantity || 0;
   const buffaloQuantity =
     totals.find((item) => item._id.milkType === "BUF")?.totalQuantity || 0;
 
-  const pieData = [
-    { name: "Cow Milk", value: cowQuantity },
-    { name: "Buffalo Milk", value: buffaloQuantity },
-  ];
+  const pieData = useMemo(
+    () => [
+      { name: "Cow Milk", value: cowQuantity },
+      { name: "Buffalo Milk", value: buffaloQuantity },
+    ],
+    [cowQuantity, buffaloQuantity]
+  );
 
   const pieColors = ["#1cc88a", "#36b9cc"];
 
@@ -163,162 +175,104 @@ const DashboardPage = () => {
 
       <div className="usersPage my-3">
         <Card className="h-100 p-4 shadow-sm">
-          {isLoading ? (
-            <div className="text-center my-5">
-              <Spinner animation="border" variant="primary" />
-            </div>
+          {/* SHOW SKELETON LOADER WHEN FETCH NOT STARTED OR LOADING */}
+          {(!hasFetched || isLoading) ? (
+            <Row className="g-4 mb-4">
+              <SkeletonHome />
+              <SkeletonHome />
+              <SkeletonHome />
+            </Row>
           ) : isError ? (
             <div className="alert alert-danger" role="alert">
-              Error:{" "}
-              {error?.data?.message || error?.error || "Failed to load data"}
+              Error: {error?.data?.message || error?.error || "Failed to load data"}
             </div>
-          ) : (
+          ) : totals.length > 0 ? (
             <>
               <h5 className="mb-4">Summary for {formattedDate}</h5>
               <Row className="g-4 mb-4">
-                {totals.length > 0 ? (
-                  totals.map((item, idx) => (
-                    <Col md={4} key={idx}>
-                      <Card className="p-4 dashboard-summary-card h-100 border-0 shadow rounded-4 bg-white">
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                          <span className="badge bg-primary-subtle text-primary px-3 py-2 fs-6 rounded-pill shadow-sm">
-                            {item._id.milkType}
-                          </span>
-                        </div>
+                {totals.map((item, idx) => (
+                  <Col md={4} key={idx}>
+                    <Card className="p-4 dashboard-summary-card h-100 border-0 shadow rounded-4 bg-white">
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <span className="badge bg-primary-subtle text-primary px-3 py-2 fs-6 rounded-pill shadow-sm">
+                          {item._id.milkType}
+                        </span>
+                      </div>
 
-                        {/* Quantity Section */}
-                        <div className="mb-3">
-                          <h4 className="fw-bold text-dark mb-1">
-                            {item.totalQuantity.toFixed(2)} L
-                          </h4>
-                          <p className="text-muted mb-0">Total Quantity</p>
-                        </div>
+                      <div className="mb-3">
+                        <h4 className="fw-bold text-dark mb-1">
+                          {item.totalQuantity.toFixed(2)} L
+                        </h4>
+                        <p className="text-muted mb-0">Total Quantity</p>
+                      </div>
 
-                        {/* Amount Section */}
-                        <div className="mb-4">
-                          <h5 className="text-success fw-semibold mb-1">
-                            ₹{item.totalAmount.toFixed(2)}
-                          </h5>
-                          <p className="text-muted mb-0">Total Amount</p>
-                        </div>
+                      <div className="mb-4">
+                        <h5 className="text-success fw-semibold mb-1">
+                          ₹{item.totalAmount.toFixed(2)}
+                        </h5>
+                        <p className="text-muted mb-0">Total Amount</p>
+                      </div>
 
-                        {/* Stats Row */}
-                        <div className="d-flex justify-content-between border-top pt-3 mt-3 text-muted small">
-                          <div>
-                            <span>Fat: </span>
-                            <strong className="text-dark">
-                              {item.averageFat}
-                            </strong>
-                          </div>
-                          <div>
-                            <span>SNF: </span>
-                            <strong className="text-dark">
-                              {item.averageSNF}
-                            </strong>
-                          </div>
-                          <div>
-                            <span>Rate: ₹</span>
-                            <strong className="text-dark">
-                              {item.averageRate}
-                            </strong>
-                          </div>
+                      <div className="d-flex justify-content-between border-top pt-3 mt-3 text-muted small">
+                        <div>
+                          <span>Fat: </span>
+                          <strong className="text-dark">{item.averageFat}</strong>
                         </div>
-                      </Card>
-                    </Col>
-                  ))
-                ) : (
-                  <p>No records found for selected filters.</p>
-                )}
+                        <div>
+                          <span>SNF: </span>
+                          <strong className="text-dark">{item.averageSNF}</strong>
+                        </div>
+                        <div>
+                          <span>Rate: ₹</span>
+                          <strong className="text-dark">{item.averageRate}</strong>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
               </Row>
 
-              {totals.length > 0 && (
-                <>
-                  <h5 className="mb-3 d-flex align-items-center gap-2">
-                    <FontAwesomeIcon icon={faChartBar} /> Daily Milk Summary
-                  </h5>
-                  <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                      data={totals}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="_id.milkType"
-                        tickFormatter={(value) =>
-                          value.charAt(0).toUpperCase() +
-                          value.slice(1).toLowerCase()
-                        }
-                      />
-                      <YAxis
-                        label={{
-                          value: "Quantity / Amount",
-                          angle: -90,
-                          position: "insideLeft",
-                        }}
-                      />
-                      <Tooltip
-                        formatter={(value, name) => {
-                          if (
-                            name === "Total Amount" ||
-                            name === "Total Incentive"
-                          ) {
-                            return [`₹${value.toFixed(2)}`, name];
-                          }
-                          return [value.toFixed(2), name];
-                        }}
-                      />
-                      <Legend verticalAlign="top" height={36} />
-                      <Bar
-                        dataKey="totalQuantity"
-                        fill="#8884d8"
-                        name="Total Quantity (L)"
-                        animationDuration={800}
-                      />
-                      <Bar
-                        dataKey="totalAmount"
-                        fill="#82ca9d"
-                        name="Total Amount (₹)"
-                        animationDuration={800}
-                      />
-                      <Bar
-                        dataKey="totalIncentive"
-                        fill="#ffc658"
-                        name="Total Incentive (₹)"
-                        animationDuration={800}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+              <h5 className="mb-3 d-flex align-items-center gap-2">
+                <FontAwesomeIcon icon={faChartBar} /> Daily Milk Summary
+              </h5>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={totals}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="_id.milkType" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="totalQuantity" fill="#8884d8" name="Total Quantity (L)" />
+                  <Bar dataKey="totalAmount" fill="#82ca9d" name="Total Amount (₹)" />
+                  <Bar dataKey="totalIncentive" fill="#ffc658" name="Total Incentive (₹)" />
+                </BarChart>
+              </ResponsiveContainer>
 
-                  {/* Pie Chart for Cow vs Buffalo */}
-                  <h5 className="mb-3 mt-5 d-flex align-items-center gap-2">
-                    <FontAwesomeIcon icon={faChartBar} /> Cow vs Buffalo Milk
-                    Quantity
-                  </h5>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        label
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={pieColors[index % pieColors.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </>
-              )}
+              <h5 className="mb-3 mt-5 d-flex align-items-center gap-2">
+                <FontAwesomeIcon icon={faChartBar} /> Cow vs Buffalo Milk Quantity
+              </h5>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </>
+          ) : (
+            <p>No records found for selected filters.</p>
           )}
         </Card>
       </div>
