@@ -79,7 +79,13 @@ const SettingsPage = () => {
             ? "EKO Ultra"
             : server.analyzer === "P"
             ? "Ultra Pro"
-            : "Lactoscan",
+            : server.analyzer === "L"
+            ? "Lacto Scan"
+            : server.analyzer === "K"
+            ? "Ksheera"
+            : server.analyzer === "E"
+            ? "Essae"
+            : "Milk Tester",
         useCowSnf: server.useCowSnf === "Y",
         useBufSnf: server.useBufSnf === "Y",
         highFatAccept: server.highFatAccept === "Y",
@@ -141,7 +147,13 @@ const SettingsPage = () => {
             ? "U"
             : settings.analyzer === "Ultra Pro"
             ? "P"
-            : "L",
+            : settings.analyzer === "Lacto Scan"
+            ? "L"
+            : settings.analyzer === "Ksheera"
+            ? "K"
+            : settings.analyzer === "Essae"
+            ? "E"
+            : "M",
         useCowSnf: settings.useCowSnf ? "Y" : "N",
         useBufSnf: settings.useBufSnf ? "Y" : "N",
         highFatAccept: settings.highFatAccept ? "Y" : "N",
@@ -373,7 +385,10 @@ const SettingsPage = () => {
                   >
                     <option>EKO Ultra</option>
                     <option>Ultra Pro</option>
-                    <option>Lactoscan</option>
+                    <option>Lacto Scan</option>
+                    <option>Ksheera</option>
+                    <option>Essae</option>
+                    <option>Milk Tester</option>
                   </Form.Select>
                 </Form.Group>
 
