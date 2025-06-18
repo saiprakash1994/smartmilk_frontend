@@ -118,8 +118,8 @@ const AbsentMemberRecords = () => {
 
     let csv = "";
 
-    if (absent.length > 0) {
-      const memberCSV = absent.map((rec, index) => ({
+    if (absent?.length > 0) {
+      const memberCSV = absent?.map((rec, index) => ({
         "S.No": index + 1,
         "Member Code": rec?.CODE,
         "Milk Type": rec?.MILKTYPE === "C" ? "COW" : "BUFFALO",
@@ -170,8 +170,8 @@ const AbsentMemberRecords = () => {
     doc.text(`Device Code: ${deviceCode}`, 14, y);
     y += 8;
 
-    if (absent.length > 0) {
-      const tableData = absent.map((rec, i) => [
+    if (absent?.length > 0) {
+      const tableData = absent?.map((rec, i) => [
         i + 1,
         rec?.CODE,
         rec?.MILKTYPE === "C" ? "COW" : "BUFFALO",
@@ -226,7 +226,7 @@ const AbsentMemberRecords = () => {
                   onChange={(e) => setDeviceCode(e.target.value)}
                 >
                   <option value="">Select Device Code</option>
-                  {deviceList.map((dev) => (
+                  {deviceList?.map((dev) => (
                     <option key={dev.deviceid} value={dev.deviceid}>
                       {dev.deviceid}
                     </option>
@@ -290,8 +290,8 @@ const AbsentMemberRecords = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {absent.length > 0 ? (
-                          absent.map((item, index) => (
+                        {absent?.length > 0 ? (
+                          absent?.map((item, index) => (
                             <tr key={index}>
                               <td>{index + 1}</td>
                               <td>{item.CODE}</td>

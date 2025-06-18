@@ -139,18 +139,18 @@ const MemberRecords = () => {
 
     // Records
     if (records?.length) {
-      const recordsCSVData = records.map((rec, index) => ({
+      const recordsCSVData = records?.map((rec, index) => ({
         "S.No": index + 1,
-        Date: rec.SAMPLEDATE || "",
-        Shift: rec.SHIFT || "",
-        "Milk Type": rec.MILKTYPE || "",
-        Fat: rec.FAT ?? "",
-        SNF: rec.SNF ?? "",
-        Qty: rec.QTY ?? "",
-        Rate: rec.RATE ?? "",
-        Amount: rec.AMOUNT?.toFixed(2) ?? "0.00",
-        Incentive: rec.INCENTIVEAMOUNT?.toFixed(2) ?? "0.00",
-        "Grand Total": rec.TOTAL?.toFixed(2) ?? "0.00",
+        Date: rec?.SAMPLEDATE || "",
+        Shift: rec?.SHIFT || "",
+        "Milk Type": rec?.MILKTYPE || "",
+        Fat: rec?.FAT ?? "",
+        SNF: rec?.SNF ?? "",
+        Qty: rec?.QTY ?? "",
+        Rate: rec?.RATE ?? "",
+        Amount: rec?.AMOUNT?.toFixed(2) ?? "0.00",
+        Incentive: rec?.INCENTIVEAMOUNT?.toFixed(2) ?? "0.00",
+        "Grand Total": rec?.TOTAL?.toFixed(2) ?? "0.00",
       }));
       combinedCSV += "Record Summary:\n";
       combinedCSV += Papa.unparse(recordsCSVData);
@@ -159,7 +159,7 @@ const MemberRecords = () => {
 
     // Totals
     if (totals?.length) {
-      const totalsCSVData = totals.map((total) => ({
+      const totalsCSVData = totals?.map((total) => ({
         "Milk Type": total?._id?.milkType || "",
         "Total Samples": total?.totalRecords ?? "",
         "Avg FAT": total?.averageFat ?? "",
@@ -207,7 +207,7 @@ const MemberRecords = () => {
     doc.text(`Records From: ${fromDate} To: ${toDate}`, 14, currentY);
 
     if (records?.length) {
-      const recordsTable = records.map((record, index) => [
+      const recordsTable = records?.map((record, index) => [
         index + 1,
         record?.SAMPLEDATE || "",
         record?.SHIFT || "",
@@ -306,7 +306,7 @@ const MemberRecords = () => {
               onChange={(e) => setMemberCode(e.target.value)}
             >
               <option value="">Select Member Code</option>
-              {memberCodes.map((code, idx) => (
+              {memberCodes?.map((code, idx) => (
                 <option
                   key={idx}
                   value={code.CODE}
@@ -390,10 +390,10 @@ const MemberRecords = () => {
                               <td>{record?.FAT?.toFixed(1)}</td>
                               <td>{record?.SNF?.toFixed(1)}</td>
                               <td>{record?.QTY?.toFixed(2)}</td>
-                              <td>{record?.RATE?.toFixed(2)}</td>
-                              <td>{record?.AMOUNT.toFixed(2) || 0}</td>
-                              <td>{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
-                              <td>{record?.TOTAL.toFixed(2)}</td>
+                              <td>₹{record?.RATE?.toFixed(2)}</td>
+                              <td>₹{record?.AMOUNT.toFixed(2) || 0}</td>
+                              <td>₹{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
+                              <td>₹{record?.TOTAL.toFixed(2)}</td>
                             </tr>
                           ))
                         ) : (
@@ -425,19 +425,19 @@ const MemberRecords = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {totals.length > 0 ? (
-                          totals.map((total, index) => (
+                        {totals?.length > 0 ? (
+                          totals?.map((total, index) => (
                             <tr key={index}>
-                              <td>{total._id.milkType}</td>
-                              <td>{total.totalRecords}</td>
-                              <td>{total.averageFat}</td>
-                              <td>{total.averageSNF}</td>
-                              <td>{total.totalQuantity}</td>
-                              <td>{total.averageRate}</td>
-                              <td>{total.totalAmount}</td>
-                              <td>{total.totalIncentive}</td>
+                              <td>{total?._id.milkType}</td>
+                              <td>{total?.totalRecords}</td>
+                              <td>{total?.averageFat}</td>
+                              <td>{total?.averageSNF}</td>
+                              <td>{total?.totalQuantity}</td>
+                              <td>₹{total?.averageRate}</td>
+                              <td>₹{total?.totalAmount}</td>
+                              <td>₹{total?.totalIncentive}</td>
                               <td>
-                                {`${(
+                                ₹{`${(
                                   parseFloat(total.totalAmount) +
                                   parseFloat(total.totalIncentive)
                                 ).toFixed(2)}`}

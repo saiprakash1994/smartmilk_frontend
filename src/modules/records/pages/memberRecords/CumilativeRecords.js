@@ -179,7 +179,7 @@ const CumilativeRecords = () => {
 
     // Member Records
     if (records?.length) {
-      const recordsCSVData = records.map((record, index) => ({
+      const recordsCSVData = records?.map((record, index) => ({
         SNO: index + 1,
         MemberCode: record?.CODE,
         MilkType: record?.MILKTYPE,
@@ -197,7 +197,7 @@ const CumilativeRecords = () => {
 
     // COW Totals
     if (cowMilkTypeTotals?.length) {
-      const cowData = cowMilkTypeTotals.map((cow) => ({
+      const cowData = cowMilkTypeTotals?.map((cow) => ({
         MilkType: cow?.MILKTYPE,
         MemberCount: cow?.memberCount,
         TotalQty: cow?.totalQty,
@@ -213,7 +213,7 @@ const CumilativeRecords = () => {
 
     // BUF Totals
     if (bufMilkTypeTotals?.length) {
-      const bufData = bufMilkTypeTotals.map((buf) => ({
+      const bufData = bufMilkTypeTotals?.map((buf) => ({
         MilkType: buf?.MILKTYPE,
         MemberCount: buf?.memberCount,
         TotalQty: buf?.totalQty,
@@ -278,7 +278,7 @@ const CumilativeRecords = () => {
 
     // Member-wise Table
     if (records?.length) {
-      const memberTable = records.map((record, index) => [
+      const memberTable = records?.map((record, index) => [
         index + 1,
         record?.CODE,
         record?.MILKTYPE,
@@ -312,13 +312,13 @@ const CumilativeRecords = () => {
     }
 
     const renderSection = (title, data, startY) => {
-      if (!data.length) return startY;
+      if (!data?.length) return startY;
 
       doc.setFontSize(11);
       doc.text(title, 14, startY);
       startY += 4;
 
-      const tableData = data.map((item) => [
+      const tableData = data?.map((item) => [
         item.memberCount,
         item.MILKTYPE,
         item.totalQty,
@@ -419,7 +419,7 @@ const CumilativeRecords = () => {
               onChange={(e) => setFromCode(e.target.value)}
             >
               <option value="">Select Start Member Code</option>
-              {memberCodes.map((code, idx) => (
+              {memberCodes?.map((code, idx) => (
                 <option
                   key={idx}
                   value={code.CODE}
@@ -431,7 +431,7 @@ const CumilativeRecords = () => {
               onChange={(e) => setToCode(e.target.value)}
             >
               <option value="">Select End Member Code</option>
-              {memberCodes.map((code, idx) => (
+              {memberCodes?.map((code, idx) => (
                 <option
                   key={idx}
                   value={code.CODE}
@@ -504,17 +504,17 @@ const CumilativeRecords = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {records.length > 0 ? (
+                        {records?.length > 0 ? (
                           records?.map((record, index) => (
                             <tr key={index}>
                               <td>{index + 1}</td>
                               <td>{record?.CODE}</td>
                               <td>{record?.MILKTYPE}</td>
                               <td>{record?.totalQty}</td>
-                              <td>{record?.avgRate}</td>
-                              <td>{record?.totalAmount}</td>
-                              <td>{record?.totalIncentive}</td>
-                              <td>{record?.grandTotal}</td>
+                              <td>₹{record?.avgRate}</td>
+                              <td>₹{record?.totalAmount}</td>
+                              <td>₹{record?.totalIncentive}</td>
+                              <td>₹{record?.grandTotal}</td>
                             </tr>
                           ))
                         ) : (
@@ -546,15 +546,15 @@ const CumilativeRecords = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {cowMilkTypeTotals.length > 0 ? (
-                          cowMilkTypeTotals.map((cow, index) => (
+                        {cowMilkTypeTotals?.length > 0 ? (
+                          cowMilkTypeTotals?.map((cow, index) => (
                             <tr key={index}>
                               <td>{cow?.memberCount}</td>
                               <td>{cow?.MILKTYPE}</td>
                               <td>{cow?.totalQty}</td>
-                              <td>{cow?.totalAmount}</td>
-                              <td>{cow?.totalIncentive}</td>
-                              <td>{cow?.grandTotal}</td>
+                              <td>?{cow?.totalAmount}</td>
+                              <td>?{cow?.totalIncentive}</td>
+                              <td>?{cow?.grandTotal}</td>
                             </tr>
                           ))
                         ) : (
@@ -583,15 +583,15 @@ const CumilativeRecords = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {bufMilkTypeTotals.length > 0 ? (
-                          bufMilkTypeTotals.map((buf, index) => (
+                        {bufMilkTypeTotals?.length > 0 ? (
+                          bufMilkTypeTotals?.map((buf, index) => (
                             <tr key={index}>
                               <td>{buf?.memberCount}</td>
                               <td>{buf?.MILKTYPE}</td>
                               <td>{buf?.totalQty}</td>
-                              <td>{buf?.totalAmount}</td>
-                              <td>{buf?.totalIncentive}</td>
-                              <td>{buf?.grandTotal}</td>
+                              <td>₹{buf?.totalAmount}</td>
+                              <td>₹{buf?.totalIncentive}</td>
+                              <td>₹{buf?.grandTotal}</td>
                             </tr>
                           ))
                         ) : (
@@ -622,9 +622,9 @@ const CumilativeRecords = () => {
                         <tr>
                           <td>{totalMembers}</td>
                           <td>{grandTotalQty}</td>
-                          <td>{grandTotalIncentive}</td>
-                          <td>{grandTotalAmount}</td>
-                          <td>{grandTotal}</td>
+                          <td>₹{grandTotalIncentive}</td>
+                          <td>₹{grandTotalAmount}</td>
+                          <td>₹{grandTotal}</td>
                         </tr>
                       </tbody>
                     </Table>

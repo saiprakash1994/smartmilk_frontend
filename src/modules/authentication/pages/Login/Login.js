@@ -24,13 +24,13 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e?.target;
         setLoginInfo((prev) => ({ ...prev, [name]: value }));
     };
 
     const validateForm = () => {
-        const email = loginInfo.email.trim();
-        const password = loginInfo.password.trim();
+        const email = loginInfo?.email.trim();
+        const password = loginInfo?.password.trim();
 
         if (!email || !password) {
             errorToast("Email and password are required");
@@ -51,8 +51,8 @@ const Login = () => {
 
         try {
             const response = await login({
-                email: loginInfo.email.trim(),
-                password: loginInfo.password.trim(),
+                email: loginInfo?.email.trim(),
+                password: loginInfo?.password.trim(),
             });
 
             if (response?.error) {
@@ -67,14 +67,14 @@ const Login = () => {
             const userInfo = {
                 token,
                 role,
-                ...(role === roles.ADMIN || role === roles.DAIRY
+                ...(role === roles?.ADMIN || role === roles?.DAIRY
                     ? { dairyName, dairyCode }
                     : { deviceName, deviceid, dairyCode }),
             };
 
             dispatch(adduserInfo(userInfo));
-            setItemToLocalStorage(AppConstants.accessToken, token);
-            setItemToLocalStorage(AppConstants.userInfo, userInfo);
+            setItemToLocalStorage(AppConstants?.accessToken, token);
+            setItemToLocalStorage(AppConstants?.userInfo, userInfo);
 
             setLoginInfo({ email: "", password: "" });
             setTimeout(() => navigate("/"), 500);
@@ -102,7 +102,7 @@ const Login = () => {
                                 type="email"
                                 name="email"
                                 placeholder="Enter your email"
-                                value={loginInfo.email}
+                                value={loginInfo?.email}
                                 onChange={handleChange}
                                 autoFocus
                                 disabled={isLoading}
@@ -114,7 +114,7 @@ const Login = () => {
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 placeholder="Enter your password"
-                                value={loginInfo.password}
+                                value={loginInfo?.password}
                                 onChange={handleChange}
                                 disabled={isLoading}
                                 autoComplete="off"

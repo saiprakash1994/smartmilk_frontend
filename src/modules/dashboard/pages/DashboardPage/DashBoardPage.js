@@ -42,15 +42,15 @@ const DashboardPage = () => {
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
   const userType = userInfo?.role;
 
-  const isAdmin = userType === roles.ADMIN;
-  const isDairy = userType === roles.DAIRY;
+  const isAdmin = userType === roles?.ADMIN;
+  const isDairy = userType === roles?.DAIRY;
 
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
 
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().slice(0, 10);
+    return today?.toISOString()?.slice(0, 10);
   });
   const [selectedShift, setSelectedShift] = useState("");
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
@@ -70,7 +70,7 @@ const DashboardPage = () => {
 
   const deviceCodes = useMemo(() => {
     if (isAdmin || isDairy) {
-      return selectedDeviceId || deviceList.map((d) => d.deviceid).join(",");
+      return selectedDeviceId || deviceList?.map((d) => d?.deviceid)?.join(",");
     }
     return deviceid || "";
   }, [isAdmin, isDairy, selectedDeviceId, deviceList, deviceid]);
@@ -105,9 +105,9 @@ const DashboardPage = () => {
   const totals = data?.totals || [];
 
   const cowQuantity =
-    totals.find((item) => item._id.milkType === "COW")?.totalQuantity || 0;
+    totals?.find((item) => item?._id?.milkType === "COW")?.totalQuantity || 0;
   const buffaloQuantity =
-    totals.find((item) => item._id.milkType === "BUF")?.totalQuantity || 0;
+    totals?.find((item) => item?._id?.milkType === "BUF")?.totalQuantity || 0;
 
   const pieData = useMemo(
     () => [
@@ -186,29 +186,29 @@ const DashboardPage = () => {
             <div className="alert alert-danger" role="alert">
               Error: {error?.data?.message || error?.error || "Failed to load data"}
             </div>
-          ) : totals.length > 0 ? (
+          ) : totals?.length > 0 ? (
             <>
               <h5 className="mb-4">Summary for {formattedDate}</h5>
               <Row className="g-4 mb-4">
-                {totals.map((item, idx) => (
+                {totals?.map((item, idx) => (
                   <Col md={4} key={idx}>
                     <Card className="p-4 dashboard-summary-card h-100 border-0 shadow rounded-4 bg-white">
                       <div className="d-flex justify-content-between align-items-center mb-3">
                         <span className="badge bg-primary-subtle text-primary px-3 py-2 fs-6 rounded-pill shadow-sm">
-                          {item._id.milkType}
+                          {item?._id.milkType}
                         </span>
                       </div>
 
                       <div className="mb-3">
                         <h4 className="fw-bold text-dark mb-1">
-                          {item.totalQuantity.toFixed(2)} L
+                          {item?.totalQuantity.toFixed(2)} L
                         </h4>
                         <p className="text-muted mb-0">Total Quantity</p>
                       </div>
 
                       <div className="mb-4">
                         <h5 className="text-success fw-semibold mb-1">
-                          ₹{item.totalAmount.toFixed(2)}
+                          ₹{(Number(item?.totalAmount) + Number(item?.totalIncentive)).toFixed(2)}
                         </h5>
                         <p className="text-muted mb-0">Total Amount</p>
                       </div>
@@ -216,15 +216,15 @@ const DashboardPage = () => {
                       <div className="d-flex justify-content-between border-top pt-3 mt-3 text-muted small">
                         <div>
                           <span>Fat: </span>
-                          <strong className="text-dark">{item.averageFat}</strong>
+                          <strong className="text-dark">{item?.averageFat}</strong>
                         </div>
                         <div>
                           <span>SNF: </span>
-                          <strong className="text-dark">{item.averageSNF}</strong>
+                          <strong className="text-dark">{item?.averageSNF}</strong>
                         </div>
                         <div>
                           <span>Rate: ₹</span>
-                          <strong className="text-dark">{item.averageRate}</strong>
+                          <strong className="text-dark">{item?.averageRate}</strong>
                         </div>
                       </div>
                     </Card>
@@ -262,8 +262,8 @@ const DashboardPage = () => {
                     outerRadius={100}
                     label
                   >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                    {pieData?.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors?.length]} />
                     ))}
                   </Pie>
                   <Tooltip />

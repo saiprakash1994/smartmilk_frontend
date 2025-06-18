@@ -153,20 +153,20 @@ const DatewiseSummaryRecords = () => {
 
         let csvData = [];
 
-        records.forEach((record) => {
-            record.milktypeStats.forEach((stat) => {
+        records?.forEach((record) => {
+            record?.milktypeStats.forEach((stat) => {
                 csvData.push({
-                    Date: record.date,
-                    Shift: record.shift,
-                    "Milk Type": stat.milktype,
-                    "Samples": stat.totalSamples,
-                    "Avg FAT": stat.avgFat.toFixed(2),
-                    "Avg SNF": stat.avgSnf.toFixed(2),
-                    "Avg Rate": stat.avgRate.toFixed(2),
-                    "Total Qty": stat.totalQty.toFixed(2),
-                    "Total Amount": stat.totalAmount.toFixed(2),
-                    "Incentive": stat.totalIncentive.toFixed(2),
-                    "Grand Total": stat.grandTotal.toFixed(2),
+                    Date: record?.date,
+                    Shift: record?.shift,
+                    "Milk Type": stat?.milktype,
+                    "Samples": stat?.totalSamples,
+                    "Avg FAT": stat?.avgFat?.toFixed(2),
+                    "Avg SNF": stat?.avgSnf?.toFixed(2),
+                    "Avg Rate": stat?.avgRate?.toFixed(2),
+                    "Total Qty": stat?.totalQty?.toFixed(2),
+                    "Total Amount": stat?.totalAmount?.toFixed(2),
+                    "Incentive": stat?.totalIncentive?.toFixed(2),
+                    "Grand Total": stat?.grandTotal?.toFixed(2),
                 });
             });
         });
@@ -207,16 +207,16 @@ const DatewiseSummaryRecords = () => {
             doc.text(`Date: ${record.date} | Shift: ${record.shift}`, 14, currentY);
             currentY += 6;
 
-            const tableData = record.milktypeStats.map((stat) => ([
-                stat.milktype,
-                stat.totalSamples,
-                stat.avgFat.toFixed(2),
-                stat.avgSnf.toFixed(2),
-                stat.avgRate.toFixed(2),
-                stat.totalQty.toFixed(2),
-                stat.totalAmount.toFixed(2),
-                stat.totalIncentive.toFixed(2),
-                stat.grandTotal.toFixed(2),
+            const tableData = record.milktypeStats?.map((stat) => ([
+                stat?.milktype,
+                stat?.totalSamples,
+                stat?.avgFat.toFixed(2),
+                stat?.avgSnf.toFixed(2),
+                stat?.avgRate.toFixed(2),
+                stat?.totalQty.toFixed(2),
+                stat?.totalAmount.toFixed(2),
+                stat?.totalIncentive.toFixed(2),
+                stat?.grandTotal.toFixed(2),
             ]));
 
             autoTable(doc, {
@@ -276,7 +276,7 @@ const DatewiseSummaryRecords = () => {
                             onChange={(e) => setFromCode(e.target.value)}
                         >
                             <option value="">Select Start Member Code</option>
-                            {memberCodes.map((code, idx) => (
+                            {memberCodes?.map((code, idx) => (
                                 <option
                                     key={idx}
                                     value={code.CODE}
@@ -341,10 +341,10 @@ const DatewiseSummaryRecords = () => {
                         ) : (
                             <>
 
-                                {records.length === 0 ? (
+                                {records?.length === 0 ? (
                                     <div className="text-center text-muted">No summary data available.</div>
                                 ) : (
-                                    records.map((record, index) => (
+                                    records?.map((record, index) => (
                                         <div key={index} className="mb-4">
                                             <h5 className="mb-3">
                                                 <strong>Date:</strong> {record.date} &nbsp; | &nbsp;
@@ -357,8 +357,8 @@ const DatewiseSummaryRecords = () => {
                                                         <th>Samples</th>
                                                         <th>Avg FAT</th>
                                                         <th>Avg SNF</th>
-                                                        <th>Avg Rate</th>
                                                         <th>Total Qty</th>
+                                                        <th>Avg Rate</th>
                                                         <th>Total Amount</th>
                                                         <th>Incentive</th>
                                                         <th>Grand Total</th>
@@ -371,11 +371,11 @@ const DatewiseSummaryRecords = () => {
                                                             <td>{stat.totalSamples}</td>
                                                             <td>{stat.avgFat.toFixed(2)}</td>
                                                             <td>{stat.avgSnf.toFixed(2)}</td>
-                                                            <td>{stat.avgRate.toFixed(2)}</td>
                                                             <td>{stat.totalQty.toFixed(2)}</td>
-                                                            <td>{stat.totalAmount.toFixed(2)}</td>
-                                                            <td>{stat.totalIncentive.toFixed(2)}</td>
-                                                            <td>{stat.grandTotal.toFixed(2)}</td>
+                                                            <td>₹{stat.avgRate.toFixed(2)}</td>
+                                                            <td>₹{stat.totalAmount.toFixed(2)}</td>
+                                                            <td>₹{stat.totalIncentive.toFixed(2)}</td>
+                                                            <td>₹{stat.grandTotal.toFixed(2)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

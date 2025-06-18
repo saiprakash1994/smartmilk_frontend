@@ -164,17 +164,16 @@ const DatewiseDetailedRecords = () => {
         records.forEach((day, dayIndex) => {
             combinedCSV += `Date: ${day.date}, Shift: ${day.shift}, Device: ${deviceCode}\n\n`;
 
-            // Individual Member Records
-            if (day.records?.length) {
-                const dailyMemberRows = day.records.map((stat) => ({
-                    Code: stat.CODE,
-                    MilkType: stat.MILKTYPE,
-                    FAT: stat.FAT,
-                    SNF: stat.SNF,
-                    Rate: stat.RATE,
-                    Quantity: stat.QTY,
-                    IncentiveAmount: stat.INCENTIVEAMOUNT,
-                    TotalAmount: stat.TOTALAMOUNT,
+            if (day?.records?.length) {
+                const dailyMemberRows = day?.records?.map((stat) => ({
+                    Code: stat?.CODE,
+                    MilkType: stat?.MILKTYPE,
+                    FAT: stat?.FAT,
+                    SNF: stat?.SNF,
+                    Rate: stat?.RATE,
+                    Quantity: stat?.QTY,
+                    IncentiveAmount: stat?.INCENTIVEAMOUNT,
+                    TotalAmount: stat?.TOTALAMOUNT,
                 }));
 
                 combinedCSV += "Member Records:\n";
@@ -182,17 +181,17 @@ const DatewiseDetailedRecords = () => {
             }
 
             // Milk Type Summary
-            if (day.milktypeStats?.length) {
-                const summaryRows = day.milktypeStats.map((stat) => ({
-                    MilkType: stat.milktype,
-                    Samples: stat.totalSamples,
-                    AvgFAT: stat.avgFat.toFixed(2),
-                    AvgSNF: stat.avgSnf.toFixed(2),
-                    AvgRate: stat.avgRate.toFixed(2),
-                    TotalQty: stat.totalQty.toFixed(2),
-                    TotalAmount: stat.totalAmount.toFixed(2),
-                    Incentive: stat.totalIncentive.toFixed(2),
-                    GrandTotal: stat.grandTotal.toFixed(2),
+            if (day?.milktypeStats?.length) {
+                const summaryRows = day?.milktypeStats?.map((stat) => ({
+                    MilkType: stat?.milktype,
+                    Samples: stat?.totalSamples,
+                    AvgFAT: stat?.avgFat.toFixed(2),
+                    AvgSNF: stat?.avgSnf.toFixed(2),
+                    AvgRate: stat?.avgRate.toFixed(2),
+                    TotalQty: stat?.totalQty.toFixed(2),
+                    TotalAmount: stat?.totalAmount.toFixed(2),
+                    Incentive: stat?.totalIncentive.toFixed(2),
+                    GrandTotal: stat?.grandTotal.toFixed(2),
                 }));
 
                 combinedCSV += "Summary Totals:\n";
@@ -236,15 +235,15 @@ const DatewiseDetailedRecords = () => {
             currentY += 6;
 
             if (day.records?.length) {
-                const memberTable = day.records.map((stat) => [
-                    stat.CODE,
-                    stat.MILKTYPE,
-                    stat.FAT,
-                    stat.SNF,
-                    stat.RATE,
-                    stat.QTY,
-                    stat.INCENTIVEAMOUNT,
-                    stat.TOTALAMOUNT,
+                const memberTable = day?.records?.map((stat) => [
+                    stat?.CODE,
+                    stat?.MILKTYPE,
+                    stat?.FAT,
+                    stat?.SNF,
+                    stat?.RATE,
+                    stat?.QTY,
+                    stat?.INCENTIVEAMOUNT,
+                    stat?.TOTALAMOUNT,
                 ]);
 
                 autoTable(doc, {
@@ -262,16 +261,16 @@ const DatewiseDetailedRecords = () => {
             }
 
             if (day.milktypeStats?.length) {
-                const summaryTable = day.milktypeStats.map((stat) => [
-                    stat.milktype,
-                    stat.totalSamples,
-                    stat.avgFat.toFixed(2),
-                    stat.avgSnf.toFixed(2),
-                    stat.avgRate.toFixed(2),
-                    stat.totalQty.toFixed(2),
-                    stat.totalAmount.toFixed(2),
-                    stat.totalIncentive.toFixed(2),
-                    stat.grandTotal.toFixed(2),
+                const summaryTable = day?.milktypeStats?.map((stat) => [
+                    stat?.milktype,
+                    stat?.totalSamples,
+                    stat?.avgFat.toFixed(2),
+                    stat?.avgSnf.toFixed(2),
+                    stat?.avgRate.toFixed(2),
+                    stat?.totalQty.toFixed(2),
+                    stat?.totalAmount.toFixed(2),
+                    stat?.totalIncentive.toFixed(2),
+                    stat?.grandTotal.toFixed(2),
                 ]);
 
                 autoTable(doc, {
@@ -316,8 +315,8 @@ const DatewiseDetailedRecords = () => {
                                 >
                                     <option value="">Select Device Code</option>
                                     {deviceList?.map((dev) => (
-                                        <option key={dev.deviceid} value={dev.deviceid}>
-                                            {dev.deviceid}
+                                        <option key={dev.deviceid} value={dev?.deviceid}>
+                                            {dev?.deviceid}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -335,11 +334,11 @@ const DatewiseDetailedRecords = () => {
                             onChange={(e) => setFromCode(e.target.value)}
                         >
                             <option value="">Select Start Member Code</option>
-                            {memberCodes.map((code, idx) => (
+                            {memberCodes?.map((code, idx) => (
                                 <option
                                     key={idx}
                                     value={code.CODE}
-                                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
+                                >{`${code?.CODE} - ${code?.MEMBERNAME}`}</option>
                             ))}
                         </Form.Select>
                         <Form.Select
@@ -347,11 +346,11 @@ const DatewiseDetailedRecords = () => {
                             onChange={(e) => setToCode(e.target.value)}
                         >
                             <option value="">Select End Member Code</option>
-                            {memberCodes.map((code, idx) => (
+                            {memberCodes?.map((code, idx) => (
                                 <option
                                     key={idx}
                                     value={code.CODE}
-                                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
+                                >{`${code?.CODE} - ${code?.MEMBERNAME}`}</option>
                             ))}
                         </Form.Select>
 
@@ -400,10 +399,10 @@ const DatewiseDetailedRecords = () => {
                         ) : (
                             <>
                                 <hr />
-                                {records.length === 0 ? (
+                                {records?.length === 0 ? (
                                     <div className="text-center text-muted">No summary data available.</div>
                                 ) : (
-                                    records.map((record, index) => (
+                                    records?.map((record, index) => (
                                         <div key={index} className="mb-4">
                                             <h5 className="mb-3">
                                                 <strong>Date:</strong> {record?.date} &nbsp; | &nbsp;
@@ -418,8 +417,8 @@ const DatewiseDetailedRecords = () => {
                                                         <th>Milk Type</th>
                                                         <th>FAT</th>
                                                         <th>SNF</th>
-                                                        <th>Rate</th>
                                                         <th>Qty</th>
+                                                        <th>Rate</th>
                                                         <th>Total</th>
                                                         <th>Incentive</th>
                                                         <th>Grand Total</th>
@@ -427,17 +426,17 @@ const DatewiseDetailedRecords = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {record.records.map((stat, statIndex) => (
+                                                    {record?.records?.map((stat, statIndex) => (
                                                         <tr key={statIndex}>
                                                             <td>{stat?.CODE}</td>
                                                             <td>{stat?.MILKTYPE}</td>
                                                             <td>{stat?.FAT?.toFixed(1)}</td>
                                                             <td>{stat?.SNF?.toFixed(1)}</td>
-                                                            <td>{stat?.RATE?.toFixed(2)}</td>
                                                             <td>{stat?.QTY.toFixed(2)}</td>
-                                                            <td>{stat?.TOTALAMOUNT?.toFixed(2)}</td>
-                                                            <td>{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
-                                                            <td>{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
+                                                            <td>₹{stat?.RATE?.toFixed(2)}</td>
+                                                            <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
+                                                            <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
+                                                            <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
 
 
                                                         </tr>
@@ -451,8 +450,8 @@ const DatewiseDetailedRecords = () => {
                                                         <th>Samples</th>
                                                         <th>Avg FAT</th>
                                                         <th>Avg SNF</th>
-                                                        <th>Avg Rate</th>
                                                         <th>Total Qty</th>
+                                                        <th>Avg Rate</th>
                                                         <th>Total Amount</th>
                                                         <th>Incentive</th>
                                                         <th>Grand Total</th>
@@ -465,11 +464,11 @@ const DatewiseDetailedRecords = () => {
                                                             <td>{stat?.totalSamples}</td>
                                                             <td>{stat?.avgFat.toFixed(2)}</td>
                                                             <td>{stat?.avgSnf.toFixed(2)}</td>
-                                                            <td>{stat?.avgRate.toFixed(2)}</td>
                                                             <td>{stat?.totalQty.toFixed(2)}</td>
-                                                            <td>{stat?.totalAmount.toFixed(2)}</td>
-                                                            <td>{stat?.totalIncentive.toFixed(2)}</td>
-                                                            <td>{stat?.grandTotal.toFixed(2)}</td>
+                                                            <td>₹{stat?.avgRate.toFixed(2)}</td>
+                                                            <td>₹{stat?.totalAmount.toFixed(2)}</td>
+                                                            <td>₹{stat?.totalIncentive.toFixed(2)}</td>
+                                                            <td>₹{stat?.grandTotal.toFixed(2)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

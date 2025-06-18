@@ -42,9 +42,9 @@ const DairyAdd = () => {
     useEffect(() => {
         if (id && isSuccess && dairyData) {
             setForm({
-                dairyCode: dairyData.dairyCode || "",
-                dairyName: dairyData.dairyName || "",
-                email: dairyData.email || "",
+                dairyCode: dairyData?.dairyCode || "",
+                dairyName: dairyData?.dairyName || "",
+                email: dairyData?.email || "",
                 oldPassword: "",
                 newPassword: "",
                 confirmPassword: "",

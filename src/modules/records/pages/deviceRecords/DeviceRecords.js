@@ -98,9 +98,9 @@ const DeviceRecords = () => {
             console.log(result, 'saiii')
 
             setHasSearched(true);
-            setRecords(result.records || []);
-            setTotals(result.totals || []);
-            setTotalCount(result.pagination?.totalRecords || 0);
+            setRecords(result?.records || []);
+            setTotals(result?.totals || []);
+            setTotalCount(result?.pagination?.totalRecords || 0);
             successToast("Data loaded successfully!");
         } catch (err) {
             console.error(err);
@@ -110,11 +110,11 @@ const DeviceRecords = () => {
 
     const filteredRecords = milkTypeFilter === "ALL"
         ? records
-        : records.filter(record => record.MILKTYPE === milkTypeFilter);
+        : records?.filter(record => record?.MILKTYPE === milkTypeFilter);
 
     const filteredTotals = milkTypeFilter === "ALL"
-        ? totals.filter(t => t._id.milkType !== "TOTAL")
-        : totals.filter(t => t._id.milkType === milkTypeFilter);
+        ? totals?.filter(t => t._id.milkType !== "TOTAL")
+        : totals?.filter(t => t._id.milkType === milkTypeFilter);
 
     const handleExportCSV = () => {
         if (!totals?.length && !records?.length) {
@@ -336,7 +336,7 @@ const DeviceRecords = () => {
                                             </thead>
                                             <tbody>
                                                 {filteredRecords?.length > 0 ? (
-                                                    filteredRecords.map((record, index) => (
+                                                    filteredRecords?.map((record, index) => (
                                                         <tr key={record._id}>
                                                             <td>{index + 1}</td>
                                                             <td>{record?.CODE}</td>
@@ -345,10 +345,10 @@ const DeviceRecords = () => {
                                                             <td>{record?.FAT.toFixed(1)}</td>
                                                             <td>{record?.SNF.toFixed(1)}</td>
                                                             <td>{record?.QTY.toFixed(2)}</td>
-                                                            <td>{record?.RATE.toFixed(2)}</td>
-                                                            <td>{record?.AMOUNT.toFixed(2)}</td>
-                                                            <td>{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
-                                                            <td>{record?.TOTAL.toFixed(2)}</td>
+                                                            <td>₹{record?.RATE.toFixed(2)}</td>
+                                                            <td>₹{record?.AMOUNT.toFixed(2)}</td>
+                                                            <td>₹{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
+                                                            <td>₹{record?.TOTAL.toFixed(2)}</td>
                                                             <td>{record?.ANALYZERMODE}</td>
                                                             <td>{record?.WEIGHTMODE}</td>
                                                         </tr>
@@ -391,10 +391,10 @@ const DeviceRecords = () => {
                                                             <td>{total?.averageFat}</td>
                                                             <td>{total?.averageSNF}</td>
                                                             <td>{total?.totalQuantity.toFixed(2)}</td>
-                                                            <td>{total?.averageRate}</td>
-                                                            <td>{total?.totalAmount.toFixed(2)}</td>
-                                                            <td>{total?.totalIncentive.toFixed(2)}</td>
-                                                            <td>{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
+                                                            <td>₹{total?.averageRate}</td>
+                                                            <td>₹{total?.totalAmount.toFixed(2)}</td>
+                                                            <td>₹{total?.totalIncentive.toFixed(2)}</td>
+                                                            <td>₹{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
 
 
                                                         </tr>

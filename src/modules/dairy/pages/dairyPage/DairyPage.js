@@ -56,17 +56,17 @@ const DairyPage = () => {
                                 ) : isError ? (
                                     <tr>
                                         <td colSpan="5" className="text-danger text-center">Error loading devices</td>
-                                    </tr>) : dairies.length === 0 ? (
+                                    </tr>) : dairies?.length === 0 ? (
                                         <tr>
                                             <td colSpan="5" className="text-center">No devices found</td>
                                         </tr>
                                     ) : (
-                                    dairies.map((dairy, index) => (
-                                        <tr key={dairy._id}>
+                                    dairies?.map((dairy, index) => (
+                                        <tr key={dairy?._id}>
                                             <td>{index + 1}</td>
-                                            <td>{dairy.dairyCode}</td>
-                                            <td>{dairy.dairyName}</td>
-                                            <td>{dairy.email}</td>
+                                            <td>{dairy?.dairyCode}</td>
+                                            <td>{dairy?.dairyName}</td>
+                                            <td>{dairy?.email}</td>
                                             <td>
                                                 <Button size="sm" variant="outline-primary" className="me-2" onClick={() => navigate(`edit/${dairy.dairyCode}`)}>
                                                     <FontAwesomeIcon icon={faEdit} />
