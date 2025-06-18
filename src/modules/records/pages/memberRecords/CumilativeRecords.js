@@ -490,13 +490,13 @@ const CumilativeRecords = () => {
                 {(viewMode == "DATA" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="Members Data" />
-                    <Table bordered responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>#</th>
                           <th>Code</th>
                           <th>MILKTYPE</th>
-                          <th>Total Qty</th>
+                          <th>Total Qty (L)</th>
                           <th>Avg Rate</th>
                           <th>Total Amount</th>
                           <th>Total Incentive</th>
@@ -510,7 +510,7 @@ const CumilativeRecords = () => {
                               <td>{index + 1}</td>
                               <td>{record?.CODE}</td>
                               <td>{record?.MILKTYPE}</td>
-                              <td>{record?.totalQty}</td>
+                              <td>{record?.totalQty} L</td>
                               <td>₹{record?.avgRate}</td>
                               <td>₹{record?.totalAmount}</td>
                               <td>₹{record?.totalIncentive}</td>
@@ -534,12 +534,12 @@ const CumilativeRecords = () => {
                 {(viewMode == "COWTOTALS" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="Cow Totals" />
-                    <Table bordered responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>Member Count</th>
                           <th>MILKTYPE</th>
-                          <th>Total Qty</th>
+                          <th>Total Qty (L)</th>
                           <th>Total Amount</th>
                           <th>total Incentive</th>
                           <th>Grand Total</th>
@@ -551,7 +551,7 @@ const CumilativeRecords = () => {
                             <tr key={index}>
                               <td>{cow?.memberCount}</td>
                               <td>{cow?.MILKTYPE}</td>
-                              <td>{cow?.totalQty}</td>
+                              <td>{cow?.totalQty} L</td>
                               <td>?{cow?.totalAmount}</td>
                               <td>?{cow?.totalIncentive}</td>
                               <td>?{cow?.grandTotal}</td>
@@ -571,7 +571,7 @@ const CumilativeRecords = () => {
                 {(viewMode == "BUFFTOTALS" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="Buf Totals" />
-                    <Table bordered responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>Member Count</th>
@@ -588,7 +588,7 @@ const CumilativeRecords = () => {
                             <tr key={index}>
                               <td>{buf?.memberCount}</td>
                               <td>{buf?.MILKTYPE}</td>
-                              <td>{buf?.totalQty}</td>
+                              <td>{buf?.totalQty} L</td>
                               <td>₹{buf?.totalAmount}</td>
                               <td>₹{buf?.totalIncentive}</td>
                               <td>₹{buf?.grandTotal}</td>
@@ -608,7 +608,7 @@ const CumilativeRecords = () => {
                 {(viewMode == "TOTALS" || viewMode == "ALL") && (
                   <>
                     <PageTitle name="All Totals" />
-                    <Table hover responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>Total Members</th>
@@ -621,7 +621,7 @@ const CumilativeRecords = () => {
                       <tbody>
                         <tr>
                           <td>{totalMembers}</td>
-                          <td>{grandTotalQty}</td>
+                          <td>{grandTotalQty} L</td>
                           <td>₹{grandTotalIncentive}</td>
                           <td>₹{grandTotalAmount}</td>
                           <td>₹{grandTotal}</td>

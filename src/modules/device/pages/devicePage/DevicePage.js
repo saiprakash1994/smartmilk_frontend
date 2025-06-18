@@ -80,7 +80,7 @@ const DevicePage = () => {
             <div className="usersPage">
                 <Card className="h-100">
                     <Card.Body className="cardbodyCss">
-                        <Table hover>
+                        <Table striped="columns" bordered hover responsive>
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -104,12 +104,12 @@ const DevicePage = () => {
                                         <td colSpan="5" className="text-center">No devices found</td>
                                     </tr>
                                 ) : (
-                                    devices.map((device, index) => (
-                                        <tr key={device._id}>
+                                    devices?.map((device, index) => (
+                                        <tr key={device?._id}>
                                             <td>{index + 1}</td>
-                                            <td>{device.deviceid}</td>
-                                            <td>{device.email}</td>
-                                            <td>{device.status}</td>
+                                            <td>{device?.deviceid}</td>
+                                            <td>{device?.email}</td>
+                                            <td>{device?.status}</td>
                                             <td>
                                                 <Button
                                                     size="sm"

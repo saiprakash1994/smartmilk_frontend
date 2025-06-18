@@ -39,7 +39,7 @@ const DairyPage = () => {
             <div className="usersPage">
                 <Card className="h-100">
                     <Card.Body className="cardbodyCss">
-                        <Table hover>
+                        <Table striped="columns" bordered hover responsive>
                             <thead>
                                 <tr>
                                     <th>#</th>

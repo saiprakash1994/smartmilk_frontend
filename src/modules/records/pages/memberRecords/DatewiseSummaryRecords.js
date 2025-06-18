@@ -350,14 +350,14 @@ const DatewiseSummaryRecords = () => {
                                                 <strong>Date:</strong> {record.date} &nbsp; | &nbsp;
                                                 <strong>Shift:</strong> {record.shift}
                                             </h5>
-                                            <Table hover responsive>
+                                            <Table striped="columns" bordered hover responsive>
                                                 <thead>
                                                     <tr>
                                                         <th>Milk Type</th>
                                                         <th>Samples</th>
                                                         <th>Avg FAT</th>
                                                         <th>Avg SNF</th>
-                                                        <th>Total Qty</th>
+                                                        <th>Total Qty (L)</th>
                                                         <th>Avg Rate</th>
                                                         <th>Total Amount</th>
                                                         <th>Incentive</th>
@@ -371,7 +371,7 @@ const DatewiseSummaryRecords = () => {
                                                             <td>{stat.totalSamples}</td>
                                                             <td>{stat.avgFat.toFixed(2)}</td>
                                                             <td>{stat.avgSnf.toFixed(2)}</td>
-                                                            <td>{stat.totalQty.toFixed(2)}</td>
+                                                            <td>{stat.totalQty.toFixed(2)} L</td>
                                                             <td>₹{stat.avgRate.toFixed(2)}</td>
                                                             <td>₹{stat.totalAmount.toFixed(2)}</td>
                                                             <td>₹{stat.totalIncentive.toFixed(2)}</td>

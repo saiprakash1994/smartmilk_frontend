@@ -363,7 +363,7 @@ const MemberRecords = () => {
                 {viewMode !== "TOTALS" && (
                   <>
                     <PageTitle name="Record Summary" />
-                    <Table hover responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>#</th>
@@ -372,7 +372,7 @@ const MemberRecords = () => {
                           <th>Milk Type</th>
                           <th>Fat</th>
                           <th>SNF</th>
-                          <th>Qty</th>
+                          <th>Qty (L)</th>
                           <th>Rate</th>
                           <th>Amount</th>
                           <th>Incentive</th>
@@ -389,7 +389,7 @@ const MemberRecords = () => {
                               <td>{record?.SHIFT}</td>
                               <td>{record?.FAT?.toFixed(1)}</td>
                               <td>{record?.SNF?.toFixed(1)}</td>
-                              <td>{record?.QTY?.toFixed(2)}</td>
+                              <td>{record?.QTY?.toFixed(2)} L</td>
                               <td>₹{record?.RATE?.toFixed(2)}</td>
                               <td>₹{record?.AMOUNT.toFixed(2) || 0}</td>
                               <td>₹{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
@@ -410,14 +410,14 @@ const MemberRecords = () => {
                 {viewMode !== "RECORDS" && (
                   <>
                     <PageTitle name="Total Records" />
-                    <Table bordered responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>Milk Type</th>
                           <th>Total Records</th>
                           <th>Avg Fat</th>
                           <th>Avg SNF</th>
-                          <th>Total Qty</th>
+                          <th>Total Qty (L)</th>
                           <th>Avg Rate</th>
                           <th>Total Amount</th>
                           <th>Total Incentive</th>
@@ -432,7 +432,7 @@ const MemberRecords = () => {
                               <td>{total?.totalRecords}</td>
                               <td>{total?.averageFat}</td>
                               <td>{total?.averageSNF}</td>
-                              <td>{total?.totalQuantity}</td>
+                              <td>{total?.totalQuantity} L</td>
                               <td>₹{total?.averageRate}</td>
                               <td>₹{total?.totalAmount}</td>
                               <td>₹{total?.totalIncentive}</td>

@@ -280,7 +280,7 @@ const AbsentMemberRecords = () => {
                 {(viewMode === "ABSENT" || viewMode === "ALL") && (
                   <>
                     <PageTitle name="Absent Members" />
-                    <Table hover responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>#</th>
@@ -294,9 +294,9 @@ const AbsentMemberRecords = () => {
                           absent?.map((item, index) => (
                             <tr key={index}>
                               <td>{index + 1}</td>
-                              <td>{item.CODE}</td>
-                              <td>{item.MILKTYPE === "C" ? "COW" : "BUF"}</td>
-                              <td>{item.MEMBERNAME}</td>
+                              <td>{item?.CODE}</td>
+                              <td>{item?.MILKTYPE === "C" ? "COW" : "BUF"}</td>
+                              <td>{item?.MEMBERNAME}</td>
                             </tr>
                           ))
                         ) : (
@@ -314,7 +314,7 @@ const AbsentMemberRecords = () => {
                 {(viewMode === "TOTALS" || viewMode === "ALL") && (
                   <>
                     <PageTitle name="Attendance Summary" />
-                    <Table hover responsive>
+                    <Table striped="columns" bordered hover responsive>
                       <thead>
                         <tr>
                           <th>Total Members</th>

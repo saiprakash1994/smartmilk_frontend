@@ -410,14 +410,14 @@ const DatewiseDetailedRecords = () => {
                                                 <strong>Device Id:</strong> {deviceCode}
 
                                             </h5>
-                                            <Table hover responsive>
+                                            <Table striped="columns" bordered hover responsive>
                                                 <thead>
                                                     <tr>
                                                         <th>Code</th>
                                                         <th>Milk Type</th>
                                                         <th>FAT</th>
                                                         <th>SNF</th>
-                                                        <th>Qty</th>
+                                                        <th>Qty (L)</th>
                                                         <th>Rate</th>
                                                         <th>Total</th>
                                                         <th>Incentive</th>
@@ -432,7 +432,7 @@ const DatewiseDetailedRecords = () => {
                                                             <td>{stat?.MILKTYPE}</td>
                                                             <td>{stat?.FAT?.toFixed(1)}</td>
                                                             <td>{stat?.SNF?.toFixed(1)}</td>
-                                                            <td>{stat?.QTY.toFixed(2)}</td>
+                                                            <td>{stat?.QTY.toFixed(2)} L</td>
                                                             <td>₹{stat?.RATE?.toFixed(2)}</td>
                                                             <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
                                                             <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
@@ -443,14 +443,14 @@ const DatewiseDetailedRecords = () => {
                                                     ))}
                                                 </tbody>
                                             </Table>
-                                            <Table hover responsive>
+                                            <Table striped="columns" bordered hover responsive>
                                                 <thead>
                                                     <tr>
                                                         <th>Milk Type</th>
                                                         <th>Samples</th>
                                                         <th>Avg FAT</th>
                                                         <th>Avg SNF</th>
-                                                        <th>Total Qty</th>
+                                                        <th>Total Qty (L)</th>
                                                         <th>Avg Rate</th>
                                                         <th>Total Amount</th>
                                                         <th>Incentive</th>
@@ -464,7 +464,7 @@ const DatewiseDetailedRecords = () => {
                                                             <td>{stat?.totalSamples}</td>
                                                             <td>{stat?.avgFat.toFixed(2)}</td>
                                                             <td>{stat?.avgSnf.toFixed(2)}</td>
-                                                            <td>{stat?.totalQty.toFixed(2)}</td>
+                                                            <td>{stat?.totalQty.toFixed(2)} L</td>
                                                             <td>₹{stat?.avgRate.toFixed(2)}</td>
                                                             <td>₹{stat?.totalAmount.toFixed(2)}</td>
                                                             <td>₹{stat?.totalIncentive.toFixed(2)}</td>
