@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
-import Spinner from "react-bootstrap/Spinner";
+import { 
+    Button, 
+    Form, 
+    Card, 
+    Spinner, 
+    Container, 
+    Row, 
+    Col, 
+    Alert,
+    Badge
+} from "react-bootstrap";
 import './DeviceAdd.scss';
 
 import {
@@ -18,6 +25,18 @@ import { addDevice, updateDevice } from "../../store/deviceSlice";
 import { roles } from "../../../../shared/utils/appRoles";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import { useGetAllDairysQuery } from "../../../dairy/store/dairyEndPoint";
+import { 
+    FaDesktop, 
+    FaBuilding, 
+    FaEnvelope, 
+    FaLock, 
+    FaSave, 
+    FaTimes, 
+    FaPlus,
+    FaEdit,
+    FaCircle,
+    FaArrowLeft
+} from "react-icons/fa";
 
 const DeviceAdd = () => {
     const navigate = useNavigate();
@@ -134,125 +153,297 @@ const DeviceAdd = () => {
     const saving = creating || updating;
     const dairyCodes = Array.from(new Set(allDevices.map(dev => dev.dairyCode)));
 
+    const getStatusBadge = (status) => {
+        const statusConfig = {
+            'active': { variant: 'success', text: 'Active' },
+            'deactive': { variant: 'dark', text: 'Inactive' }
+        };
+        const config = statusConfig[status] || { variant: 'secondary', text: status };
+        return <Badge bg={config.variant}>{config.text}</Badge>;
+    };
+
     return (
-        <>
-            <p className="pageTile pageTitleSpace">{id ? "Update Device" : "Create Device"}</p>
-            <Card className="mt-4">
-                <Card.Body>
-                    <Form onSubmit={submitForm}>
-                        <Form.Group>
-                            <Form.Label>Dairy Code</Form.Label>
-                            {(userType === roles.ADMIN && !id) ? (
-                                <Form.Select
-                                    value={selectedDairyCode}
-                                    onChange={(e) => setSelectedDairyCode(e.target.value)}
-                                    disabled={saving || isAllLoading}
-                                >
-                                    <option value="">-- Select Dairy Code --</option>
-                                    {dairyCodes.map((code) => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </Form.Select>
-                            ) : (
-                                <Form.Control type="text" value={selectedDairyCode} readOnly />
-                            )}
-                            {errors.dairyCode && <small className="text-danger">{errors.dairyCode}</small>}
-                        </Form.Group>
+        <div className="device-add-page">
+            <div className="d-flex justify-content-between align-items-center pageTitleSpace">
+                <div className="d-flex align-items-center">
+                    <Button 
+                        variant="outline-primary" 
+                        className="back-btn me-3"
+                        onClick={() => navigate("/device")}
+                    >
+                        <FaArrowLeft className="me-2" />
+                        Back to Devices
+                    </Button>
+                    <div>
+                        <h2 className="page-title mb-1">
+                            {id ? <FaEdit className="me-2" /> : <FaPlus className="me-2" />}
+                            {id ? "Update Device" : "Create New Device"}
+                        </h2>
+                        <p className="page-subtitle">
+                            {id ? "Modify device settings and configuration" : "Add a new device to the system"}
+                        </p>
+                    </div>
+                </div>
+                {id && (
+                    <div className="device-preview">
+                        <div className="preview-label">Device ID:</div>
+                        <div className="preview-value">{selectedDairyCode}{form.deviceIdSuffix}</div>
+                    </div>
+                )}
+            </div>
 
-                        <Form.Group className="mt-2">
-                            <Form.Label>Device ID (4-digit suffix)</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="deviceIdSuffix"
-                                value={form.deviceIdSuffix}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (/^\d{0,4}$/.test(value)) {
-                                        handleChange(e);
-                                    }
-                                }}
-                                placeholder="e.g., 0001"
-                                maxLength={4}
-                                disabled={!!id}
-                            />
-                            {errors.deviceIdSuffix && <small className="text-danger">{errors.deviceIdSuffix}</small>}
-                        </Form.Group>
+            <Container fluid className="device-add-container">
+                <Row className="justify-content-center">
+                    <Col lg={8} md={10}>
+                        <Card className="device-form-card">
+                            <Card.Header className="form-header">
+                                <h5 className="form-title">
+                                    <FaDesktop className="me-2" />
+                                    Device Information
+                                </h5>
+                            </Card.Header>
+                            <Card.Body className="p-4">
+                                {isAllError && (
+                                    <Alert variant="danger" className="mb-4">
+                                        Error loading dairy data. Please refresh the page.
+                                    </Alert>
+                                )}
 
-                        <Form.Group className="mt-2">
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select name="status" value={form.status} onChange={handleChange}>
-                                <option value="active">Active</option>
-                                <option value="deactive">Deactive</option>
-                            </Form.Select>
-                        </Form.Group>
+                                <Form onSubmit={submitForm}>
+                                    <Row className="g-4">
+                                        {/* Dairy Code */}
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label className="form-label-modern">
+                                                    <FaBuilding className="me-2" />
+                                                    Dairy Code
+                                                </Form.Label>
+                                                {(userType === roles.ADMIN && !id) ? (
+                                                    <Form.Select
+                                                        value={selectedDairyCode}
+                                                        onChange={(e) => setSelectedDairyCode(e.target.value)}
+                                                        disabled={saving || isAllLoading}
+                                                        className="form-control-modern"
+                                                        isInvalid={!!errors.dairyCode}
+                                                    >
+                                                        <option value="">-- Select Dairy Code --</option>
+                                                        {dairyCodes.map((code) => (
+                                                            <option key={code} value={code}>{code}</option>
+                                                        ))}
+                                                    </Form.Select>
+                                                ) : (
+                                                    <Form.Control 
+                                                        type="text" 
+                                                        value={selectedDairyCode} 
+                                                        readOnly 
+                                                        className="form-control-modern"
+                                                    />
+                                                )}
+                                                {errors.dairyCode && (
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errors.dairyCode}
+                                                    </Form.Control.Feedback>
+                                                )}
+                                            </Form.Group>
+                                        </Col>
 
-                        <Form.Group className="mt-2">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                placeholder="Email"
-                            />
-                            {errors.email && <small className="text-danger">{errors.email}</small>}
-                        </Form.Group>
+                                        {/* Device ID Suffix */}
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label className="form-label-modern">
+                                                    <FaDesktop className="me-2" />
+                                                    Device ID (4-digit suffix)
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="deviceIdSuffix"
+                                                    value={form.deviceIdSuffix}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^\d{0,4}$/.test(value)) {
+                                                            handleChange(e);
+                                                        }
+                                                    }}
+                                                    placeholder="e.g., 0001"
+                                                    maxLength={4}
+                                                    disabled={!!id}
+                                                    className="form-control-modern"
+                                                    isInvalid={!!errors.deviceIdSuffix}
+                                                />
+                                                {errors.deviceIdSuffix && (
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errors.deviceIdSuffix}
+                                                    </Form.Control.Feedback>
+                                                )}
+                                            </Form.Group>
+                                        </Col>
 
-                        {id && (
-                            <Form.Group className="mt-2">
-                                <Form.Label>Old Password</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    name="oldPassword"
-                                    value={form.oldPassword}
-                                    onChange={handleChange}
-                                    placeholder="Enter old password"
-                                />
-                                {errors.oldPassword && <small className="text-danger">{errors.oldPassword}</small>}
-                            </Form.Group>
-                        )}
+                                        {/* Status */}
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label className="form-label-modern">
+                                                    <FaCircle className="me-2" />
+                                                    Status
+                                                </Form.Label>
+                                                <Form.Select 
+                                                    name="status" 
+                                                    value={form.status} 
+                                                    onChange={handleChange}
+                                                    className="form-control-modern"
+                                                >
+                                                    <option value="active">Active</option>
+                                                    <option value="deactive">Inactive</option>
+                                                </Form.Select>
+                                                <div className="mt-2">
+                                                    Current Status: {getStatusBadge(form.status)}
+                                                </div>
+                                            </Form.Group>
+                                        </Col>
 
-                        <Form.Group className="mt-2">
-                            <Form.Label>{id ? "New Password" : "Password"}</Form.Label>
-                            <Form.Control
-                                type="password"
-                                name="newPassword"
-                                value={form.newPassword}
-                                onChange={handleChange}
-                                placeholder="Password"
-                            />
-                            {errors.newPassword && <small className="text-danger">{errors.newPassword}</small>}
-                        </Form.Group>
+                                        {/* Email */}
+                                        <Col md={6}>
+                                            <Form.Group>
+                                                <Form.Label className="form-label-modern">
+                                                    <FaEnvelope className="me-2" />
+                                                    Email
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="email"
+                                                    name="email"
+                                                    value={form.email}
+                                                    onChange={handleChange}
+                                                    placeholder="device@example.com"
+                                                    className="form-control-modern"
+                                                    isInvalid={!!errors.email}
+                                                />
+                                                {errors.email && (
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errors.email}
+                                                    </Form.Control.Feedback>
+                                                )}
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
 
-                        <Form.Group className="mt-2">
-                            <Form.Label>Confirm Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                name="confirmPassword"
-                                value={form.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="Confirm Password"
-                            />
-                            {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
-                        </Form.Group>
+                                    {/* Password Section */}
+                                    <div className="password-section mt-4">
+                                        <h6 className="section-title">
+                                            <FaLock className="me-2" />
+                                            Password Configuration
+                                        </h6>
+                                        <Row className="g-4">
+                                            {id && (
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className="form-label-modern">
+                                                            <FaLock className="me-2" />
+                                                            Old Password
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="password"
+                                                            name="oldPassword"
+                                                            value={form.oldPassword}
+                                                            onChange={handleChange}
+                                                            placeholder="Enter old password"
+                                                            className="form-control-modern"
+                                                            isInvalid={!!errors.oldPassword}
+                                                        />
+                                                        {errors.oldPassword && (
+                                                            <Form.Control.Feedback type="invalid">
+                                                                {errors.oldPassword}
+                                                            </Form.Control.Feedback>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                            )}
 
-                        <div className="d-flex justify-content-end gap-2 mt-3">
-                            <Button variant="secondary" onClick={() => navigate("/device")} disabled={saving}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" variant="outline-primary" disabled={saving}>
-                                {saving ? (
-                                    <>
-                                        <Spinner animation="border" size="sm" className="me-2" />
-                                        Saving...
-                                    </>
-                                ) : id ? "Update" : "Create"}
-                            </Button>
-                        </div>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </>
+                                            <Col md={6}>
+                                                <Form.Group>
+                                                    <Form.Label className="form-label-modern">
+                                                        <FaLock className="me-2" />
+                                                        {id ? "New Password" : "Password"}
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type="password"
+                                                        name="newPassword"
+                                                        value={form.newPassword}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter password"
+                                                        className="form-control-modern"
+                                                        isInvalid={!!errors.newPassword}
+                                                    />
+                                                    {errors.newPassword && (
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {errors.newPassword}
+                                                        </Form.Control.Feedback>
+                                                    )}
+                                                </Form.Group>
+                                            </Col>
+
+                                            <Col md={6}>
+                                                <Form.Group>
+                                                    <Form.Label className="form-label-modern">
+                                                        <FaLock className="me-2" />
+                                                        Confirm Password
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type="password"
+                                                        name="confirmPassword"
+                                                        value={form.confirmPassword}
+                                                        onChange={handleChange}
+                                                        placeholder="Confirm password"
+                                                        className="form-control-modern"
+                                                        isInvalid={!!errors.confirmPassword}
+                                                    />
+                                                    {errors.confirmPassword && (
+                                                        <Form.Control.Feedback type="invalid">
+                                                            {errors.confirmPassword}
+                                                        </Form.Control.Feedback>
+                                                    )}
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="action-buttons mt-5">
+                                        <div className="d-flex justify-content-end gap-3">
+                                            <Button 
+                                                variant="outline-secondary" 
+                                                onClick={() => navigate("/device")} 
+                                                disabled={saving}
+                                                className="action-btn"
+                                            >
+                                                <FaTimes className="me-2" />
+                                                Cancel
+                                            </Button>
+                                            <Button 
+                                                type="submit" 
+                                                variant="primary" 
+                                                disabled={saving}
+                                                className="action-btn save-btn"
+                                            >
+                                                {saving ? (
+                                                    <>
+                                                        <Spinner animation="border" size="sm" className="me-2" />
+                                                        Saving...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaSave className="me-2" />
+                                                        {id ? "Update Device" : "Create Device"}
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </Form>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 };
 

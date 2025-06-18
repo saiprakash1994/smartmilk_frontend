@@ -1,0 +1,281 @@
+// Modern Device Add Page Styles
+.device-add-page {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+
+  .device-add-container {
+    max-width: 1200px;
+  }
+
+  // Page Title Section
+  .pageTitleSpace {
+    padding: 20px 0;
+    margin: 20px 0 30px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+
+  .back-btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+
+  .page-title {
+    color: white;
+    font-weight: 700;
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .page-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .device-preview {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+
+    .preview-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .preview-value {
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+  }
+
+  // Device Form Card
+  .device-form-card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: slideInUp 0.6s ease-out;
+
+    .form-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: none;
+      padding: 20px 25px;
+
+      .form-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  // Form Controls
+  .form-label-modern {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+
+  .form-control-modern {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      outline: none;
+    }
+
+    &:hover {
+      border-color: #667eea;
+    }
+
+    &.is-invalid {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+
+  // Password Section
+  .password-section {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #e9ecef;
+
+    .section-title {
+      color: #2c3e50;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      font-size: 1.1rem;
+    }
+  }
+
+  // Action Buttons
+  .action-buttons {
+    .action-btn {
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+      &:hover {
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+
+  // Status Badge
+  .badge {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+  }
+
+  // Form Validation
+  .invalid-feedback {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.9rem;
+    }
+
+    .device-preview {
+      .preview-value {
+        font-size: 1rem;
+      }
+    }
+
+    .device-form-card {
+      .form-header {
+        .form-title {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .form-label-modern {
+      font-size: 0.9rem;
+    }
+
+    .form-control-modern {
+      font-size: 0.9rem;
+      padding: 10px 12px;
+    }
+
+    .password-section {
+      padding: 20px;
+
+      .section-title {
+        font-size: 1rem;
+      }
+    }
+
+    .action-buttons {
+      .action-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .pageTitleSpace {
+      flex-direction: column;
+      gap: 15px;
+      text-align: center;
+    }
+
+    .back-btn {
+      align-self: flex-start;
+    }
+
+    .device-preview {
+      align-self: stretch;
+    }
+  }
+
+  // Animation
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}

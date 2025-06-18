@@ -1,10 +1,734 @@
-.DairyPage {
-    height: 93%;
+// Modern Dairy Page Styles
+.dairy-page {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+  position: relative;
+  overflow-x: hidden;
 
-    .text-center {
-        text-align: center;
-        vertical-align: middle;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .dairy-container {
+    max-width: 1400px;
+    position: relative;
+    z-index: 1;
+  }
+
+  // Page Title Section
+  .pageTitleSpace {
+    padding: 25px 30px;
+    margin: 20px 0 35px 0;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
     }
 
+    &:hover::before {
+      left: 100%;
+    }
+  }
 
+  .add-dairy-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 30px;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    &:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+      
+      &::before {
+        left: 100%;
+      }
+    }
+
+    &:active {
+      transform: translateY(-1px) scale(1.02);
+    }
+  }
+
+  // Stats Cards
+  .stats-card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+
+    .stats-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+
+      &:hover::before {
+        transform: translateX(100%);
+      }
+    }
+
+    .stats-content {
+      .stats-value {
+        color: #2c3e50;
+        font-weight: 800;
+        margin-bottom: 8px;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        transition: all 0.3s ease;
+      }
+
+      .stats-label {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    &.total-dairies .stats-icon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    &.active-dairies .stats-icon {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    &.total-devices .stats-icon {
+      background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    }
+
+    &.total-members .stats-icon {
+      background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    }
+  }
+
+  // Filters Card
+  .filters-card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .filters-header {
+      .filters-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .filter-label {
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-control {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 15px 18px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+      &:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.25);
+        outline: none;
+        transform: translateY(-1px);
+      }
+
+      &:hover {
+        border-color: #667eea;
+        transform: translateY(-1px);
+      }
+    }
+
+    .filter-badge {
+      font-weight: 700;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      }
+    }
+  }
+
+  // Dairies Table Card
+  .dairies-table-card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: none;
+      padding: 25px 30px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      }
+
+      .table-title {
+        color: #2c3e50;
+        font-weight: 800;
+        margin: 0;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .dairies-table {
+      margin: 0;
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+
+      thead {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+        th {
+          border: none;
+          padding: 18px 12px;
+          font-weight: 700;
+          color: #2c3e50;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: left;
+          vertical-align: middle;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          position: relative;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+          }
+
+          &:hover::after {
+            transform: scaleX(1);
+          }
+        }
+
+        th:nth-child(1) { width: 60px; text-align: center; }   /* # */
+        th:nth-child(2) { width: 120px; } /* Dairy Code */
+        th:nth-child(3) { min-width: 200px; } /* Dairy Name */
+        th:nth-child(4) { min-width: 180px; } /* Email */
+        th:nth-child(5) { width: 120px; } /* Devices */
+        th:nth-child(6) { width: 150px; } /* Actions */
+      }
+
+      tbody {
+        tr {
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          border-bottom: 1px solid #f8f9fa;
+          position: relative;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+          }
+
+          &:hover {
+            transform: scale(1.01);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            &::before {
+              transform: scaleX(1);
+            }
+          }
+
+          td {
+            border: none;
+            padding: 18px 12px;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+            z-index: 1;
+          }
+
+          td:nth-child(1) { width: 60px; text-align: center; }   /* # */
+          td:nth-child(2) { width: 120px; }  /* Dairy Code */
+          td:nth-child(3) { min-width: 200px; }  /* Dairy Name */
+          td:nth-child(4) { min-width: 180px; }  /* Email */
+          td:nth-child(5) { width: 120px; }  /* Devices */
+          td:nth-child(6) { width: 150px; }  /* Actions */
+        }
+      }
+    }
+
+    // Table cell styling
+    .dairy-index {
+      font-weight: 700;
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+
+    .dairy-code {
+      .code-badge {
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 15px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+        }
+      }
+    }
+
+    .dairy-name {
+      font-weight: 700;
+      color: #2c3e50;
+      font-size: 1.05rem;
+    }
+
+    .dairy-email {
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .dairy-devices {
+      .device-count-badge {
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 15px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        border: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3);
+        }
+      }
+    }
+
+    .dairy-actions {
+      .action-btn {
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin: 0 2px;
+        font-weight: 600;
+
+        &:hover {
+          transform: translateY(-3px) scale(1.1);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        &:active {
+          transform: translateY(-1px) scale(1.05);
+        }
+      }
+    }
+
+    // Table responsive wrapper
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 0 0 20px 20px;
+      
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 4px;
+        
+        &:hover {
+          background: linear-gradient(135deg, #764ba2, #f093fb);
+        }
+      }
+    }
+  }
+
+  // Loading Section
+  .loading-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: #6c757d;
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.25em;
+    }
+
+    p {
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+
+  // No Data Section
+  .no-data-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+    color: #6c757d;
+
+    .no-data-icon {
+      font-size: 5rem;
+      color: #dee2e6;
+      margin-bottom: 25px;
+      animation: pulse 2s infinite;
+    }
+
+    h5 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    p {
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .pageTitleSpace {
+      padding: 20px 25px;
+      margin: 15px 0 25px 0;
+    }
+
+    .stats-card {
+      .stats-content {
+        .stats-value {
+          font-size: 1.8rem;
+        }
+      }
+
+      .stats-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+    }
+
+    .filters-card {
+      .filters-header {
+        .filters-title {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .dairies-table-card {
+      .table-header {
+        .table-title {
+          font-size: 1.1rem;
+        }
+      }
+
+      .dairies-table {
+        thead th {
+          font-size: 0.8rem;
+          padding: 12px 8px;
+        }
+
+        tbody td {
+          padding: 12px 8px;
+          font-size: 0.85rem;
+        }
+
+        .dairy-code {
+          .code-badge {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .dairies-table-card {
+      .dairies-table {
+        thead th {
+          font-size: 0.7rem;
+          padding: 8px 4px;
+        }
+
+        tbody td {
+          padding: 8px 4px;
+          font-size: 0.75rem;
+        }
+
+        th:nth-child(1), td:nth-child(1) { width: 40px; }
+        th:nth-child(2), td:nth-child(2) { width: 80px; }
+        th:nth-child(3), td:nth-child(3) { min-width: 120px; }
+        th:nth-child(4), td:nth-child(4) { min-width: 100px; }
+        th:nth-child(5), td:nth-child(5) { width: 80px; }
+        th:nth-child(6), td:nth-child(6) { width: 100px; }
+
+        .dairy-code {
+          .code-badge {
+            font-size: 0.65rem;
+            padding: 4px 6px;
+          }
+        }
+
+        .dairy-devices {
+          .device-count-badge {
+            font-size: 0.65rem;
+            padding: 4px 6px;
+          }
+        }
+
+        .dairy-actions {
+          .action-btn {
+            padding: 6px 8px;
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Animation for page load
+  .stats-card,
+  .filters-card,
+  .dairies-table-card {
+    animation: slideInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  // Stagger animation for stats cards
+  .stats-card:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .stats-card:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .stats-card:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 5px;
+
+    &:hover {
+      background: linear-gradient(135deg, #764ba2, #f093fb);
+    }
+  }
+}
+
+// Legacy styles for backward compatibility
+.DairyPage {
+  height: 93%;
+
+  .text-center {
+    text-align: center;
+    vertical-align: middle;
+  }
 }

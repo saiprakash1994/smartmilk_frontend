@@ -12,7 +12,7 @@ export const AuthGuard = ({ children }) => {
             clearLocalStorage();
             navigate('/login');
         }
-    }, [location]);
+    }, [location, navigate]);
 
     return <>{children}</>;
 };

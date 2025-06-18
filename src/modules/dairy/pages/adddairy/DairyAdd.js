@@ -2,16 +2,35 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
-import Spinner from "react-bootstrap/Spinner";
+import { 
+    Button, 
+    Card, 
+    Form, 
+    Spinner, 
+    Container, 
+    Row, 
+    Col, 
+    Alert,
+    Badge
+} from "react-bootstrap";
 import "./DairyAdd.scss";
 import {
     useCreateDairyMutation,
     useEditDairyMutation,
     useGetDairyByIdQuery,
 } from "../../store/dairyEndPoint";
+import { 
+    FaIndustry, 
+    FaBuilding, 
+    FaEnvelope, 
+    FaLock, 
+    FaSave, 
+    FaTimes, 
+    FaArrowLeft,
+    FaUserShield,
+    FaKey,
+    FaCheckCircle
+} from "react-icons/fa";
 
 const DairyAdd = () => {
     const navigate = useNavigate();
@@ -153,135 +172,241 @@ const DairyAdd = () => {
     const saving = creating || updating;
 
     return (
-        <>
+        <div className="dairy-add-page">
             <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name={id ? "Edit Dairy" : "Add Dairy"} pageItems={0} />
+                <div className="d-flex align-items-center">
+                    <Button 
+                        variant="outline-secondary" 
+                        size="sm" 
+                        onClick={() => navigate("/dairy")}
+                        className="me-3 back-btn"
+                    >
+                        <FaArrowLeft className="me-2" />
+                        Back
+                    </Button>
+                    <PageTitle name={id ? "Edit Dairy" : "Add New Dairy"} pageItems={0} />
+                </div>
+                {id && (
+                    <Badge bg="info" className="edit-badge">
+                        <FaCheckCircle className="me-2" />
+                        Edit Mode
+                    </Badge>
+                )}
             </div>
 
-            <div className="usersPage">
-                <Card className="h-100">
-                    <Card.Body>
-                        {fetching ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
-                                <Spinner animation="border" />
-                            </div>
-                        ) : (
-                            <Form>
-                                {!id && (
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Dairy Code</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="dairyCode"
-                                            value={form.dairyCode}
-                                            onChange={handleChange}
-                                            placeholder="Enter Dairy Code"
-                                            disabled={saving}
-                                            maxLength={3}
-                                        />
-                                        {errors.dairyCode && (
-                                            <small className="text-danger">{errors.dairyCode}</small>
-                                        )}
-                                    </Form.Group>
+            <Container fluid className="dairy-add-container">
+                <Row className="justify-content-center">
+                    <Col lg={8} xl={6}>
+                        <Card className="dairy-form-card">
+                            <Card.Header className="form-header">
+                                <h5 className="form-title">
+                                    <FaIndustry className="me-2" />
+                                    {id ? "Edit Dairy Information" : "Create New Dairy"}
+                                </h5>
+                                <p className="form-subtitle">
+                                    {id ? "Update dairy details and credentials" : "Fill in the details to create a new dairy"}
+                                </p>
+                            </Card.Header>
+                            <Card.Body className="p-4">
+                                {fetching ? (
+                                    <div className="loading-section">
+                                        <Spinner animation="border" variant="primary" />
+                                        <p>Loading dairy information...</p>
+                                    </div>
+                                ) : isError ? (
+                                    <Alert variant="danger" className="mb-4">
+                                        <FaIndustry className="me-2" />
+                                        Error loading dairy data. Please try again.
+                                    </Alert>
+                                ) : (
+                                    <Form className="dairy-form">
+                                        {/* Dairy Information Section */}
+                                        <div className="form-section mb-4">
+                                            <h6 className="section-title">
+                                                <FaBuilding className="me-2" />
+                                                Dairy Information
+                                            </h6>
+                                            <Row className="g-3">
+                                                {!id && (
+                                                    <Col md={6}>
+                                                        <Form.Group>
+                                                            <Form.Label className="form-label">
+                                                                <FaIndustry className="me-2" />
+                                                                Dairy Code
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                type="text"
+                                                                name="dairyCode"
+                                                                value={form.dairyCode}
+                                                                onChange={handleChange}
+                                                                placeholder="Enter 3-letter code"
+                                                                disabled={saving}
+                                                                maxLength={3}
+                                                                className={`form-control ${errors.dairyCode ? 'is-invalid' : ''}`}
+                                                            />
+                                                            {errors.dairyCode && (
+                                                                <div className="invalid-feedback">{errors.dairyCode}</div>
+                                                            )}
+                                                            <small className="form-text text-muted">
+                                                                3 uppercase letters only
+                                                            </small>
+                                                        </Form.Group>
+                                                    </Col>
+                                                )}
+                                                <Col md={!id ? 6 : 12}>
+                                                    <Form.Group>
+                                                        <Form.Label className="form-label">
+                                                            <FaBuilding className="me-2" />
+                                                            Dairy Name
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            name="dairyName"
+                                                            value={form.dairyName}
+                                                            onChange={handleChange}
+                                                            placeholder="Enter dairy name"
+                                                            disabled={saving}
+                                                            maxLength={40}
+                                                            className={`form-control ${errors.dairyName ? 'is-invalid' : ''}`}
+                                                        />
+                                                        {errors.dairyName && (
+                                                            <div className="invalid-feedback">{errors.dairyName}</div>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={12}>
+                                                    <Form.Group>
+                                                        <Form.Label className="form-label">
+                                                            <FaEnvelope className="me-2" />
+                                                            Email Address
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="email"
+                                                            name="email"
+                                                            value={form.email}
+                                                            onChange={handleChange}
+                                                            placeholder="Enter email address"
+                                                            disabled={saving}
+                                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                                        />
+                                                        {errors.email && (
+                                                            <div className="invalid-feedback">{errors.email}</div>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </div>
+
+                                        {/* Password Section */}
+                                        <div className="form-section mb-4">
+                                            <h6 className="section-title">
+                                                <FaLock className="me-2" />
+                                                {id ? "Update Password (Optional)" : "Set Password"}
+                                            </h6>
+                                            <Row className="g-3">
+                                                {id && (
+                                                    <Col md={12}>
+                                                        <Form.Group>
+                                                            <Form.Label className="form-label">
+                                                                <FaKey className="me-2" />
+                                                                Current Password
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                type="password"
+                                                                name="oldPassword"
+                                                                value={form.oldPassword}
+                                                                onChange={handleChange}
+                                                                placeholder="Enter current password"
+                                                                disabled={saving}
+                                                                className={`form-control ${errors.oldPassword ? 'is-invalid' : ''}`}
+                                                            />
+                                                            {errors.oldPassword && (
+                                                                <div className="invalid-feedback">{errors.oldPassword}</div>
+                                                            )}
+                                                        </Form.Group>
+                                                    </Col>
+                                                )}
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className="form-label">
+                                                            <FaUserShield className="me-2" />
+                                                            {id ? "New Password" : "Password"}
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="password"
+                                                            name="newPassword"
+                                                            value={form.newPassword}
+                                                            onChange={handleChange}
+                                                            placeholder={`Enter ${id ? "new" : ""} password`}
+                                                            disabled={saving}
+                                                            className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`}
+                                                        />
+                                                        {errors.newPassword && (
+                                                            <div className="invalid-feedback">{errors.newPassword}</div>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Form.Group>
+                                                        <Form.Label className="form-label">
+                                                            <FaCheckCircle className="me-2" />
+                                                            Confirm Password
+                                                        </Form.Label>
+                                                        <Form.Control
+                                                            type="password"
+                                                            name="confirmPassword"
+                                                            value={form.confirmPassword}
+                                                            onChange={handleChange}
+                                                            placeholder="Confirm password"
+                                                            disabled={saving}
+                                                            className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                                                        />
+                                                        {errors.confirmPassword && (
+                                                            <div className="invalid-feedback">{errors.confirmPassword}</div>
+                                                        )}
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="form-actions">
+                                            <Button 
+                                                variant="outline-secondary" 
+                                                onClick={() => navigate("/dairy")} 
+                                                disabled={saving}
+                                                className="cancel-btn"
+                                            >
+                                                <FaTimes className="me-2" />
+                                                Cancel
+                                            </Button>
+                                            <Button 
+                                                variant="primary" 
+                                                onClick={onSave} 
+                                                disabled={saving}
+                                                className="save-btn"
+                                            >
+                                                {saving ? (
+                                                    <>
+                                                        <Spinner animation="border" size="sm" className="me-2" />
+                                                        Saving...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaSave className="me-2" />
+                                                        {id ? "Update Dairy" : "Create Dairy"}
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </Form>
                                 )}
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Dairy Name</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="dairyName"
-                                        value={form.dairyName}
-                                        onChange={handleChange}
-                                        placeholder="Enter Dairy Name"
-                                        disabled={saving}
-                                        maxLength={40}
-                                    />
-                                    {errors.dairyName && (
-                                        <small className="text-danger">{errors.dairyName}</small>
-                                    )}
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        name="email"
-                                        value={form.email}
-                                        onChange={handleChange}
-                                        placeholder="Enter Email"
-                                        disabled={saving}
-                                    />
-                                    {errors.email && (
-                                        <small className="text-danger">{errors.email}</small>
-                                    )}
-                                </Form.Group>
-
-                                {id && (
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Old Password</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            name="oldPassword"
-                                            value={form.oldPassword}
-                                            onChange={handleChange}
-                                            placeholder="Enter Old Password"
-                                            disabled={saving}
-                                        />
-                                        {errors.oldPassword && (
-                                            <small className="text-danger">{errors.oldPassword}</small>
-                                        )}
-                                    </Form.Group>
-                                )}
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{id ? "New Password" : "Password"}</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        name="newPassword"
-                                        value={form.newPassword}
-                                        onChange={handleChange}
-                                        placeholder={`Enter ${id ? "New" : ""} Password`}
-                                        disabled={saving}
-                                    />
-                                    {errors.newPassword && (
-                                        <small className="text-danger">{errors.newPassword}</small>
-                                    )}
-                                </Form.Group>
-
-                                <Form.Group className="mb-4">
-                                    <Form.Label>Confirm Password</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        name="confirmPassword"
-                                        value={form.confirmPassword}
-                                        onChange={handleChange}
-                                        placeholder="Confirm Password"
-                                        disabled={saving}
-                                    />
-                                    {errors.confirmPassword && (
-                                        <small className="text-danger">{errors.confirmPassword}</small>
-                                    )}
-                                </Form.Group>
-
-                                <div className="d-flex justify-content-end gap-2">
-                                    <Button variant="secondary" onClick={() => navigate("/dairy")} disabled={saving}>
-                                        Cancel
-                                    </Button>
-                                    <Button variant="outline-primary" onClick={onSave} disabled={saving}>
-                                        {saving ? (
-                                            <>
-                                                <Spinner animation="border" size="sm" className="me-2" />
-                                                Saving...
-                                            </>
-                                        ) : id ? "Update" : "Create"}
-                                    </Button>
-                                </div>
-                            </Form>
-                        )}
-                    </Card.Body>
-                </Card>
-            </div>
-        </>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 };
 
