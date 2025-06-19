@@ -1,4 +1,4 @@
-import { faFileCsv, faSearch, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch, faUsers, faDesktop, faCalendar, faList, faTint, faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -20,10 +20,23 @@ import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
+
+// Helper to format date as dd-mm-yyyy
+const formatDateDMY = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+};
+
 const DeviceRecords = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -191,9 +204,10 @@ const DeviceRecords = () => {
         if (records?.length) {
             const recordTable = records.map((rec, i) => [
                 i + 1,
+                formatDateDMY(rec?.DATE || date),
+                rec?.SHIFT,
                 rec?.CODE,
                 rec?.MILKTYPE,
-                rec?.SHIFT,
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
                 rec?.QTY?.toFixed(2),
@@ -206,7 +220,7 @@ const DeviceRecords = () => {
             autoTable(doc, {
                 startY: currentY,
                 head: [[
-                    "S.No", "Code", "Milk Type", "Shift", "FAT", "SNF", "Qty (L)",
+                    "S.No", "Date", "Shift", "Code", "Milk Type", "Fat", "SNF", "Qty (L)",
                     "Rate", "Amount", "Incentive", "Total"
                 ]],
                 body: recordTable,
@@ -254,224 +268,220 @@ const DeviceRecords = () => {
     };
 
     return (
-        <>
-            <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name="DEVICE RECORDS" pageItems={0} />
-            </div>
-
-            <div className="usersPage">
-                <Card className="h-100">
-                    <div className="filters d-flex gap-3 p-3 ">
+        <div className="device-records-page">
+            <div className="records-container">
+                <Card className="filters-card">
+                    <Form className="row g-3 align-items-end">
                         {(isAdmin || isDairy) && (
-                            <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
-                                <option value="">Select Device Code</option>
-                                {deviceList?.map((dev) => (
-                                    <option key={dev.deviceid} value={dev.deviceid}>
-                                        {dev.deviceid}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">Device Code</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                                    <Form.Select className="form-select-modern" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                                        <option value="">Select Device Code</option>
+                                        {deviceList?.map((dev) => (
+                                            <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                                        ))}
+                                    </Form.Select>
+                                </InputGroup>
+                            </Form.Group>
                         )}
-
                         {isDevice && (
-                            <Form.Control type="text" value={deviceCode} readOnly />
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">Device Code</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                                    <Form.Control className="form-control-modern" type="text" value={deviceCode} readOnly />
+                                </InputGroup>
+                            </Form.Group>
                         )}
-
-                        <Form.Control type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
-
-                        <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="">All Shifts</option>
-                            <option value="MORNING">MORNING</option>
-                            <option value="EVENING">EVENING</option>
-                        </Form.Select>
-
-                        <Form.Select value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
-                            <option value="ALL">All Milk Types</option>
-                            <option value="COW">COW</option>
-                            <option value="BUF">BUF</option>
-                        </Form.Select>
-                        <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
-                            <option value="ALL">Show All Records</option>
-                            <option value="RECORDS">Only Records Summary</option>
-                            <option value="TOTALS">Only Record Totals</option>
-                        </Form.Select>
-
-                        <Button variant="outline-primary" onClick={handleSearch} disabled={isFetching}>
-                            {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />}
-                        </Button>
-                    </div>
-
-                    <Card.Body className="cardbodyCss">
-                        {!hasSearched ? (
-                            <div className="text-center my-5 text-muted">
-                                Please apply filters and click <strong>Search</strong> to view records.
-                            </div>
-                        ) : isFetching ? (
-                            <div className="text-center my-5">
-                                <Spinner animation="border" variant="primary" />
-                            </div>
-                        ) : (
-                            <>
-                                <hr />
-                                {viewMode !== "TOTALS" && (
-                                    <>
-                                        <PageTitle name="Record Summary" />
-                                        <Table hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Code</th>
-                                                    <th>Milk Type</th>
-                                                    <th>Shift</th>
-                                                    <th>Fat</th>
-                                                    <th>SNF</th>
-                                                    <th>Qty</th>
-                                                    <th>Rate</th>
-                                                    <th>Amount</th>
-                                                    <th>Incentive</th>
-                                                    <th>Total</th>
-                                                    <th>AnalyzerMode</th>
-                                                    <th>WeightMode</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredRecords?.length > 0 ? (
-                                                    filteredRecords?.map((record, index) => (
-                                                        <tr key={record._id}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{record?.CODE}</td>
-                                                            <td>{record?.MILKTYPE}</td>
-                                                            <td>{record?.SHIFT}</td>
-                                                            <td>{record?.FAT.toFixed(1)}</td>
-                                                            <td>{record?.SNF.toFixed(1)}</td>
-                                                            <td>{record?.QTY.toFixed(2)}</td>
-                                                            <td>₹{record?.RATE.toFixed(2)}</td>
-                                                            <td>₹{record?.AMOUNT.toFixed(2)}</td>
-                                                            <td>₹{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
-                                                            <td>₹{record?.TOTAL.toFixed(2)}</td>
-                                                            <td>{record?.ANALYZERMODE}</td>
-                                                            <td>{record?.WEIGHTMODE}</td>
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="12" className="text-center">No records found</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-
-
-                                    </>
-                                )}
-
-                                {viewMode !== "RECORDS" && (
-                                    <>
-                                        <PageTitle name="Total Records" />
-                                        <Table bordered responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>Milk Type</th>
-                                                    <th>Total Records</th>
-                                                    <th>Avg Fat</th>
-                                                    <th>Avg SNF</th>
-                                                    <th>Total Qty</th>
-                                                    <th>Avg Rate</th>
-                                                    <th>Total Amount</th>
-                                                    <th>Total Incentive</th>
-                                                    <th>Grand Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredTotals?.length > 0 ? (
-                                                    filteredTotals.map((total, index) => (
-                                                        <tr key={index}>
-                                                            <td>{total?._id.milkType}</td>
-                                                            <td>{total?.totalRecords}</td>
-                                                            <td>{total?.averageFat}</td>
-                                                            <td>{total?.averageSNF}</td>
-                                                            <td>{total?.totalQuantity.toFixed(2)}</td>
-                                                            <td>₹{total?.averageRate}</td>
-                                                            <td>₹{total?.totalAmount.toFixed(2)}</td>
-                                                            <td>₹{total?.totalIncentive.toFixed(2)}</td>
-                                                            <td>₹{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
-
-
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="9" className="text-center">No totals available</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-                                    </>
-                                )}
-                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
-                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-
-                                </Button>
-                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
-                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-
-                                </Button>
-
-                                {totalCount > 0 && (
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                                        {/* Page size selector */}
-                                        <div className="d-flex align-items-center gap-2">
-                                            <span className="text-muted">Rows per page:</span>
-                                            <Form.Select
-                                                size="sm"
-                                                value={recordsPerPage}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setRecordsPerPage(parseInt(value));
-                                                    setCurrentPage(1);
-
-                                                }}
-                                                style={{ width: "auto" }}
-                                            >
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                            </Form.Select>
-                                        </div>
-
-                                        {/* Page navigation */}
-                                        {totalCount > recordsPerPage && (
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    « Prev
-                                                </Button>
-                                                <span className="fw-semibold">Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}</span>
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                                                >
-                                                    Next »
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-
-                            </>
-
-                        )}
-                    </Card.Body>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Date</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                <Form.Control className="form-control-modern" type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Shift</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faList} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
+                                    <option value="">All Shifts</option>
+                                    <option value="MORNING">MORNING</option>
+                                    <option value="EVENING">EVENING</option>
+                                </Form.Select>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Milk Type</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faTint} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
+                                    <option value="ALL">All Milk Types</option>
+                                    <option value="COW">COW</option>
+                                    <option value="BUF">BUF</option>
+                                </Form.Select>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">View Mode</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={viewMode} onChange={e => setViewMode(e.target.value)}>
+                                    <option value="ALL">Show All Records</option>
+                                    <option value="RECORDS">Only Records Summary</option>
+                                    <option value="TOTALS">Only Record Totals</option>
+                                </Form.Select>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2 d-flex align-items-end">
+                            <Button className="export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                            </Button>
+                        </Form.Group>
+                    </Form>
                 </Card>
+
+                <div className="d-flex justify-content-end mb-3">
+                    <Button className="export-btn" onClick={handleExportCSV} type="button">
+                        <FontAwesomeIcon icon={faFileCsv} className="me-2" /> Export CSV
+                    </Button>
+                    <Button className="export-btn" onClick={handleExportPDF} type="button">
+                        <FontAwesomeIcon icon={faFilePdf} className="me-2" /> Export PDF
+                    </Button>
+                </div>
+
+                {!hasSearched ? (
+                    <Card className="records-card text-center my-5 text-muted">
+                        <Card.Body>
+                            Please apply filters and click <strong>Search</strong> to view records.
+                        </Card.Body>
+                    </Card>
+                ) : isFetching ? (
+                    <Card className="records-card text-center my-5">
+                        <Card.Body>
+                            <Spinner animation="border" variant="primary" />
+                        </Card.Body>
+                    </Card>
+                ) : (
+                    <>
+                        {viewMode !== "TOTALS" && (
+                            <Card className="records-card mb-4">
+                                <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Record Summary</Card.Header>
+                                <div className="table-responsive">
+                                    <Table className="records-table" hover responsive>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Date</th>
+                                                <th>Shift</th>
+                                                <th>Code</th>
+                                                <th>Milk Type</th>
+                                                <th>Fat</th>
+                                                <th>SNF</th>
+                                                <th>Qty</th>
+                                                <th>Rate</th>
+                                                <th>Amount</th>
+                                                <th>Incentive</th>
+                                                <th>Total</th>
+                                                <th>AnalyzerMode</th>
+                                                <th>WeightMode</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredRecords?.length > 0 ? (
+                                                filteredRecords?.map((record, index) => (
+                                                    <tr key={record._id}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{formatDateDMY(record?.DATE || date)}</td>
+                                                        <td>{record?.SHIFT}</td>
+                                                        <td>{record?.CODE}</td>
+                                                        <td>{record?.MILKTYPE}</td>
+                                                        <td>{record?.FAT.toFixed(1)}</td>
+                                                        <td>{record?.SNF.toFixed(1)}</td>
+                                                        <td>{record?.QTY.toFixed(2)}</td>
+                                                        <td>₹{record?.RATE.toFixed(2)}</td>
+                                                        <td>₹{record?.AMOUNT.toFixed(2)}</td>
+                                                        <td>₹{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
+                                                        <td>₹{record?.TOTAL.toFixed(2)}</td>
+                                                        <td>{record?.ANALYZERMODE}</td>
+                                                        <td>{record?.WEIGHTMODE}</td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="13" className="text-center">No records found</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </Card>
+                        )}
+
+                        {viewMode !== "RECORDS" && (
+                            <Card className="totals-card mb-4">
+                                <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Total Records</Card.Header>
+                                <Card.Body>
+                                    {filteredTotals?.length > 0 ? (
+                                        <>
+                                            {/* Summary Row */}
+                                            <div className="mb-2 fw-semibold text-end">
+                                                {(() => {
+                                                    const totalAmountSum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalAmount) || 0), 0);
+                                                    const grandTotalSum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalAmount || 0) + Number(t.totalIncentive || 0)), 0);
+                                                    const totalQtySum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalQuantity) || 0), 0);
+                                                    return (
+                                                        <>
+                                                            Total Qty: <span className="text-info">{totalQtySum.toFixed(2)} L</span> &nbsp;|&nbsp; Total Amount: <span className="text-primary">₹{totalAmountSum.toFixed(2)}</span> &nbsp;|&nbsp; Grand Total: <span className="text-success">₹{grandTotalSum.toFixed(2)}</span>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+                                            <div className="table-responsive">
+                                                <Table className="records-table" bordered responsive>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Milk Type</th>
+                                                            <th>Total Records</th>
+                                                            <th>Avg Fat</th>
+                                                            <th>Avg SNF</th>
+                                                            <th>Total Qty</th>
+                                                            <th>Avg Rate</th>
+                                                            <th>Total Amount</th>
+                                                            <th>Total Incentive</th>
+                                                            <th>Grand Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {filteredTotals.map((total, index) => (
+                                                            <tr key={index}>
+                                                                <td>{total?._id.milkType}</td>
+                                                                <td>{total?.totalRecords}</td>
+                                                                <td>{total?.averageFat}</td>
+                                                                <td>{total?.averageSNF}</td>
+                                                                <td>{total?.totalQuantity.toFixed(2)}</td>
+                                                                <td>₹{total?.averageRate}</td>
+                                                                <td>₹{total?.totalAmount.toFixed(2)}</td>
+                                                                <td>₹{total?.totalIncentive.toFixed(2)}</td>
+                                                                <td>₹{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-center text-muted py-4">No totals found</div>
+                                    )}
+                                </Card.Body>
+                            </Card>
+                        )}
+                    </>
+                )}
             </div>
-        </>
+        </div>
     );
 };
 

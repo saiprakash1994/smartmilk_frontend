@@ -49,7 +49,9 @@ const SettingsPage = () => {
   const preSelectedDairy = location.state?.selectedDairyCode;
 
   const [selectedDairyCode, setSelectedDairyCode] = useState(preSelectedDairy || "");
-  const [selectedDeviceId, setSelectedDeviceId] = useState(preSelectedDevice || "");
+  const [selectedDeviceId, setSelectedDeviceId] = useState(
+    preSelectedDevice || (isDevice ? deviceid : "")
+  );
   const [originalSettings, setOriginalSettings] = useState({});
   const [settings, setSettings] = useState({});
 
@@ -232,6 +234,12 @@ const SettingsPage = () => {
       />
     </div>
   );
+
+  useEffect(() => {
+    if (isDevice && deviceid) {
+      setSelectedDeviceId(deviceid);
+    }
+  }, [isDevice, deviceid]);
 
   return (
     <div className="settings-page">

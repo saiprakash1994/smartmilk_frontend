@@ -211,7 +211,7 @@ const DevicePage = () => {
 
                     {/* Stats Cards */}
                     <Row className="g-4 mb-4">
-                        <Col lg={3} md={6}>
+                        <Col lg={4} md={6}>
                             <Card className="stats-card total-devices">
                                 <Card.Body className="p-4">
                                     <div className="stats-icon">
@@ -225,7 +225,7 @@ const DevicePage = () => {
                             </Card>
                         </Col>
 
-                        <Col lg={3} md={6}>
+                        <Col lg={4} md={6}>
                             <Card className="stats-card active-devices">
                                 <Card.Body className="p-4">
                                     <div className="stats-icon">
@@ -241,7 +241,7 @@ const DevicePage = () => {
                             </Card>
                         </Col>
 
-                        <Col lg={3} md={6}>
+                        <Col lg={4} md={6}>
                             <Card className="stats-card inactive-devices">
                                 <Card.Body className="p-4">
                                     <div className="stats-icon">
@@ -252,22 +252,6 @@ const DevicePage = () => {
                                             {statsDevices.filter(d => d.status === 'deactive').length}
                                         </h3>
                                         <p className="stats-label">Inactive Devices</p>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-
-                        <Col lg={3} md={6}>
-                            <Card className="stats-card maintenance-devices">
-                                <Card.Body className="p-4">
-                                    <div className="stats-icon">
-                                        <FaCog />
-                                    </div>
-                                    <div className="stats-content">
-                                        <h3 className="stats-value">
-                                            {statsDevices.filter(d => d.status === 'maintenance').length}
-                                        </h3>
-                                        <p className="stats-label">In Maintenance</p>
                                     </div>
                                 </Card.Body>
                             </Card>

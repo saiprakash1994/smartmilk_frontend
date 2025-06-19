@@ -28,6 +28,7 @@ import {
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
 import { skipToken } from "@reduxjs/toolkit/query";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
@@ -275,78 +276,84 @@ const MemberRecords = () => {
       </div>
 
       <div className="usersPage">
-        <Card className="h-100">
-          <div className="filters d-flex gap-3 p-3">
-            {(isAdmin || isDairy) &&
-              (isAdminLoading || isDairyLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                <Form.Select
-                  value={deviceCode}
-                  onChange={(e) => setDeviceCode(e.target.value)}
-                >
-                  <option value="">Select Device Code</option>
-                  {deviceList?.map((dev) => (
-                    <option key={dev.deviceid} value={dev.deviceid}>
-                      {dev.deviceid}
-                    </option>
+        <Card className="mb-4">
+          <Form className="row g-3 align-items-end p-3">
+            {(isAdmin || isDairy) && (
+              <Form.Group className="col-md-2">
+                <Form.Label>Device Code</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                  <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                    <option value="">Select Device Code</option>
+                    {deviceList?.map((dev) => (
+                      <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                    ))}
+                  </Form.Select>
+                </InputGroup>
+              </Form.Group>
+            )}
+            {isDevice && (
+              <Form.Group className="col-md-2">
+                <Form.Label>Device Code</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                  <Form.Control type="text" value={deviceCode} readOnly />
+                </InputGroup>
+              </Form.Group>
+            )}
+            <Form.Group className="col-md-2">
+              <Form.Label>Member Code</Form.Label>
+              <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <Form.Select value={memberCode} onChange={e => setMemberCode(e.target.value)}>
+                  <option value="">Select Member Code</option>
+                  {memberCodes?.map((code, idx) => (
+                    <option key={idx} value={code.CODE}>{`${code.CODE} - ${code.MEMBERNAME}`}</option>
                   ))}
                 </Form.Select>
-              ))}
-
-            {isDevice &&
-              (isDeviceLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                <Form.Control type="text" value={deviceCode} readOnly />
-              ))}
-
-            <Form.Select
-              value={memberCode}
-              onChange={(e) => setMemberCode(e.target.value)}
-            >
-              <option value="">Select Member Code</option>
-              {memberCodes?.map((code, idx) => (
-                <option
-                  key={idx}
-                  value={code.CODE}
-                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-              ))}
-            </Form.Select>
-
-            <Form.Control
-              type="date"
-              value={fromDate}
-              max={getToday()}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-            <Form.Control
-              type="date"
-              value={toDate}
-              max={getToday()}
-              onChange={(e) => setToDate(e.target.value)}
-            />
-            <Form.Select
-              value={viewMode}
-              onChange={(e) => setViewMode(e.target.value)}
-            >
-              <option value="ALL">Show All Records</option>
-              <option value="RECORDS">Only Records Summary</option>
-              <option value="TOTALS">Only Record Totals</option>
-            </Form.Select>
-            <Button
-              variant="outline-primary"
-              onClick={handleSearch}
-              disabled={isFetching}
-            >
-              {isFetching ? (
-                <Spinner size="sm" animation="border" />
-              ) : (
-                <FontAwesomeIcon icon={faSearch} />
-              )}
-            </Button>
-          </div>
-
+              </InputGroup>
+            </Form.Group>
+            <Form.Group className="col-md-2">
+              <Form.Label>From Date</Form.Label>
+              <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
+              </InputGroup>
+            </Form.Group>
+            <Form.Group className="col-md-2">
+              <Form.Label>To Date</Form.Label>
+              <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
+              </InputGroup>
+            </Form.Group>
+            <Form.Group className="col-md-2">
+              <Form.Label>View Mode</Form.Label>
+              <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
+                  <option value="ALL">Show All Records</option>
+                  <option value="RECORDS">Only Records Summary</option>
+                  <option value="TOTALS">Only Record Totals</option>
+                </Form.Select>
+              </InputGroup>
+            </Form.Group>
+            <Form.Group className="col-md-2 d-flex align-items-end">
+              <Button variant="primary" className="w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+              </Button>
+            </Form.Group>
+          </Form>
+        </Card>
+        <div className="d-flex justify-content-end mb-3">
+          <Button variant="success" className="me-2" onClick={handleExportCSV} type="button">
+            <FontAwesomeIcon icon={faFileCsv} className="me-2" /> Export CSV
+          </Button>
+          <Button variant="danger" onClick={handleExportPDF} type="button">
+            <FontAwesomeIcon icon={faFilePdf} className="me-2" /> Export PDF
+          </Button>
+        </div>
+        <Card className="h-100">
           <Card.Body className="cardbodyCss">
             {!searchParams ? (
               <div className="text-center my-5 text-muted">
@@ -455,20 +462,6 @@ const MemberRecords = () => {
                     </Table>
                   </>
                 )}
-                <Button
-                  variant="outline-primary"
-                  className="mb-3 me-2"
-                  onClick={handleExportCSV}
-                >
-                  <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  className="mb-3"
-                  onClick={handleExportPDF}
-                >
-                  <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-                </Button>
                 {viewMode !== "TOTALS" && totalCount > 0 && (
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
                     <div className="d-flex align-items-center gap-2">

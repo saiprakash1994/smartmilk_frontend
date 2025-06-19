@@ -164,33 +164,14 @@ const DeviceAdd = () => {
 
     return (
         <div className="device-add-page">
-            <div className="d-flex justify-content-between align-items-center pageTitleSpace">
-                <div className="d-flex align-items-center">
-                    <Button 
-                        variant="outline-primary" 
-                        className="back-btn me-3"
-                        onClick={() => navigate("/device")}
-                    >
-                        <FaArrowLeft className="me-2" />
-                        Back to Devices
-                    </Button>
-                    <div>
-                        <h2 className="page-title mb-1">
-                            {id ? <FaEdit className="me-2" /> : <FaPlus className="me-2" />}
-                            {id ? "Update Device" : "Create New Device"}
-                        </h2>
-                        <p className="page-subtitle">
-                            {id ? "Modify device settings and configuration" : "Add a new device to the system"}
-                        </p>
-                    </div>
-                </div>
+            {/* <div className="d-flex justify-content-between align-items-center pageTitleSpace">
                 {id && (
                     <div className="device-preview">
                         <div className="preview-label">Device ID:</div>
                         <div className="preview-value">{selectedDairyCode}{form.deviceIdSuffix}</div>
                     </div>
                 )}
-            </div>
+            </div> */}
 
             <Container fluid className="device-add-container">
                 <Row className="justify-content-center">

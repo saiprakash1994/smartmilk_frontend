@@ -19,3 +19,101 @@
 .spinner-box {
     text-align: center;
 }
+
+.device-records-page {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+
+  .records-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .records-card, .filters-card, .totals-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+  }
+
+  .filters-card {
+    padding: 25px;
+  }
+
+  .records-card {
+    padding: 25px;
+  }
+
+  .totals-card {
+    padding: 18px 25px;
+    font-weight: 600;
+    color: #2c3e50;
+    background: linear-gradient(90deg, #e0e7ff 0%, #f5f7fa 100%);
+    border-left: 5px solid #667eea;
+  }
+
+  .form-label-modern {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+  .form-select-modern, .form-control-modern {
+    border-radius: 6px;
+    font-size: 0.95rem;
+    border: 1.5px solid #e9ecef;
+    transition: border-color 0.2s;
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+      outline: none;
+    }
+  }
+
+  .records-table {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+    th, td {
+      vertical-align: middle;
+      font-size: 0.97rem;
+    }
+    th {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+    }
+    tr {
+      transition: background 0.2s;
+    }
+    tbody tr:nth-child(even) {
+      background: #f5f7fa;
+    }
+    tbody tr:hover {
+      background: #e0e7ff;
+    }
+  }
+
+  .export-btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 18px;
+    margin-right: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+    &:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+      color: #fff;
+    }
+  }
+}
