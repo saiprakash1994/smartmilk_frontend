@@ -1,0 +1,78 @@
+// Modern filter and export section styles for DatewiseSummaryRecords
+.filters-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  margin-bottom: 2rem;
+  padding: 25px;
+}
+
+.records-actions-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+  background: rgba(255,255,255,0.97);
+  padding: 16px 24px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-label-modern {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.form-select-modern, .form-control-modern {
+  border-radius: 6px;
+  font-size: 0.95rem;
+  border: 1.5px solid #e9ecef;
+  padding: 4px 8px !important;
+  width: 120px;
+  max-width: 100%;
+  transition: border-color 0.2s;
+  &:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    outline: none;
+  }
+}
+.select-device {
+  width: 120px;
+}
+.select-date {
+  width: 140px;
+}
+.select-shift {
+  width: 110px;
+}
+.select-milktype {
+  width: 120px;
+}
+.select-viewmode {
+  width: 140px;
+}
+.select-member {
+  width: 130px;
+}
+.export-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 18px;
+  margin-right: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+  &:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+    color: #fff;
+  }
+} 

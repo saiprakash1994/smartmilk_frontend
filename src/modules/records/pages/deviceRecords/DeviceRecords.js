@@ -1,4 +1,4 @@
-import { faFileCsv, faSearch, faUsers, faDesktop, faCalendar, faList, faTint, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch, faUsers, faDesktop, faCalendar, faList, faTint, faEye, faMicrochip, faCalendarDays, faClock, faBuilding } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -61,7 +61,6 @@ const DeviceRecords = () => {
     const [filterShift, setFilterShift] = useState('');
     const [filterMilkTypeFilter, setFilterMilkTypeFilter] = useState('ALL');
     const [filterViewMode, setFilterViewMode] = useState('ALL');
-    const [filterRecordsPerPage, setFilterRecordsPerPage] = useState(10);
 
     // Applied/search states
     const [deviceCode, setDeviceCode] = useState('');
@@ -96,7 +95,7 @@ const DeviceRecords = () => {
         setShift(filterShift);
         setMilkTypeFilter(filterMilkTypeFilter);
         setViewMode(filterViewMode);
-        setRecordsPerPage(filterRecordsPerPage);
+        setRecordsPerPage(recordsPerPage);
 
         if (!filterDeviceCode || !filterDate) {
             errorToast("Please select device code and date");
@@ -117,7 +116,7 @@ const DeviceRecords = () => {
                     deviceCode: filterDeviceCode,
                     ...(filterShift && { shift: filterShift }),
                     page: currentPage,
-                    limit: filterRecordsPerPage,
+                    limit: recordsPerPage,
                 },
             }).unwrap();
             setHasSearched(true);
@@ -333,7 +332,7 @@ const DeviceRecords = () => {
                             <Form.Group className="col-md-2">
                                 <Form.Label className="form-label-modern">Device Code</Form.Label>
                                 <InputGroup>
-                                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faMicrochip} /></InputGroup.Text>
                                     <Form.Control className="form-control-modern" type="text" value={deviceCode} readOnly />
                                 </InputGroup>
                             </Form.Group>
@@ -341,14 +340,14 @@ const DeviceRecords = () => {
                         <Form.Group className="col-md-2">
                             <Form.Label className="form-label-modern">Date</Form.Label>
                             <InputGroup>
-                                <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                <InputGroup.Text><FontAwesomeIcon icon={faCalendarDays} /></InputGroup.Text>
                                 <Form.Control className="form-control-modern" type="date" value={filterDate} max={getToday()} onChange={e => setFilterDate(e.target.value)} />
                             </InputGroup>
                         </Form.Group>
                         <Form.Group className="col-md-2">
                             <Form.Label className="form-label-modern">Shift</Form.Label>
                             <InputGroup>
-                                <InputGroup.Text><FontAwesomeIcon icon={faList} /></InputGroup.Text>
+                                <InputGroup.Text><FontAwesomeIcon icon={faClock} /></InputGroup.Text>
                                 <Form.Select className="form-select-modern" value={filterShift} onChange={e => setFilterShift(e.target.value)}>
                                     <option value="">All Shifts</option>
                                     <option value="MORNING">MORNING</option>
@@ -372,28 +371,11 @@ const DeviceRecords = () => {
                             <InputGroup>
                                 <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
                                 <Form.Select className="form-select-modern" value={filterViewMode} onChange={e => setFilterViewMode(e.target.value)}>
-                                    <option value="ALL">Show All Records</option>
-                                    <option value="RECORDS">Only Records Summary</option>
-                                    <option value="TOTALS">Only Record Totals</option>
+                                    <option value="ALL">Show All</option>
+                                    <option value="RECORDS">Only Summary</option>
+                                    <option value="TOTALS">Only Totals</option>
                                 </Form.Select>
                             </InputGroup>
-                        </Form.Group>
-                        <Form.Group className="col-md-2">
-                            <Form.Label className="form-label-modern">Rows per page</Form.Label>
-                            <Form.Select
-                                className="form-select-modern"
-                                value={filterRecordsPerPage}
-                                onChange={e => {
-                                    setFilterRecordsPerPage(Number(e.target.value));
-                                    setCurrentPage(1);
-                                }}
-                            >
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={20}>20</option>
-                                <option value={50}>50</option>
-                                <option value={100}>100</option>
-                            </Form.Select>
                         </Form.Group>
                         <Form.Group className="col-md-2 d-flex align-items-end">
                             <Button className="export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
@@ -428,7 +410,7 @@ const DeviceRecords = () => {
                     <>
                         {viewMode !== "TOTALS" && (
                             <Card className="records-card mb-4">
-                                <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Record Summary</Card.Header>
+                                {/* <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Record Summary</Card.Header> */}
                                 <div className="table-responsive">
                                     <Table className="records-table" hover responsive>
                                         <thead>
@@ -478,11 +460,11 @@ const DeviceRecords = () => {
                                     </Table>
                                 </div>
                                 {/* Pagination Controls */}
-                                <div className="d-flex justify-content-between align-items-center mt-3">
+                                <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
                                     <div>
                                         Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
                                     </div>
-                                    <div>
+                                    <div className="d-flex align-items-center gap-2 flex-wrap">
                                         <Button
                                             variant="outline-primary"
                                             size="sm"
@@ -500,6 +482,22 @@ const DeviceRecords = () => {
                                         >
                                             Next
                                         </Button>
+                                        <span className="ms-3 text-muted">Rows per page:</span>
+                                        <Form.Select
+                                            size="sm"
+                                            style={{ width: 'auto' }}
+                                            value={recordsPerPage}
+                                            onChange={e => {
+                                                setRecordsPerPage(Number(e.target.value));
+                                                setCurrentPage(1);
+                                            }}
+                                        >
+                                            <option value={5}>5</option>
+                                            <option value={10}>10</option>
+                                            <option value={20}>20</option>
+                                            <option value={50}>50</option>
+                                            <option value={100}>100</option>
+                                        </Form.Select>
                                     </div>
                                 </div>
                             </Card>
@@ -507,7 +505,7 @@ const DeviceRecords = () => {
 
                         {viewMode !== "RECORDS" && (
                             <Card className="totals-card mb-4">
-                                <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Total Records</Card.Header>
+                                {/* <Card.Header className="bg-white fw-bold" style={{fontSize: '1.1rem'}}>Total Records</Card.Header> */}
                                 <Card.Body>
                                     {filteredTotals?.length > 0 ? (
                                         <>

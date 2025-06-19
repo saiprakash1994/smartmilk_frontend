@@ -2,6 +2,10 @@ import {
     faFileCsv,
     faFilePdf,
     faSearch,
+    faDesktop,
+    faUser,
+    faCalendar,
+    faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
@@ -27,6 +31,9 @@ import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { InputGroup } from "react-bootstrap";
+import './DatewiseSummaryRecords.scss';
+
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -240,94 +247,146 @@ const DatewiseSummaryRecords = () => {
 
     return (
         <>
-            <div className="d-flex justify-content-between pageTitleSpace">
+            {/* <div className="d-flex justify-content-between pageTitleSpace">
                 <PageTitle name="DATEWISE SUMMARY RECORDS" pageItems={0} />
-            </div>
+            </div> */}
 
             <div className="usersPage">
                 <Card className="h-100">
-                    <div className="filters d-flex gap-3 p-3">
-                        {(isAdmin || isDairy) &&
-                            (isAdminLoading || isDairyLoading ? (
-                                <Spinner animation="border" size="sm" />
-                            ) : (
-                                <Form.Select
-                                    value={deviceCode}
-                                    onChange={(e) => setDeviceCode(e.target.value)}
-                                >
-                                    <option value="">Select Device Code</option>
-                                    {deviceList?.map((dev) => (
-                                        <option key={dev.deviceid} value={dev.deviceid}>
-                                            {dev.deviceid}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            ))}
-
-                        {isDevice &&
-                            (isDeviceLoading ? (
-                                <Spinner animation="border" size="sm" />
-                            ) : (
-                                <Form.Control type="text" value={deviceCode} readOnly />
-                            ))}
-
-                        <Form.Select
-                            value={fromCode}
-                            onChange={(e) => setFromCode(e.target.value)}
-                        >
-                            <option value="">Select Start Member Code</option>
-                            {memberCodes?.map((code, idx) => (
-                                <option
-                                    key={idx}
-                                    value={code.CODE}
-                                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-                            ))}
-                        </Form.Select>
-                        <Form.Select
-                            value={toCode}
-                            onChange={(e) => setToCode(e.target.value)}
-                        >
-                            <option value="">Select End Member Code</option>
-                            {memberCodes.map((code, idx) => (
-                                <option
-                                    key={idx}
-                                    value={code.CODE}
-                                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-                            ))}
-                        </Form.Select>
-
-                        <Form.Control
-                            type="date"
-                            value={fromDate}
-                            max={getToday()}
-                            onChange={(e) => setFromDate(e.target.value)}
-                        />
-                        <Form.Control
-                            type="date"
-                            value={toDate}
-                            max={getToday()}
-                            onChange={(e) => setToDate(e.target.value)}
-                        />
-                        <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="BOTH">ALL Shifts</option>
-
-                            <option value="MORNING">MORNING</option>
-                            <option value="EVENING">EVENING</option>
-                        </Form.Select>
-
-                        <Button
-                            variant="outline-primary"
-                            onClick={handleSearch}
-                            disabled={isFetching}
-                        >
-                            {isFetching ? (
-                                <Spinner size="sm" animation="border" />
-                            ) : (
-                                <FontAwesomeIcon icon={faSearch} />
+                    <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
+                        <Form className="row g-3 align-items-end justify-content-end">
+                            {(isAdmin || isDairy) && (
+                                <Form.Group className="col-md-2">
+                                    <Form.Label className="form-label-modern">Device Code</Form.Label>
+                                    <InputGroup>
+                                        <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                                        <Form.Select className="form-select-modern select-device" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                                            <option value="">Select Device Code</option>
+                                            {deviceList?.map((dev) => (
+                                                <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                                            ))}
+                                        </Form.Select>
+                                    </InputGroup>
+                                </Form.Group>
                             )}
-                        </Button>
-                    </div>
+                            {isDevice && (
+                                <Form.Group className="col-md-2">
+                                    <Form.Label className="form-label-modern">Device Code</Form.Label>
+                                    <InputGroup>
+                                        <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                                        <Form.Control className="form-control-modern select-device" type="text" value={deviceCode} readOnly />
+                                    </InputGroup>
+                                </Form.Group>
+                            )}
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">Start Member</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faUser} /></InputGroup.Text>
+                                    <Form.Select className="form-select-modern select-member" value={fromCode} onChange={e => setFromCode(e.target.value)}>
+                                        <option value="">Start Member Code</option>
+                                        {memberCodes?.map((code, idx) => (
+                                            <option key={idx} value={code.CODE}>{code.CODE} - {code.MEMBERNAME}</option>
+                                        ))}
+                                    </Form.Select>
+                                </InputGroup>
+                            </Form.Group>
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">End Member</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faUser} /></InputGroup.Text>
+                                    <Form.Select className="form-select-modern select-member" value={toCode} onChange={e => setToCode(e.target.value)}>
+                                        <option value="">End Member Code</option>
+                                        {memberCodes?.map((code, idx) => (
+                                            <option key={idx} value={code.CODE}>{code.CODE} - {code.MEMBERNAME}</option>
+                                        ))}
+                                    </Form.Select>
+                                </InputGroup>
+                            </Form.Group>
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">From Date</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                    <Form.Control className="form-control-modern select-date" type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
+                                </InputGroup>
+                            </Form.Group>
+                            <Form.Group className="col-md-2">
+                                <Form.Label className="form-label-modern">To Date</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                    <Form.Control className="form-control-modern select-date" type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
+                                </InputGroup>
+                            </Form.Group>
+                            <Form.Group className="col-md-1">
+                                <Form.Label className="form-label-modern">Shift</Form.Label>
+                                <InputGroup>
+                                    <InputGroup.Text><FontAwesomeIcon icon={faClock} /></InputGroup.Text>
+                                    <Form.Select className="form-select-modern select-shift" value={shift} onChange={e => setShift(e.target.value)}>
+                                        <option value="BOTH">ALL</option>
+                                        <option value="MORNING">MORNING</option>
+                                        <option value="EVENING">EVENING</option>
+                                    </Form.Select>
+                                </InputGroup>
+                            </Form.Group>
+                            <Form.Group className="col-md-1 d-flex align-items-end">
+                                <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
+                                    {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                                </Button>
+                            </Form.Group>
+                        </Form>
+                    </Card>
 
+             {/* Actions Section: Export and Rows Per Page */}
+             {totalCount > 0 && (
+                                    <Card className="mb-3 records-actions-card" style={{ borderRadius: 14, padding: 16, background: 'rgba(255,255,255,0.97)' }}>
+                                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 w-100">
+                                            <div className="d-flex gap-2">
+                                                <Button variant="outline-primary" className="export-btn" onClick={handleExportCSV}>
+                                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+                                                </Button>
+                                                <Button variant="outline-primary" className="export-btn" onClick={handleExportPDF}>
+                                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+                                                </Button>
+                                            </div>
+                                            <div className="d-flex align-items-center gap-3 flex-wrap">
+                                                <span className="text-muted">Rows per page:</span>
+                                                <Form.Select
+                                                    size="sm"
+                                                    value={recordsPerPage}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setRecordsPerPage(parseInt(value));
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    style={{ width: "auto" }}
+                                                >
+                                                    <option value="5">5</option>
+                                                    <option value="10">10</option>
+                                                    <option value="20">20</option>
+                                                    <option value="50">50</option>
+                                                </Form.Select>
+                                                <span className="fw-semibold ms-3">
+                                                    Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                                                </span>
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                                                    disabled={currentPage === 1}
+                                                >
+                                                    « Prev
+                                                </Button>
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                                >
+                                                    Next »
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                )}
                     <Card.Body className="cardbodyCss">
                         {!searchParams ? (
                             <div className="text-center my-5 text-muted">
@@ -383,68 +442,7 @@ const DatewiseSummaryRecords = () => {
                                         </div>
                                     ))
                                 )}
-                                <hr />
-
-                                <Button
-                                    variant="outline-primary"
-                                    className="mb-3 me-2"
-                                    onClick={handleExportCSV}
-                                >
-                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-                                </Button>
-                                <Button
-                                    variant="outline-primary"
-                                    className="mb-3"
-                                    onClick={handleExportPDF}
-                                >
-                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-                                </Button>
-                                {totalCount > 0 && (
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                                        <div className="d-flex align-items-center gap-2">
-                                            <span className="text-muted">Rows per page:</span>
-                                            <Form.Select
-                                                size="sm"
-                                                value={recordsPerPage}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setRecordsPerPage(parseInt(value));
-                                                    setCurrentPage(1);
-                                                }}
-                                                style={{ width: "auto" }}
-                                            >
-                                                <option value="5">5</option>
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                            </Form.Select>
-                                        </div>
-
-                                        {totalCount > recordsPerPage && (
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage((prev) => prev - 1)}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    « Prev
-                                                </Button>
-                                                <span className="fw-semibold">
-                                                    Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
-                                                </span>
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage((prev) => prev + 1)}
-                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                                                >
-                                                    Next »
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                
                             </>
                         )}
                     </Card.Body>
