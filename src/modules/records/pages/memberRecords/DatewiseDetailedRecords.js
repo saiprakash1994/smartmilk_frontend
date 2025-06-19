@@ -2,6 +2,8 @@ import {
     faFileCsv,
     faFilePdf,
     faSearch,
+    faCalendar,
+    faList,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
@@ -21,12 +23,15 @@ import {
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetCumulativeReportQuery, useGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
+import { useGetCumulativeReportQuery, useGetDatewiseDetailedReportQuery, useLazyGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
+import InputGroup from "react-bootstrap/esm/InputGroup";
+import './DatewiseDetailedRecords.scss';
+
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
@@ -63,6 +68,8 @@ const DatewiseDetailedRecords = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
     const [searchParams, setSearchParams] = useState(null);
+
+    const [triggerGetAllDetailed, { isLoading: isExporting }] = useLazyGetDatewiseDetailedReportQuery();
 
     useEffect(() => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -202,8 +209,37 @@ const DatewiseDetailedRecords = () => {
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
         saveAs(blob, `${getToday()}_${deviceCode}_datewise_detailed.csv`);
     };
-    const handleExportPDF = () => {
-        if (!records?.length) {
+    const handleExportPDF = async () => {
+        if (!searchParams) {
+            alert("Please search and select filters first.");
+            return;
+        }
+
+        // Prepare params for full export
+        const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
+        const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
+
+        let allData;
+        try {
+            const result = await triggerGetAllDetailed({
+                params: {
+                    deviceId: searchParams.deviceCode,
+                    fromCode: searchParams.fromCode,
+                    toCode: searchParams.toCode,
+                    fromDate: formattedFromDate,
+                    toDate: formattedToDate,
+                    shift: searchParams.shift,
+                    page: 1,
+                    limit: 10000, // Large number to get all data
+                }
+            }).unwrap();
+            allData = result?.data || [];
+        } catch (err) {
+            alert("Failed to fetch all records for export.");
+            return;
+        }
+
+        if (!allData.length) {
             alert("No data available to export.");
             return;
         }
@@ -215,20 +251,20 @@ const DatewiseDetailedRecords = () => {
         // Title
         doc.setFont("helvetica", "bold");
         doc.setFontSize(18);
-        const title = "Datewise Detailed";
+        const title = "Datewise Detailed Report";
         doc.text(title, (pageWidth - doc.getTextWidth(title)) / 2, currentY);
         currentY += 10;
 
         // Header
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
-        doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-        doc.text(`Members: ${fromCode} to ${toCode}`, pageWidth - 80, currentY);
+        doc.text(`Device Code: ${searchParams.deviceCode}`, 14, currentY);
+        doc.text(`Members: ${searchParams.fromCode} to ${searchParams.toCode}`, pageWidth - 80, currentY);
         currentY += 8;
-        doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, currentY);
+        doc.text(`Date Range: ${searchParams.fromDate} to ${searchParams.toDate}`, 14, currentY);
         currentY += 10;
 
-        records.forEach((day) => {
+        allData.forEach((day) => {
             doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
             doc.text(`Date: ${day.date} | Shift: ${day.shift}`, 14, currentY);
@@ -289,7 +325,7 @@ const DatewiseDetailedRecords = () => {
             }
         });
 
-        doc.save(`${getToday()}_${deviceCode}_datewise_detailed.pdf`);
+        doc.save(`${getToday()}_${searchParams.deviceCode}_datewise_detailed.pdf`);
     };
 
 
@@ -297,100 +333,93 @@ const DatewiseDetailedRecords = () => {
 
 
     return (
-        <>
-            <div className="d-flex justify-content-between pageTitleSpace">
+        <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
+            <div className="container" style={{ maxWidth: 1400 }}>
                 <PageTitle name="DATEWISE DETAILED RECORDS" pageItems={0} />
-            </div>
-
-            <div className="usersPage">
-                <Card className="h-100">
-                    <div className="filters d-flex gap-3 p-3">
-                        {(isAdmin || isDairy) &&
-                            (isAdminLoading || isDairyLoading ? (
-                                <Spinner animation="border" size="sm" />
+                <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
+                    <Form className="row g-3 align-items-end">
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Device Code</Form.Label>
+                            {(isAdmin || isDairy) ? (
+                                isAdminLoading || isDairyLoading ? (
+                                    <Spinner animation="border" size="sm" />
+                                ) : (
+                                    <InputGroup>
+                                        <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                                        <Form.Select className="form-select-modern" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                                            <option value="">Select Device Code</option>
+                                            {deviceList?.map((dev) => (
+                                                <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                                            ))}
+                                        </Form.Select>
+                                    </InputGroup>
+                                )
                             ) : (
-                                <Form.Select
-                                    value={deviceCode}
-                                    onChange={(e) => setDeviceCode(e.target.value)}
-                                >
-                                    <option value="">Select Device Code</option>
-                                    {deviceList?.map((dev) => (
-                                        <option key={dev.deviceid} value={dev?.deviceid}>
-                                            {dev?.deviceid}
-                                        </option>
+                                isDeviceLoading ? <Spinner animation="border" size="sm" /> :
+                                    <Form.Control className="form-control-modern" type="text" value={deviceCode} readOnly />
+                            )}
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Start Member</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={fromCode} onChange={e => setFromCode(e.target.value)}>
+                                    <option value="">Start Member Code</option>
+                                    {memberCodes?.map((code, idx) => (
+                                        <option key={idx} value={code.CODE}>{code.CODE} - {code.MEMBERNAME}</option>
                                     ))}
                                 </Form.Select>
-                            ))}
-
-                        {isDevice &&
-                            (isDeviceLoading ? (
-                                <Spinner animation="border" size="sm" />
-                            ) : (
-                                <Form.Control type="text" value={deviceCode} readOnly />
-                            ))}
-
-                        <Form.Select
-                            value={fromCode}
-                            onChange={(e) => setFromCode(e.target.value)}
-                        >
-                            <option value="">Select Start Member Code</option>
-                            {memberCodes?.map((code, idx) => (
-                                <option
-                                    key={idx}
-                                    value={code.CODE}
-                                >{`${code?.CODE} - ${code?.MEMBERNAME}`}</option>
-                            ))}
-                        </Form.Select>
-                        <Form.Select
-                            value={toCode}
-                            onChange={(e) => setToCode(e.target.value)}
-                        >
-                            <option value="">Select End Member Code</option>
-                            {memberCodes?.map((code, idx) => (
-                                <option
-                                    key={idx}
-                                    value={code.CODE}
-                                >{`${code?.CODE} - ${code?.MEMBERNAME}`}</option>
-                            ))}
-                        </Form.Select>
-
-                        <Form.Control
-                            type="date"
-                            value={fromDate}
-                            max={getToday()}
-                            onChange={(e) => setFromDate(e.target.value)}
-                        />
-                        <Form.Control
-                            type="date"
-                            value={toDate}
-                            max={getToday()}
-                            onChange={(e) => setToDate(e.target.value)}
-                        />
-                        <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="BOTH">ALL Shifts</option>
-
-                            <option value="MORNING">MORNING</option>
-                            <option value="EVENING">EVENING</option>
-                        </Form.Select>
-
-                        <Button
-                            variant="outline-primary"
-                            onClick={handleSearch}
-                            disabled={isFetching}
-                        >
-                            {isFetching ? (
-                                <Spinner size="sm" animation="border" />
-                            ) : (
-                                <FontAwesomeIcon icon={faSearch} />
-                            )}
-                        </Button>
-                    </div>
-
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">End Member</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={toCode} onChange={e => setToCode(e.target.value)}>
+                                    <option value="">End Member Code</option>
+                                    {memberCodes?.map((code, idx) => (
+                                        <option key={idx} value={code.CODE}>{code.CODE} - {code.MEMBERNAME}</option>
+                                    ))}
+                                </Form.Select>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">From Date</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                <Form.Control className="form-control-modern" type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">To Date</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
+                                <Form.Control className="form-control-modern" type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-1">
+                            <Form.Label className="form-label-modern">Shift</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text><FontAwesomeIcon icon={faList} /></InputGroup.Text>
+                                <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
+                                    <option value="BOTH">ALL</option>
+                                    <option value="MORNING">MORNING</option>
+                                    <option value="EVENING">EVENING</option>
+                                </Form.Select>
+                            </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-1 d-flex align-items-end">
+                            <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
+                                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                            </Button>
+                        </Form.Group>
+                    </Form>
+                </Card>
+                <Card className="shadow mb-4" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
                     <Card.Body className="cardbodyCss">
                         {!searchParams ? (
                             <div className="text-center my-5 text-muted">
-                                Please apply filters and click <strong>Search</strong> to view
-                                records.
+                                Please apply filters and click <strong>Search</strong> to view records.
                             </div>
                         ) : isFetching ? (
                             <div className="text-center my-5">
@@ -398,101 +427,16 @@ const DatewiseDetailedRecords = () => {
                             </div>
                         ) : (
                             <>
-                                <hr />
-                                {records?.length === 0 ? (
-                                    <div className="text-center text-muted">No summary data available.</div>
-                                ) : (
-                                    records?.map((record, index) => (
-                                        <div key={index} className="mb-4">
-                                            <h5 className="mb-3">
-                                                <strong>Date:</strong> {record?.date} &nbsp; | &nbsp;
-                                                <strong>Shift:</strong> {record?.shift}&nbsp; | &nbsp;
-                                                <strong>Device Id:</strong> {deviceCode}
-
-                                            </h5>
-                                            <Table hover responsive>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Code</th>
-                                                        <th>Milk Type</th>
-                                                        <th>FAT</th>
-                                                        <th>SNF</th>
-                                                        <th>Qty</th>
-                                                        <th>Rate</th>
-                                                        <th>Total</th>
-                                                        <th>Incentive</th>
-                                                        <th>Grand Total</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {record?.records?.map((stat, statIndex) => (
-                                                        <tr key={statIndex}>
-                                                            <td>{stat?.CODE}</td>
-                                                            <td>{stat?.MILKTYPE}</td>
-                                                            <td>{stat?.FAT?.toFixed(1)}</td>
-                                                            <td>{stat?.SNF?.toFixed(1)}</td>
-                                                            <td>{stat?.QTY.toFixed(2)}</td>
-                                                            <td>₹{stat?.RATE?.toFixed(2)}</td>
-                                                            <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
-                                                            <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
-                                                            <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
-
-
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </Table>
-                                            <Table hover responsive>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Milk Type</th>
-                                                        <th>Samples</th>
-                                                        <th>Avg FAT</th>
-                                                        <th>Avg SNF</th>
-                                                        <th>Total Qty</th>
-                                                        <th>Avg Rate</th>
-                                                        <th>Total Amount</th>
-                                                        <th>Incentive</th>
-                                                        <th>Grand Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {record.milktypeStats.map((stat, statIndex) => (
-                                                        <tr key={statIndex}>
-                                                            <td>{stat?.milktype}</td>
-                                                            <td>{stat?.totalSamples}</td>
-                                                            <td>{stat?.avgFat.toFixed(2)}</td>
-                                                            <td>{stat?.avgSnf.toFixed(2)}</td>
-                                                            <td>{stat?.totalQty.toFixed(2)}</td>
-                                                            <td>₹{stat?.avgRate.toFixed(2)}</td>
-                                                            <td>₹{stat?.totalAmount.toFixed(2)}</td>
-                                                            <td>₹{stat?.totalIncentive.toFixed(2)}</td>
-                                                            <td>₹{stat?.grandTotal.toFixed(2)}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </Table>
-
-                                        </div>
-                                    ))
-                                )}
-                                <Button
-                                    variant="outline-primary"
-                                    className="mb-3 me-2"
-                                    onClick={handleExportCSV}
-                                >
-                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-                                </Button>
-                                <Button
-                                    variant="outline-primary"
-                                    className="mb-3"
-                                    onClick={handleExportPDF}
-                                >
-                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-                                </Button>
-                                {totalCount > 0 && (
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                                <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                                    <div className="d-flex gap-2">
+                                        <Button variant="outline-primary" className="export-btn" onClick={handleExportCSV} disabled={isFetching}>
+                                            <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+                                        </Button>
+                                        <Button variant="outline-primary" className="export-btn" onClick={handleExportPDF} disabled={isExporting || isFetching}>
+                                            <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+                                        </Button>
+                                    </div>
+                                    {totalCount > 0 && (
                                         <div className="d-flex align-items-center gap-2">
                                             <span className="text-muted">Rows per page:</span>
                                             <Form.Select
@@ -510,31 +454,73 @@ const DatewiseDetailedRecords = () => {
                                                 <option value="20">20</option>
                                                 <option value="50">50</option>
                                             </Form.Select>
+                                            {totalCount > recordsPerPage && (
+                                                <div className="d-flex align-items-center gap-2 ms-3">
+                                                    <Button
+                                                        variant="outline-primary"
+                                                        size="sm"
+                                                        onClick={() => setCurrentPage((prev) => prev - 1)}
+                                                        disabled={currentPage === 1}
+                                                    >
+                                                        « Prev
+                                                    </Button>
+                                                    <span className="fw-semibold">
+                                                        Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
+                                                    </span>
+                                                    <Button
+                                                        variant="outline-primary"
+                                                        size="sm"
+                                                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                                                        disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                                    >
+                                                        Next »
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
-
-                                        {totalCount > recordsPerPage && (
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage((prev) => prev - 1)}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    « Prev
-                                                </Button>
-                                                <span className="fw-semibold">
-                                                    Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
-                                                </span>
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage((prev) => prev + 1)}
-                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                                                >
-                                                    Next »
-                                                </Button>
-                                            </div>
-                                        )}
+                                    )}
+                                </div>
+                                <hr />
+                                {records?.length === 0 ? (
+                                    <div className="text-center text-muted">No summary data available.</div>
+                                ) : (
+                                    <div className="table-responsive">
+                                        <Table hover responsive className="records-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Shift</th>
+                                                    <th>Code</th>
+                                                    <th>Milk Type</th>
+                                                    <th>FAT</th>
+                                                    <th>SNF</th>
+                                                    <th>Qty</th>
+                                                    <th>Rate</th>
+                                                    <th>Total</th>
+                                                    <th>Incentive</th>
+                                                    <th>Grand Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {records.flatMap((record) =>
+                                                    record?.records?.map((stat, statIndex) => (
+                                                        <tr key={`${record.date}-${record.shift}-${stat.CODE}-${statIndex}`}>
+                                                            <td>{record.date}</td>
+                                                            <td>{record.shift}</td>
+                                                            <td>{stat?.CODE}</td>
+                                                            <td>{stat?.MILKTYPE}</td>
+                                                            <td>{stat?.FAT?.toFixed(1)}</td>
+                                                            <td>{stat?.SNF?.toFixed(1)}</td>
+                                                            <td>{stat?.QTY.toFixed(2)}</td>
+                                                            <td>₹{stat?.RATE?.toFixed(2)}</td>
+                                                            <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
+                                                            <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
+                                                            <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </Table>
                                     </div>
                                 )}
                             </>
@@ -542,7 +528,7 @@ const DatewiseDetailedRecords = () => {
                     </Card.Body>
                 </Card>
             </div>
-        </>
+        </div>
     );
 };
 

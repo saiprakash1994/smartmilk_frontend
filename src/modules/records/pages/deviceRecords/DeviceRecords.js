@@ -55,29 +55,33 @@ const DeviceRecords = () => {
 
     const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
 
+    // Filter input states
+    const [filterDeviceCode, setFilterDeviceCode] = useState('');
+    const [filterDate, setFilterDate] = useState(getToday());
+    const [filterShift, setFilterShift] = useState('');
+    const [filterMilkTypeFilter, setFilterMilkTypeFilter] = useState('ALL');
+    const [filterViewMode, setFilterViewMode] = useState('ALL');
+    const [filterRecordsPerPage, setFilterRecordsPerPage] = useState(10);
+
+    // Applied/search states
     const [deviceCode, setDeviceCode] = useState('');
     const [date, setDate] = useState(getToday());
     const [shift, setShift] = useState('');
     const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
+    const [viewMode, setViewMode] = useState('ALL');
+    const [recordsPerPage, setRecordsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
     const [records, setRecords] = useState([]);
     const [totals, setTotals] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
-    const [viewMode, setViewMode] = useState('ALL');
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [recordsPerPage, setRecordsPerPage] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
+
     useEffect(() => {
         if (isDevice && deviceid) {
+            setFilterDeviceCode(deviceid);
             setDeviceCode(deviceid);
         }
     }, [isDevice, deviceid]);
-
-    useEffect(() => {
-        if (isDevice && deviceCode && date) {
-            handleSearch();
-        }
-    }, [isDevice, deviceCode, date]);
 
     useEffect(() => {
         if (hasSearched) {
@@ -86,30 +90,36 @@ const DeviceRecords = () => {
     }, [currentPage, recordsPerPage]);
 
     const handleSearch = async () => {
-        if (!deviceCode || !date) {
+        // Copy filter states to applied states
+        setDeviceCode(filterDeviceCode);
+        setDate(filterDate);
+        setShift(filterShift);
+        setMilkTypeFilter(filterMilkTypeFilter);
+        setViewMode(filterViewMode);
+        setRecordsPerPage(filterRecordsPerPage);
+
+        if (!filterDeviceCode || !filterDate) {
             errorToast("Please select device code and date");
             return;
         }
         const today = new Date().toISOString().split("T")[0];
-        if (date > today) {
+        if (filterDate > today) {
             errorToast("Future dates are not allowed.");
             return;
         }
 
-        const formattedDate = date.split("-").reverse().join("/");
+        const formattedDate = filterDate.split("-").reverse().join("/");
 
         try {
             const result = await triggerGetRecords({
                 params: {
                     date: formattedDate,
-                    deviceCode,
-                    ...(shift && { shift }),
+                    deviceCode: filterDeviceCode,
+                    ...(filterShift && { shift: filterShift }),
                     page: currentPage,
-                    limit: recordsPerPage,
+                    limit: filterRecordsPerPage,
                 },
             }).unwrap();
-            console.log(result, 'saiii')
-
             setHasSearched(true);
             setRecords(result?.records || []);
             setTotals(result?.totals || []);
@@ -141,8 +151,9 @@ const DeviceRecords = () => {
         if (records?.length) {
             const recordsCSVData = records.map((rec, index) => ({
                 "S.No": index + 1,
-                "Member Code": rec?.CODE,
+                "Member Code": String(rec?.CODE).padStart(4, "0"),
                 "Milk Type": rec?.MILKTYPE,
+                "Date": rec?.SAMPLEDATE,
                 "Shift": rec?.SHIFT,
                 "FAT": rec?.FAT?.toFixed(1),
                 "SNF": rec?.SNF?.toFixed(1),
@@ -154,7 +165,7 @@ const DeviceRecords = () => {
                 "Analyzer": rec?.ANALYZERMODE,
                 "Weight Mode": rec?.WEIGHTMODE,
                 "Device ID": rec?.DEVICEID,
-                "Date": date
+                "Date": rec?.date ? formatDateDMY(rec.date) : ''
             }));
 
             combinedCSV += `Milk Records for ${deviceCode} on ${date}\n`;
@@ -182,8 +193,34 @@ const DeviceRecords = () => {
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
         saveAs(blob, `Milk_Data_${deviceCode}_${date}.csv`);
     };
-    const handleExportPDF = () => {
-        if (!totals?.length && !records?.length) {
+    const handleExportPDF = async () => {
+        if (!deviceCode || !date) {
+            alert("Please select device code and date");
+            return;
+        }
+
+        // Fetch all records for export
+        let allRecords = [];
+        let allTotals = [];
+        try {
+            const formattedDate = date.split("-").reverse().join("/");
+            const result = await triggerGetRecords({
+                params: {
+                    date: formattedDate,
+                    deviceCode,
+                    ...(shift && { shift }),
+                    page: 1,
+                    limit: 10000, // Large number to get all records
+                },
+            }).unwrap();
+            allRecords = result?.records || [];
+            allTotals = result?.totals || [];
+        } catch (err) {
+            alert("Failed to fetch all records for export.");
+            return;
+        }
+
+        if (!allTotals.length && !allRecords.length) {
             alert("No data available to export.");
             return;
         }
@@ -200,14 +237,20 @@ const DeviceRecords = () => {
         doc.text(`Date: ${date} | Shift: ${shift || 'ALL'} | Milk Type: ${milkTypeFilter}`, 14, currentY);
         currentY += 8;
 
+        // Add total records count
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Total Records: ${totalCount}`, 14, currentY);
+        currentY += 8;
+
         // Records Table
-        if (records?.length) {
-            const recordTable = records.map((rec, i) => [
+        if (allRecords?.length) {
+            const recordTable = allRecords.map((rec, i) => [
                 i + 1,
-                formatDateDMY(rec?.DATE || date),
-                rec?.SHIFT,
-                rec?.CODE,
+                String(rec?.CODE).padStart(4, "0"),
                 rec?.MILKTYPE,
+                rec?.SAMPLEDATE,
+                rec?.SHIFT,                
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
                 rec?.QTY?.toFixed(2),
@@ -220,7 +263,7 @@ const DeviceRecords = () => {
             autoTable(doc, {
                 startY: currentY,
                 head: [[
-                    "S.No", "Date", "Shift", "Code", "Milk Type", "Fat", "SNF", "Qty (L)",
+                    "S.No", "Code", "Milk Type", "Date", "Shift", "Fat", "SNF", "Qty (L)",
                     "Rate", "Amount", "Incentive", "Total"
                 ]],
                 body: recordTable,
@@ -232,13 +275,13 @@ const DeviceRecords = () => {
         }
 
         // Totals Table
-        if (totals?.length) {
+        if (allTotals?.length) {
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
             doc.text("Milk Totals", 14, currentY);
             currentY += 6;
 
-            const totalsTable = totals.map(total => [
+            const totalsTable = allTotals.map(total => [
                 total?._id?.milkType,
                 total?.totalRecords,
                 total?.averageFat,
@@ -277,7 +320,7 @@ const DeviceRecords = () => {
                                 <Form.Label className="form-label-modern">Device Code</Form.Label>
                                 <InputGroup>
                                     <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
-                                    <Form.Select className="form-select-modern" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                                    <Form.Select className="form-select-modern" value={filterDeviceCode} onChange={e => setFilterDeviceCode(e.target.value)}>
                                         <option value="">Select Device Code</option>
                                         {deviceList?.map((dev) => (
                                             <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
@@ -299,14 +342,14 @@ const DeviceRecords = () => {
                             <Form.Label className="form-label-modern">Date</Form.Label>
                             <InputGroup>
                                 <InputGroup.Text><FontAwesomeIcon icon={faCalendar} /></InputGroup.Text>
-                                <Form.Control className="form-control-modern" type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
+                                <Form.Control className="form-control-modern" type="date" value={filterDate} max={getToday()} onChange={e => setFilterDate(e.target.value)} />
                             </InputGroup>
                         </Form.Group>
                         <Form.Group className="col-md-2">
                             <Form.Label className="form-label-modern">Shift</Form.Label>
                             <InputGroup>
                                 <InputGroup.Text><FontAwesomeIcon icon={faList} /></InputGroup.Text>
-                                <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
+                                <Form.Select className="form-select-modern" value={filterShift} onChange={e => setFilterShift(e.target.value)}>
                                     <option value="">All Shifts</option>
                                     <option value="MORNING">MORNING</option>
                                     <option value="EVENING">EVENING</option>
@@ -317,7 +360,7 @@ const DeviceRecords = () => {
                             <Form.Label className="form-label-modern">Milk Type</Form.Label>
                             <InputGroup>
                                 <InputGroup.Text><FontAwesomeIcon icon={faTint} /></InputGroup.Text>
-                                <Form.Select className="form-select-modern" value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
+                                <Form.Select className="form-select-modern" value={filterMilkTypeFilter} onChange={e => setFilterMilkTypeFilter(e.target.value)}>
                                     <option value="ALL">All Milk Types</option>
                                     <option value="COW">COW</option>
                                     <option value="BUF">BUF</option>
@@ -328,12 +371,29 @@ const DeviceRecords = () => {
                             <Form.Label className="form-label-modern">View Mode</Form.Label>
                             <InputGroup>
                                 <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
-                                <Form.Select className="form-select-modern" value={viewMode} onChange={e => setViewMode(e.target.value)}>
+                                <Form.Select className="form-select-modern" value={filterViewMode} onChange={e => setFilterViewMode(e.target.value)}>
                                     <option value="ALL">Show All Records</option>
                                     <option value="RECORDS">Only Records Summary</option>
                                     <option value="TOTALS">Only Record Totals</option>
                                 </Form.Select>
                             </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="col-md-2">
+                            <Form.Label className="form-label-modern">Rows per page</Form.Label>
+                            <Form.Select
+                                className="form-select-modern"
+                                value={filterRecordsPerPage}
+                                onChange={e => {
+                                    setFilterRecordsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </Form.Select>
                         </Form.Group>
                         <Form.Group className="col-md-2 d-flex align-items-end">
                             <Button className="export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
@@ -374,10 +434,10 @@ const DeviceRecords = () => {
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Date</th>
-                                                <th>Shift</th>
                                                 <th>Code</th>
                                                 <th>Milk Type</th>
+                                                <th>Date</th>
+                                                <th>Shift</th>                                               
                                                 <th>Fat</th>
                                                 <th>SNF</th>
                                                 <th>Qty</th>
@@ -394,10 +454,10 @@ const DeviceRecords = () => {
                                                 filteredRecords?.map((record, index) => (
                                                     <tr key={record._id}>
                                                         <td>{index + 1}</td>
-                                                        <td>{formatDateDMY(record?.DATE || date)}</td>
-                                                        <td>{record?.SHIFT}</td>
-                                                        <td>{record?.CODE}</td>
+                                                        <td>{String(record?.CODE).padStart(4, "0")}</td>
                                                         <td>{record?.MILKTYPE}</td>
+                                                        <td>{record?.SAMPLEDATE}</td>
+                                                        <td>{record?.SHIFT}</td>                                                       
                                                         <td>{record?.FAT.toFixed(1)}</td>
                                                         <td>{record?.SNF.toFixed(1)}</td>
                                                         <td>{record?.QTY.toFixed(2)}</td>
@@ -416,6 +476,31 @@ const DeviceRecords = () => {
                                             )}
                                         </tbody>
                                     </Table>
+                                </div>
+                                {/* Pagination Controls */}
+                                <div className="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                        Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
+                                    </div>
+                                    <div>
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            className="me-2"
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage(currentPage - 1)}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                                            onClick={() => setCurrentPage(currentPage + 1)}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
                                 </div>
                             </Card>
                         )}
