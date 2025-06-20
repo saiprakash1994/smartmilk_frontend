@@ -18,22 +18,22 @@ const RecordsPage = () => {
         onSelect={(k) => setActiveTab(k)}
         className="mb-3"
       >
-        <Tab eventKey="records" title="Device Records">
+        <Tab eventKey="records" title="Daily Report">
           <DeviceRecords />
         </Tab>
         <Tab eventKey="memberRecords" title="Memberwise Report">
           <MemberRecords />
         </Tab>
-        <Tab eventKey="absentRecords" title="Absent Members">
+        <Tab eventKey="absentRecords" title="Absent Members Report">
           <AbsentMemberRecords />
         </Tab>
         <Tab eventKey="cumilativeRecords" title="Payment Register">
           <CumilativeRecords />
         </Tab>
-        <Tab eventKey="datewiseDetailed" title="Datewise Detailed">
+        <Tab eventKey="datewiseDetailed" title="Datewise Detailed Report">
           <DatewiseDetailedRecords />
         </Tab>
-        <Tab eventKey="datewiseSummary" title="Datewise Summary">
+        <Tab eventKey="datewiseSummary" title="Datewise Summary Report">
           <DatewiseSummaryRecords />
         </Tab>
       </Tabs>

@@ -1,4 +1,4 @@
-import { faFileCsv, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faDesktop, faEye, faFileCsv, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -24,6 +24,10 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 import { skipToken } from "@reduxjs/toolkit/query";
+import InputGroup from "react-bootstrap/esm/InputGroup";
+import ExportButtonsSection from "../ExportButtonsSection";
+
+const isExporting = false
 
 const getToday = () => new Date().toISOString().split("T")[0];
 
@@ -209,62 +213,94 @@ const AbsentMemberRecords = () => {
     doc.save(`${deviceCode}_Absent_Members_Report_${date}_${shift}.pdf`);
   };
 
+  // Helper to format date as dd/mm/yyyy
+  const formatDateDMY = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <>
-      <div className="d-flex justify-content-between pageTitleSpace">
-        <PageTitle name="ABSENT MEMBER RECORDS" pageItems={0} />
-      </div>
-      <div className="usersPage">
-        <Card className="h-100">
-          <div className="filters d-flex gap-3 p-3">
-            {(isAdmin || isDairy) &&
-              (isAdminLoading || isDairyLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                <Form.Select
-                  value={deviceCode}
-                  onChange={(e) => setDeviceCode(e.target.value)}
-                >
-                  <option value="">Select Device Code</option>
-                  {deviceList?.map((dev) => (
-                    <option key={dev.deviceid} value={dev.deviceid}>
-                      {dev.deviceid}
-                    </option>
-                  ))}
-                </Form.Select>
-              ))}
-
-            {isDevice && (
-              <Form.Control type="text" value={deviceCode} readOnly />
-            )}
-
-            <Form.Select value={shift} onChange={(e) => setShift(e.target.value)}>
-              <option value="MORNING">MORNING</option>
-              <option value="EVENING">EVENING</option>
-            </Form.Select>
-
-            <Form.Control
-              type="date"
-              value={date}
-              max={getToday()}
-              onChange={(e) => setDate(e.target.value)}
-            />
-
-            <Form.Select value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
-              <option value="ALL">All Data</option>
-              <option value="TOTALS">Attendance Summary</option>
-              <option value="ABSENT">Absent Members</option>
-            </Form.Select>
-
-            <Button
-              variant="outline-primary"
-              onClick={handleSearch}
-              disabled={isFetching}
-            >
-              {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />}
-            </Button>
-          </div>
-
+      <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
+        <div className="container" style={{ maxWidth: 1400 }}>
+          <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
+            <Form className="row g-3 align-items-end">
+              {(isAdmin || isDairy) && (
+                <Form.Group className="col-md-3">
+                  <Form.Label className="form-label-modern">Device Code</Form.Label>
+                  <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <Form.Select className="form-select-modern select-device" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                      <option value="">Select Device</option>
+                      {deviceList?.map((dev) => (
+                        <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                </Form.Group>
+              )}
+              {isDevice && (
+                <Form.Group className="col-md-3">
+                  <Form.Label className="form-label-modern">Device Code</Form.Label>
+                  <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <Form.Control className="form-control-modern select-device" type="text" value={deviceCode} readOnly />
+                  </InputGroup>
+                </Form.Group>
+              )}
+              <Form.Group className="col-md-2">
+                <Form.Label className="form-label-modern">Shift</Form.Label>
+                <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faClock} /></InputGroup.Text>
+                  <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
+                    <option value="MORNING">MORNING</option>
+                    <option value="EVENING">EVENING</option>
+                  </Form.Select>
+                </InputGroup>
+              </Form.Group>
+              <Form.Group className="col-md-2">
+                <Form.Label className="form-label-modern">Date</Form.Label>
+                <InputGroup>
+                  <Form.Control className="form-control-modern select-date" type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
+                </InputGroup>
+              </Form.Group>
+              <Form.Group className="col-md-2">
+                <Form.Label className="form-label-modern">View Mode</Form.Label>
+                <InputGroup>
+                <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
+                  <Form.Select className="form-select-modern" value={viewMode} onChange={e => setViewMode(e.target.value)}>
+                    <option value="ALL">Show All</option>
+                    <option value="TOTALS">Summary</option>
+                    <option value="ABSENT">Absent Members</option>
+                  </Form.Select>
+                </InputGroup>
+              </Form.Group>
+              <Form.Group className="col-md-2 ms-auto d-flex align-items-end justify-content-end">
+                <Button className="export-btn w-100" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
+                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                </Button>
+              </Form.Group>
+            </Form>
+          </Card>
+          {/* Actions Section: Export */}
+         {totalCount > 0 && (
+                    <div className=" mb-3">
+                        {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
+                            <ExportButtonsSection
+                                handleExportCSV={handleExportCSV}
+                                handleExportPDF={handleExportPDF}
+                                isFetching={isFetching}
+                                isExporting={isExporting}
+                            />
+                        {/* </Card> */}
+                       
+                    </div>
+                )}
           <Card.Body className="cardbodyCss">
             {!searchParams ? (
               <div className="text-center my-5 text-muted">
@@ -278,128 +314,150 @@ const AbsentMemberRecords = () => {
               <>
                 <hr />
                 {(viewMode === "ABSENT" || viewMode === "ALL") && (
-                  <>
-                    <PageTitle name="Absent Members" />
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>CODE</th>
-                          <th>MILKTYPE</th>
-                          <th>MEMBERNAME</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {absent?.length > 0 ? (
-                          absent?.map((item, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{item.CODE}</td>
-                              <td>{item.MILKTYPE === "C" ? "COW" : "BUF"}</td>
-                              <td>{item.MEMBERNAME}</td>
-                            </tr>
-                          ))
-                        ) : (
+                  <Card className="records-card mb-4">
+                    {/* Modern Gradient Header Section */}
+                    <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
+                        style={{
+                            gap: 16,
+                            borderRadius: 12,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: '#fff',
+                            boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
+                        }}>
+                        <div className="fw-semibold" style={{minWidth: 120, fontSize: '1.08rem'}}>
+                            Device Code: <span style={{color: '#fff', fontWeight: 700}}>{deviceCode}</span>
+                        </div>
+                        <div className="flex-grow-1 text-center" style={{fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1}}>
+                            ABSENT MEMBERS REPORT
+                        </div>
+                        <div className="fw-semibold text-end" style={{minWidth: 220, fontSize: '1.08rem'}}>
+                            Date: <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(date)}</span>
+                            <span className="mx-2">|</span>
+                            Shift: <span style={{color: '#fff', fontWeight: 700}}>{shift}</span>
+                        </div>
+                    </div>
+                    <div className="table-responsive">
+                      <Table className="records-table" hover responsive>
+                        <thead>
+                       
                           <tr>
-                            <td colSpan="4" className="text-center">
-                              No absent members
-                            </td>
+                            <th>#</th>
+                            <th>CODE</th>
+                            <th>MILKTYPE</th>
+                            <th>MEMBERNAME</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
+                        </thead>
+                        <tbody>
+                          {absent?.length > 0 ? (
+                            absent?.map((item, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{item.CODE}</td>
+                                <td>{item.MILKTYPE === "C" ? "COW" : "BUF"}</td>
+                                <td>{item.MEMBERNAME}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="4" className="text-center">
+                                No absent members
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </Table>
+                    </div>
+                    {/* Pagination Controls */}
+                    {totalCount > 0 && (
+                      <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="text-muted">Rows per page:</span>
+                          <Form.Select
+                            size="sm"
+                            style={{ width: 'auto' }}
+                            value={recordsPerPage}
+                            onChange={e => {
+                              setRecordsPerPage(Number(e.target.value));
+                              setCurrentPage(1);
+                            }}
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                          </Form.Select>
+                        </div>
+                        <div className="flex-grow-1 text-center fw-semibold">
+                          Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                            disabled={currentPage === 1}
+                          >
+                            &laquo; Prev
+                          </Button>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                          >
+                            Next &raquo;
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
                 )}
-
                 {(viewMode === "TOTALS" || viewMode === "ALL") && (
-                  <>
-                    <PageTitle name="Attendance Summary" />
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Total Members</th>
-                          <th>Present Members</th>
-                          <th>Absent Members</th>
-                          <th>Cow Absent</th>
-                          <th>Buffalo Absent</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{totalMembers}</td>
-                          <td>{presentCount}</td>
-                          <td>{absentCount}</td>
-                          <td>{cowAbsentCount}</td>
-                          <td>{bufAbsentCount}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-
-                <Button
-                  variant="outline-primary"
-                  className="mb-3 me-2"
-                  onClick={handleExportCSV}
-                  disabled={totalMembers === 0}
-                >
-                  <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  className="mb-3"
-                  onClick={handleExportPDF}
-                  disabled={totalMembers === 0}
-                >
-                  <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-                </Button>
-
-                {(viewMode === "ABSENT" || viewMode === "ALL") && totalCount > recordsPerPage && (
-                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="text-muted">Rows per page:</span>
-                      <Form.Select
-                        size="sm"
-                        value={recordsPerPage}
-                        onChange={(e) => {
-                          setRecordsPerPage(parseInt(e.target.value));
-                          setCurrentPage(1);
-                        }}
-                        style={{ width: "auto" }}
-                      >
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                      </Form.Select>
+                  <Card className="records-card mb-4">
+                    <div className="table-responsive">
+                      <Table className="records-table" hover responsive>
+                        <thead>
+                          <tr>
+                            <th>Total Members</th>
+                            <th>Present Members</th>
+                            <th>Absent Members</th>
+                            <th>Cow Absent</th>
+                            <th>Buffalo Absent</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{totalMembers}</td>
+                            <td>{presentCount}</td>
+                            <td>{absentCount}</td>
+                            <td>{cowAbsentCount}</td>
+                            <td>{bufAbsentCount}</td>
+                          </tr>
+                        </tbody>
+                      </Table>
                     </div>
-
-                    <div className="d-flex align-items-center gap-2">
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => setCurrentPage((prev) => prev - 1)}
-                        disabled={currentPage === 1}
-                      >
-                        « Prev
-                      </Button>
-                      <span className="fw-semibold">
-                        Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
-                      </span>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => setCurrentPage((prev) => prev + 1)}
-                        disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                      >
-                        Next »
-                      </Button>
-                    </div>
-                  </div>
+                  </Card>
                 )}
+                <div className="mb-3">
+                  <Button
+                    variant="outline-primary"
+                    className="me-2"
+                    onClick={handleExportCSV}
+                    disabled={totalMembers === 0}
+                  >
+                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={handleExportPDF}
+                    disabled={totalMembers === 0}
+                  >
+                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+                  </Button>
+                </div>
               </>
             )}
           </Card.Body>
-        </Card>
+        </div>
       </div>
     </>
   );

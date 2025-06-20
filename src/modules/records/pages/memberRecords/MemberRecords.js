@@ -1,7 +1,11 @@
 import {
+  faDesktop,
   faFileCsv,
   faFilePdf,
+  faList,
+  faUser,
   faSearch,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
@@ -29,10 +33,28 @@ import { roles } from "../../../../shared/utils/appRoles";
 import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
 import { skipToken } from "@reduxjs/toolkit/query";
 import InputGroup from "react-bootstrap/esm/InputGroup";
+import '../deviceRecords/DeviceRecords.scss';
+import ExportButtonsSection from "../ExportButtonsSection";
+import DeviceRecordsTotalsSection from '../../DeviceRecordsTotalsSection';
+
+const isExporting = false
+
 
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
 };
+
+// Helper to format date as dd/mm/yyyy
+const formatDateDMY = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const MemberRecords = () => {
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -124,6 +146,7 @@ const MemberRecords = () => {
   const totals = resultData?.totals || [];
   const totalCount = resultData?.totalRecords;
 
+  const filteredTotals = totals.filter(t => t._id?.milkType !== "TOTAL");
 
   const handleExportCSV = () => {
     if (!totals?.length && !records?.length) {
@@ -271,18 +294,19 @@ const MemberRecords = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between pageTitleSpace">
+      {/* <div className="d-flex justify-content-between pageTitleSpace">
         <PageTitle name="MEMBER RECORDS" pageItems={0} />
-      </div>
+      </div> */}
 
-      <div className="usersPage">
-        <Card className="mb-4">
-          <Form className="row g-3 align-items-end p-3">
+    <div className="device-records-page">
+      <div className="records-container">
+        <Card className="filters-card">
+          <Form className="row g-3 align-items-end">
             {(isAdmin || isDairy) && (
               <Form.Group className="col-md-2">
                 <Form.Label>Device Code</Form.Label>
                 <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
                   <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
                     <option value="">Select Device Code</option>
                     {deviceList?.map((dev) => (
@@ -296,7 +320,7 @@ const MemberRecords = () => {
               <Form.Group className="col-md-2">
                 <Form.Label>Device Code</Form.Label>
                 <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
                   <Form.Control type="text" value={deviceCode} readOnly />
                 </InputGroup>
               </Form.Group>
@@ -304,7 +328,7 @@ const MemberRecords = () => {
             <Form.Group className="col-md-2">
               <Form.Label>Member Code</Form.Label>
               <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <InputGroup.Text><FontAwesomeIcon icon={faUser} /></InputGroup.Text>
                 <Form.Select value={memberCode} onChange={e => setMemberCode(e.target.value)}>
                   <option value="">Select Member Code</option>
                   {memberCodes?.map((code, idx) => (
@@ -316,43 +340,49 @@ const MemberRecords = () => {
             <Form.Group className="col-md-2">
               <Form.Label>From Date</Form.Label>
               <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
                 <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
               </InputGroup>
             </Form.Group>
             <Form.Group className="col-md-2">
               <Form.Label>To Date</Form.Label>
               <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
                 <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
               </InputGroup>
             </Form.Group>
             <Form.Group className="col-md-2">
               <Form.Label>View Mode</Form.Label>
               <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+                <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
                 <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
-                  <option value="ALL">Show All Records</option>
-                  <option value="RECORDS">Only Records Summary</option>
-                  <option value="TOTALS">Only Record Totals</option>
+                  <option value="ALL">Show All</option>
+                  <option value="RECORDS">Only Records</option>
+                  <option value="TOTALS">Only Totals</option>
                 </Form.Select>
               </InputGroup>
             </Form.Group>
             <Form.Group className="col-md-2 d-flex align-items-end">
-              <Button variant="primary" className="w-100" onClick={handleSearch} disabled={isFetching} type="button">
+            <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
                 {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
-              </Button>
-            </Form.Group>
+            </Button>
+        </Form.Group>
           </Form>
         </Card>
-        <div className="d-flex justify-content-end mb-3">
-          <Button variant="success" className="me-2" onClick={handleExportCSV} type="button">
-            <FontAwesomeIcon icon={faFileCsv} className="me-2" /> Export CSV
-          </Button>
-          <Button variant="danger" onClick={handleExportPDF} type="button">
-            <FontAwesomeIcon icon={faFilePdf} className="me-2" /> Export PDF
-          </Button>
-        </div>
+         {/* Actions Section: Export */}
+         {totalCount > 0 && (
+                    <div className=" mb-3">
+                        {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
+                            <ExportButtonsSection
+                                handleExportCSV={handleExportCSV}
+                                handleExportPDF={handleExportPDF}
+                                isFetching={isFetching}
+                                isExporting={isExporting}
+                            />
+                        {/* </Card> */}
+                       
+                    </div>
+                )}
         <Card className="h-100">
           <Card.Body className="cardbodyCss">
             {!searchParams ? (
@@ -366,151 +396,134 @@ const MemberRecords = () => {
               </div>
             ) : (
               <>
+                {/* Modern Gradient Header Section */}
+                <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
+                  style={{
+                    gap: 16,
+                    borderRadius: 12,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
+                  }}>
+                  <div style={{minWidth: 120}}>
+                    <div className="fw-semibold" style={{color: '#fff', fontSize: '1.08rem'}}>
+                      Device Code: <span style={{color: '#fff',fontWeight: 700}}>{deviceCode}</span>
+                      <span className="mx-2">|</span>
+                      Member Code: <span style={{color: '#fff', fontWeight: 700}}>{String(memberCode || '').padStart(4, '0')}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-grow-1 text-center" style={{fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1}}>
+                    MEMBERWISE REPORT
+                  </div>
+                  <div className="fw-semibold text-end" style={{minWidth: 220, fontSize: '1.08rem'}}>
+                    From: <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(toDate)}</span>
+                  </div>
+                </div>
                 <hr />
                 {viewMode !== "TOTALS" && (
-                  <>
-                    <PageTitle name="Record Summary" />
-                    <Table hover responsive>
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Date</th>
-                          <th>Shift</th>
-                          <th>Milk Type</th>
-                          <th>Fat</th>
-                          <th>SNF</th>
-                          <th>Qty</th>
-                          <th>Rate</th>
-                          <th>Amount</th>
-                          <th>Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {records.length > 0 ? (
-                          records.map((record, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{record?.SAMPLEDATE}</td>
-                              <td>{record?.MILKTYPE}</td>
-                              <td>{record?.SHIFT}</td>
-                              <td>{record?.FAT?.toFixed(1)}</td>
-                              <td>{record?.SNF?.toFixed(1)}</td>
-                              <td>{record?.QTY?.toFixed(2)}</td>
-                              <td>₹{record?.RATE?.toFixed(2)}</td>
-                              <td>₹{record?.AMOUNT.toFixed(2) || 0}</td>
-                              <td>₹{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
-                              <td>₹{record?.TOTAL.toFixed(2)}</td>
-                            </tr>
-                          ))
-                        ) : (
+                  <Card className="records-card mb-4">
+                    <div className="table-responsive">
+                      <Table className="records-table" hover responsive>
+                        <thead>
                           <tr>
-                            <td colSpan="9" className="text-center">
-                              No records found
-                            </td>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Shift</th>
+                            <th>Milk Type</th>
+                            <th>Fat</th>
+                            <th>SNF</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Incentive</th>
+                            <th>Grand Total</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {viewMode !== "RECORDS" && (
-                  <>
-                    <PageTitle name="Total Records" />
-                    <Table bordered responsive>
-                      <thead>
-                        <tr>
-                          <th>Milk Type</th>
-                          <th>Total Records</th>
-                          <th>Avg Fat</th>
-                          <th>Avg SNF</th>
-                          <th>Total Qty</th>
-                          <th>Avg Rate</th>
-                          <th>Total Amount</th>
-                          <th>Total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {totals?.length > 0 ? (
-                          totals?.map((total, index) => (
-                            <tr key={index}>
-                              <td>{total?._id.milkType}</td>
-                              <td>{total?.totalRecords}</td>
-                              <td>{total?.averageFat}</td>
-                              <td>{total?.averageSNF}</td>
-                              <td>{total?.totalQuantity}</td>
-                              <td>₹{total?.averageRate}</td>
-                              <td>₹{total?.totalAmount}</td>
-                              <td>₹{total?.totalIncentive}</td>
-                              <td>
-                                ₹{`${(
-                                  parseFloat(total.totalAmount) +
-                                  parseFloat(total.totalIncentive)
-                                ).toFixed(2)}`}
-                              </td>
+                        </thead>
+                        <tbody>
+                          {records.length > 0 ? (
+                            records.map((record, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{record?.SAMPLEDATE}</td>
+                                <td>{record?.SHIFT}</td>
+                                <td>{record?.MILKTYPE}</td>
+                                <td>{record?.FAT?.toFixed(1)}</td>
+                                <td>{record?.SNF?.toFixed(1)}</td>
+                                <td>{record?.QTY?.toFixed(2)}</td>
+                                <td>₹{record?.RATE?.toFixed(2)}</td>
+                                <td>₹{record?.AMOUNT?.toFixed(2) || 0}</td>
+                                <td>₹{record?.INCENTIVEAMOUNT?.toFixed(2) || 0}</td>
+                                <td>₹{record?.TOTAL?.toFixed(2)}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="11" className="text-center">No records found</td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {viewMode !== "TOTALS" && totalCount > 0 && (
-                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="text-muted">Rows per page:</span>
-                      <Form.Select
-                        size="sm"
-                        value={recordsPerPage}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setRecordsPerPage(parseInt(value));
-                          setCurrentPage(1);
-                        }}
-                        style={{ width: "auto" }}
-                      >
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                      </Form.Select>
+                          )}
+                        </tbody>
+                      </Table>
                     </div>
-
-                    {totalCount > recordsPerPage && (
-                      <div className="d-flex align-items-center gap-2">
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => prev - 1)}
-                          disabled={currentPage === 1}
-                        >
-                          « Prev
-                        </Button>
-                        <span className="fw-semibold">
-                          Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
-                        </span>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => setCurrentPage((prev) => prev + 1)}
-                          disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                        >
-                          Next »
-                        </Button>
+                    {/* Pagination Controls */}
+                    {totalCount > 0 && (
+                      <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="text-muted">Rows per page:</span>
+                          <Form.Select
+                            size="sm"
+                            style={{ width: 'auto' }}
+                            value={recordsPerPage}
+                            onChange={e => {
+                              setRecordsPerPage(Number(e.target.value));
+                              setCurrentPage(1);
+                            }}
+                          >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </Form.Select>
+                        </div>
+                        <div className="flex-grow-1 text-center fw-semibold">
+                          Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
+                        </div>
+                        <div className="d-flex align-items-center gap-2 justify-content-end">
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            className="me-2"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                          >
+                            Previous
+                          </Button>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                          >
+                            Next
+                          </Button>
+                        </div>
                       </div>
                     )}
-                  </div>
+                  </Card>
+                )}
+                {viewMode !== "RECORDS" && (
+                  <Card className="totals-card">
+                    <Card.Body>
+                      <DeviceRecordsTotalsSection filteredTotals={filteredTotals} />
+                    </Card.Body>
+                  </Card>
                 )}
               </>
             )}
           </Card.Body>
         </Card>
+      </div>
       </div>
     </>
   );

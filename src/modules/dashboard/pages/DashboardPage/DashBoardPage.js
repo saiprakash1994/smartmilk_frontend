@@ -47,8 +47,11 @@ import {
     FaIndustry,
     FaArrowUp,
     FaArrowDown,
-    FaEquals
+    FaEquals,
+    FaSearch
 } from "react-icons/fa";
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from "react-bootstrap/Button";
 
 const shifts = [
   { value: "", label: "All Shifts", icon: FaClock },
@@ -164,84 +167,69 @@ const DashboardPage = () => {
         {/* Filters Section */}
         <Card className="filters-card mb-4">
           <Card.Body className="p-4">
-            <div className="filters-header mb-3">
-              <h6 className="filters-title">
-                <FaCalendarAlt className="me-2" />
-                Filter Options
-              </h6>
-            </div>
-            <Row className="g-3">
+            <Form className="row g-3 align-items-end">
               <Col md={3}>
                 <Form.Group controlId="filterDate">
-                  <Form.Label className="filter-label">
-                    <FaCalendarAlt className="me-2" />
-                    Date
+                  <Form.Label className="form-label-modern">
+                    <FaCalendarAlt className="me-2" /> Date
                   </Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={selectedDate}
-                    max={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="filter-control"
-                  />
+                  <InputGroup>
+                    <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
+                    <Form.Control
+                      type="date"
+                      value={selectedDate}
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={e => setSelectedDate(e.target.value)}
+                      className="form-control-modern select-date"
+                    />
+                  </InputGroup>
                 </Form.Group>
               </Col>
-
               <Col md={3}>
                 <Form.Group controlId="filterShift">
-                  <Form.Label className="filter-label">
-                    <FaClock className="me-2" />
-                    Shift
+                  <Form.Label className="form-label-modern">
+                    <FaClock className="me-2" /> Shift
                   </Form.Label>
-                  <Form.Select
-                    value={selectedShift}
-                    onChange={(e) => setSelectedShift(e.target.value)}
-                    className="filter-control"
-                  >
-                    {shifts.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  <InputGroup>
+                    <InputGroup.Text><FaClock /></InputGroup.Text>
+                    <Form.Select
+                      value={selectedShift}
+                      onChange={e => setSelectedShift(e.target.value)}
+                      className="form-select-modern select-shift"
+                    >
+                      <option value="">All Shifts</option>
+                      <option value="MORNING">Morning</option>
+                      <option value="EVENING">Evening</option>
+                    </Form.Select>
+                  </InputGroup>
                 </Form.Group>
               </Col>
-
-              {(isAdmin || isDairy) && (
-                <Col md={3}>
-                  <Form.Group controlId="filterDevice">
-                    <Form.Label className="filter-label">
-                      <FaDesktop className="me-2" />
-                      Device
-                    </Form.Label>
+              <Col md={3}>
+                <Form.Group controlId="filterDevice">
+                  <Form.Label className="form-label-modern">
+                    <FaDesktop className="me-2" /> Device
+                  </Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text><FaDesktop /></InputGroup.Text>
                     <Form.Select
                       value={selectedDeviceId}
-                      onChange={(e) => setSelectedDeviceId(e.target.value)}
-                      className="filter-control"
+                      onChange={e => setSelectedDeviceId(e.target.value)}
+                      className="form-select-modern select-device"
                     >
                       <option value="">All Devices</option>
-                      {deviceList.map((dev) => (
-                        <option key={dev.deviceid} value={dev.deviceid}>
-                          {dev.deviceid}
-                        </option>
+                      {deviceList?.map((dev) => (
+                        <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
                       ))}
                     </Form.Select>
-                  </Form.Group>
-                </Col>
-              )}
-
-              <Col md={3}>
-                <div className="d-flex align-items-end h-100">
-                  <Badge 
-                    bg="light" 
-                    text="dark" 
-                    className="filter-badge"
-                  >
-                    {formattedDate} {selectedShift && `• ${selectedShift}`}
-                  </Badge>
-                </div>
+                  </InputGroup>
+                </Form.Group>
               </Col>
-            </Row>
+              <Col md={3} className="ms-auto d-flex align-items-end justify-content-end">
+                <Button className="w-100 export-btn" variant="primary" onClick={refetch} type="button">
+                  <FaSearch /> Search
+                </Button>
+              </Col>
+            </Form>
           </Card.Body>
         </Card>
 
