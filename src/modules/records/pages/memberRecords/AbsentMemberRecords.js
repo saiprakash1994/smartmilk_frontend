@@ -9,7 +9,7 @@ import {
   faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Table, Card, Button, Form, Spinner, Row, Col, Badge } from "react-bootstrap";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -107,6 +107,7 @@ const AbsentMemberRecords = () => {
 
   const absent = resultData?.absentMembers || [];
   const totalCount = resultData?.totalRecords || 0;
+  const totalPages = Math.ceil(totalCount / recordsPerPage);
 
   const filteredAbsent = absent.filter(member =>
     String(member.CODE).toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -405,27 +406,17 @@ const AbsentMemberRecords = () => {
                             </Form.Select>
                           </div>
                           {totalCount > recordsPerPage && (
-                            <div className="d-flex align-items-center gap-2">
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() => setCurrentPage((prev) => prev - 1)}
-                                disabled={currentPage === 1}
-                              >
-                                « Prev
-                              </Button>
-                              <span className="fw-semibold">
-                                Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}
-                              </span>
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() => setCurrentPage((prev) => prev + 1)}
-                                disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                              >
-                                Next »
-                              </Button>
-                            </div>
+                            <Pagination>
+                              <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                              <Pagination.Prev onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} />
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
+                                  {page}
+                                </Pagination.Item>
+                              ))}
+                              <Pagination.Next onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} />
+                              <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                            </Pagination>
                           )}
                         </div>
                       </Card.Footer>
