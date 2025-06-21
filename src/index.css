@@ -16,7 +16,10 @@
 
 
   --appSiderbarWidth: 75px;
-  --appTheam: #000078;
+  --appTheam: #4f8cff;
+  /* Use for solid color backgrounds, borders, etc. */
+  --appGradient: linear-gradient(135deg, #4f8cff 0%, #a084ee 100%);
+  /* Use for backgrounds where gradients are supported */
   --appTextColor: white;
   --appPageTitleColor: var(--bs-gray-700);
   --appTitleColor: var(--bs-gray-700);
@@ -26,11 +29,32 @@
   --appOrderPending: #FFC107;
   --appOrderDelivered: #5ead5e;
 
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --accent: #f8a304;
+  --background: #f8fafc;
+  --sidebar-bg: #fff;
+  --sidebar-border: #2563eb;
+  --header-height: 60px;
+  --card-radius: 14px;
+  --card-shadow: 0 2px 12px 0 rgba(30, 64, 175, 0.06);
+  --text-main: #1e293b;
+  --text-muted: #64748b;
 }
 
 body,
 #root {
   height: 100vh;
+  min-height: 100vh;
+  background: var(--background);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .pageTile {

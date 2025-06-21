@@ -2,13 +2,14 @@ import {
   faFileCsv,
   faFilePdf,
   faSearch,
+  faFilter,
+  faMicrochip,
+  faUser,
+  faCalendarAlt,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Table from "react-bootstrap/esm/Table";
-import Card from "react-bootstrap/esm/Card";
-import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/esm/Form";
-import Spinner from "react-bootstrap/esm/Spinner";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -27,6 +28,7 @@ import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
+import '../../Records.scss';
 
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
@@ -66,6 +68,7 @@ const CumilativeRecords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -149,6 +152,10 @@ const CumilativeRecords = () => {
 
   const records = resultData?.data || [];
   const totalCount = resultData?.pagination?.totalRecords;
+
+  const filteredRecords = records.filter(record =>
+    String(record.CODE).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const cowMilkTypeTotals =
     resultData?.milkTypeTotals.filter((cow) => cow?.MILKTYPE === "COW") || [];
@@ -382,274 +389,349 @@ const CumilativeRecords = () => {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-between pageTitleSpace">
-        <PageTitle name="CUMILATIVE RECORDS" pageItems={0} />
-      </div>
+    <div className="records-container">
 
-      <div className="usersPage">
-        <Card className="h-100">
-          <div className="filters d-flex gap-3 p-3">
-            {(isAdmin || isDairy) &&
-              (isAdminLoading || isDairyLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                <Form.Select
-                  value={deviceCode}
-                  onChange={(e) => setDeviceCode(e.target.value)}
-                >
-                  <option value="">Select Device Code</option>
-                  {deviceList?.map((dev) => (
-                    <option key={dev.deviceid} value={dev.deviceid}>
-                      {dev.deviceid}
-                    </option>
-                  ))}
-                </Form.Select>
-              ))}
-
-            {isDevice &&
-              (isDeviceLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                <Form.Control type="text" value={deviceCode} readOnly />
-              ))}
-
-            <Form.Select
-              value={fromCode}
-              onChange={(e) => setFromCode(e.target.value)}
-            >
-              <option value="">Select Start Member Code</option>
-              {memberCodes?.map((code, idx) => (
-                <option
-                  key={idx}
-                  value={code.CODE}
-                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-              ))}
-            </Form.Select>
-            <Form.Select
-              value={toCode}
-              onChange={(e) => setToCode(e.target.value)}
-            >
-              <option value="">Select End Member Code</option>
-              {memberCodes?.map((code, idx) => (
-                <option
-                  key={idx}
-                  value={code.CODE}
-                >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-              ))}
-            </Form.Select>
-
-            <Form.Control
-              type="date"
-              value={fromDate}
-              max={getToday()}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-            <Form.Control
-              type="date"
-              value={toDate}
-              max={getToday()}
-              onChange={(e) => setToDate(e.target.value)}
-            />
-            <Form.Select
-              value={viewMode}
-              onChange={(e) => setViewMode(e.target.value)}
-            >
-              <option value="ALL">All DATA</option>
-              <option value="TOTALS">All MilkType Totals</option>
-              <option value="COWTOTALS">COW Totals</option>
-              <option value="BUFFTOTALS">BUF Totals</option>
-              <option value="DATA">Members Data </option>
-            </Form.Select>
-            <Button
-              variant="outline-primary"
-              onClick={handleSearch}
-              disabled={isFetching}
-            >
-              {isFetching ? (
-                <Spinner size="sm" animation="border" />
-              ) : (
-                <FontAwesomeIcon icon={faSearch} />
+      <Card className="filter-card mb-4">
+        <Card.Header className="filter-card-header">
+          <FontAwesomeIcon icon={faFilter} className="me-2" />
+          Filter Cumulative Records
+        </Card.Header>
+        <Card.Body>
+          <Form>
+            <Row className="align-items-end">
+              {(isAdmin || isDairy) && (
+                <Col md={2}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faMicrochip} className="me-2" />Select Device</Form.Label>
+                    {isAdminLoading || isDairyLoading ? (
+                      <Spinner animation="border" size="sm" />
+                    ) : (
+                      <Form.Select
+                        className="form-select-modern"
+                        value={deviceCode}
+                        onChange={(e) => setDeviceCode(e.target.value)}
+                      >
+                        <option value="">Select Device Code</option>
+                        {deviceList?.map((dev) => (
+                          <option key={dev.deviceid} value={dev.deviceid}>
+                            {dev.deviceid}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    )}
+                  </Form.Group>
+                </Col>
               )}
-            </Button>
-          </div>
 
-          <Card.Body className="cardbodyCss">
-            {!searchParams ? (
-              <div className="text-center my-5 text-muted">
-                Please apply filters and click <strong>Search</strong> to view
-                records.
-              </div>
-            ) : isFetching ? (
+              {isDevice && (
+                <Col md={2}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faMicrochip} className="me-2" />Device</Form.Label>
+                    {isDeviceLoading ? (
+                      <Spinner animation="border" size="sm" />
+                    ) : (
+                      <Form.Control className="form-control-modern" type="text" value={deviceCode} readOnly />
+                    )}
+                  </Form.Group>
+                </Col>
+              )}
+              <Col md={2}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faUser} className="me-2" />From Member</Form.Label>
+                  <Form.Select
+                    className="form-select-modern"
+                    value={fromCode}
+                    onChange={(e) => setFromCode(e.target.value)}
+                  >
+                    <option value="">Start Code</option>
+                    {memberCodes?.map((code, idx) => (
+                      <option
+                        key={idx}
+                        value={code.CODE}
+                      >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faUser} className="me-2" />To Member</Form.Label>
+                  <Form.Select
+                    className="form-select-modern"
+                    value={toCode}
+                    onChange={(e) => setToCode(e.target.value)}
+                  >
+                    <option value="">End Code</option>
+                    {memberCodes?.map((code, idx) => (
+                      <option
+                        key={idx}
+                        value={code.CODE}
+                      >{`${code.CODE} - ${code.MEMBERNAME}`}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={2}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faCalendarAlt} className="me-2" />From Date</Form.Label>
+                  <Form.Control
+                    className="form-control-modern"
+                    type="date"
+                    value={fromDate}
+                    max={getToday()}
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faCalendarAlt} className="me-2" />To Date</Form.Label>
+                  <Form.Control
+                    className="form-control-modern"
+                    type="date"
+                    value={toDate}
+                    max={getToday()}
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faEye} className="me-2" />View Mode</Form.Label>
+                  <Form.Select
+                    className="form-select-modern"
+                    value={viewMode}
+                    onChange={(e) => setViewMode(e.target.value)}
+                  >
+                    <option value="ALL">All DATA</option>
+                    <option value="TOTALS">All MilkType Totals</option>
+                    <option value="COWTOTALS">COW Totals</option>
+                    <option value="BUFFTOTALS">BUF Totals</option>
+                    <option value="DATA">Members Data </option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Button
+                  variant="primary"
+                  className="w-100 modern-button"
+                  onClick={handleSearch}
+                  disabled={isFetching}
+                >
+                  {isFetching ? (
+                    <Spinner size="sm" animation="border" />
+                  ) : (
+                    <><FontAwesomeIcon icon={faSearch} className="me-2" />Search</>
+                  )}
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card.Body>
+      </Card>
+
+      {searchParams && (
+        <Card className="results-card">
+          <Card.Body>
+            {isFetching ? (
               <div className="text-center my-5">
                 <Spinner animation="border" variant="primary" />
               </div>
             ) : (
               <>
-                <hr />
-                {(viewMode == "DATA" || viewMode == "ALL") && (
-                  <>
-                    <PageTitle name="Members Data" />
-                    <Table striped="columns" bordered hover responsive>
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Code</th>
-                          <th>MILKTYPE</th>
-                          <th>Total Qty (L)</th>
-                          <th>Avg Rate</th>
-                          <th>Total Amount</th>
-                          <th>Total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {records?.length > 0 ? (
-                          records?.map((record, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{record?.CODE}</td>
-                              <td>{record?.MILKTYPE}</td>
-                              <td>{record?.totalQty} L</td>
-                              <td>₹{record?.avgRate}</td>
-                              <td>₹{record?.totalAmount}</td>
-                              <td>₹{record?.totalIncentive}</td>
-                              <td>₹{record?.grandTotal}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
+                <div className="d-flex justify-content-end mb-3">
+                  <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
+                    <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
+                  </Button>
+                  <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
+                    <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
+                  </Button>
+                </div>
 
-                  </>
+                {(viewMode === "DATA" || viewMode === "ALL") && (
+                  <Card className="mb-4">
+                    <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
+                      <span>Members Data</span>
+                      <Form.Group style={{ width: '250px' }}>
+                        <Form.Control
+                          type="text"
+                          placeholder="Search by Member Code..."
+                          className="form-control-modern"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Card.Header>
+                    <Card.Body>
+                      <Table hover responsive className="records-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>MILKTYPE</th>
+                            <th>Total Qty (L)</th>
+                            <th>Avg Rate</th>
+                            <th>Total Amount</th>
+                            <th>Total Incentive</th>
+                            <th>Grand Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredRecords.length > 0 ? (
+                            filteredRecords.map((record, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{record?.CODE}</td>
+                                <td>
+                                  <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                    {record?.MILKTYPE}
+                                  </Badge>
+                                </td>
+                                <td>{record?.totalQty} L</td>
+                                <td>₹{record?.avgRate}</td>
+                                <td>₹{record?.totalAmount}</td>
+                                <td>₹{record?.totalIncentive}</td>
+                                <td>₹{record?.grandTotal}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="8" className="text-center">
+                                {searchTerm ? "No members found matching your search." : "No totals available"}
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </Table>
+                    </Card.Body>
+                  </Card>
                 )}
 
 
-                {(viewMode == "COWTOTALS" || viewMode == "ALL") && (
-                  <>
-                    <PageTitle name="Cow Totals" />
-                    <Table striped="columns" bordered hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Member Count</th>
-                          <th>MILKTYPE</th>
-                          <th>Total Qty (L)</th>
-                          <th>Total Amount</th>
-                          <th>total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cowMilkTypeTotals?.length > 0 ? (
-                          cowMilkTypeTotals?.map((cow, index) => (
-                            <tr key={index}>
-                              <td>{cow?.memberCount}</td>
-                              <td>{cow?.MILKTYPE}</td>
-                              <td>{cow?.totalQty} L</td>
-                              <td>?{cow?.totalAmount}</td>
-                              <td>?{cow?.totalIncentive}</td>
-                              <td>?{cow?.grandTotal}</td>
-                            </tr>
-                          ))
-                        ) : (
+                {(viewMode === "COWTOTALS" || viewMode === "ALL") && (
+                  <Card className="mb-4">
+                    <Card.Header className="results-card-header">Cow Totals</Card.Header>
+                    <Card.Body>
+                      <Table hover responsive className="totals-table">
+                        <thead>
                           <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
+                            <th>Member Count</th>
+                            <th>MILKTYPE</th>
+                            <th>Total Qty (L)</th>
+                            <th>Total Amount</th>
+                            <th>total Incentive</th>
+                            <th>Grand Total</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-                {(viewMode == "BUFFTOTALS" || viewMode == "ALL") && (
-                  <>
-                    <PageTitle name="Buf Totals" />
-                    <Table striped="columns" bordered hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Member Count</th>
-                          <th>MILKTYPE</th>
-                          <th>Total Qty</th>
-                          <th>Total Amount</th>
-                          <th>total Incentive</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bufMilkTypeTotals?.length > 0 ? (
-                          bufMilkTypeTotals?.map((buf, index) => (
-                            <tr key={index}>
-                              <td>{buf?.memberCount}</td>
-                              <td>{buf?.MILKTYPE}</td>
-                              <td>{buf?.totalQty} L</td>
-                              <td>₹{buf?.totalAmount}</td>
-                              <td>₹{buf?.totalIncentive}</td>
-                              <td>₹{buf?.grandTotal}</td>
+                        </thead>
+                        <tbody>
+                          {cowMilkTypeTotals?.length > 0 ? (
+                            cowMilkTypeTotals?.map((cow, index) => (
+                              <tr key={index}>
+                                <td>{cow?.memberCount}</td>
+                                <td>
+                                  <Badge bg={cow?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                    {cow?.MILKTYPE}
+                                  </Badge>
+                                </td>
+                                <td>{cow?.totalQty} L</td>
+                                <td>₹{cow?.totalAmount}</td>
+                                <td>₹{cow?.totalIncentive}</td>
+                                <td>₹{cow?.grandTotal}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="6" className="text-center">
+                                No totals available
+                              </td>
                             </tr>
-                          ))
-                        ) : (
+                          )}
+                        </tbody>
+                      </Table>
+                    </Card.Body>
+                  </Card>
+                )}
+                {(viewMode === "BUFFTOTALS" || viewMode === "ALL") && (
+                  <Card className="mb-4">
+                    <Card.Header className="results-card-header">Buf Totals</Card.Header>
+                    <Card.Body>
+                      <Table hover responsive className="totals-table">
+                        <thead>
                           <tr>
-                            <td colSpan="8" className="text-center">
-                              No totals available
-                            </td>
+                            <th>Member Count</th>
+                            <th>MILKTYPE</th>
+                            <th>Total Qty</th>
+                            <th>Total Amount</th>
+                            <th>total Incentive</th>
+                            <th>Grand Total</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
+                        </thead>
+                        <tbody>
+                          {bufMilkTypeTotals?.length > 0 ? (
+                            bufMilkTypeTotals?.map((buf, index) => (
+                              <tr key={index}>
+                                <td>{buf?.memberCount}</td>
+                                <td>
+                                  <Badge bg={buf?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                    {buf?.MILKTYPE}
+                                  </Badge>
+                                </td>
+                                <td>{buf?.totalQty} L</td>
+                                <td>₹{buf?.totalAmount}</td>
+                                <td>₹{buf?.totalIncentive}</td>
+                                <td>₹{buf?.grandTotal}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="6" className="text-center">
+                                No totals available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </Table>
+                    </Card.Body>
+                  </Card>
                 )}
-                {(viewMode == "TOTALS" || viewMode == "ALL") && (
-                  <>
-                    <PageTitle name="All Totals" />
-                    <Table striped="columns" bordered hover responsive>
-                      <thead>
-                        <tr>
-                          <th>Total Members</th>
-                          <th>Grand Total Qty</th>
-                          <th>Grand Total Incentive</th>
-                          <th>Grand Total Amount</th>
-                          <th>Grand Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{totalMembers}</td>
-                          <td>{grandTotalQty} L</td>
-                          <td>₹{grandTotalIncentive}</td>
-                          <td>₹{grandTotalAmount}</td>
-                          <td>₹{grandTotal}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </>
+                {(viewMode === "TOTALS" || viewMode === "ALL") && (
+                  <Card className="mb-4">
+                    <Card.Header className="results-card-header">All Totals</Card.Header>
+                    <Card.Body>
+                      <Table hover responsive className="totals-table">
+                        <thead>
+                          <tr>
+                            <th>Total Members</th>
+                            <th>Grand Total Qty</th>
+                            <th>Grand Total Incentive</th>
+                            <th>Grand Total Amount</th>
+                            <th>Grand Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{totalMembers}</td>
+                            <td>{grandTotalQty} L</td>
+                            <td>₹{grandTotalIncentive}</td>
+                            <td>₹{grandTotalAmount}</td>
+                            <td>₹{grandTotal}</td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    </Card.Body>
+                  </Card>
                 )}
-                <Button
-                  variant="outline-primary"
-                  className="mb-3 me-2"
-                  onClick={handleExportCSV}
-                >
-                  <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  className="mb-3"
-                  onClick={handleExportPDF}
-                >
-                  <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-                </Button>
+
                 {(viewMode === "DATA" || viewMode === "ALL") && totalCount > 0 && (
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
                     <div className="d-flex align-items-center gap-2">
                       <span className="text-muted">Rows per page:</span>
                       <Form.Select
                         size="sm"
+                        className="form-select-modern-sm"
                         value={recordsPerPage}
                         onChange={(e) => {
                           const value = e.target.value;
@@ -693,9 +775,13 @@ const CumilativeRecords = () => {
             )}
           </Card.Body>
         </Card>
-
-      </div>
-    </>
+      )}
+      {!searchParams &&
+        <div className="text-center my-5 text-muted">
+          Please apply filters and click <strong>Search</strong> to view records.
+        </div>
+      }
+    </div>
   );
 };
 

@@ -1,0 +1,145 @@
+.deviceadd-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    position: relative;
+}
+
+.deviceadd-bg-illustration {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100vw;
+    height: 350px;
+    background: radial-gradient(circle at 20% 40%, #fff6 0%, #4f8cff22 60%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+    animation: floatBg 8s ease-in-out infinite alternate;
+}
+
+@keyframes floatBg {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(30px);
+    }
+}
+
+.device-add-responsive {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 8px;
+}
+
+.modern-card {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1.5px 4px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 32px 24px;
+    background: #fff;
+}
+
+.deviceadd-card {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 4px 32px 0 #4f8cff22;
+    border-radius: 24px;
+    border: none;
+}
+
+.deviceadd-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #4f8cff;
+    text-shadow: 0 2px 8px #4f8cff33;
+}
+
+.deviceadd-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.deviceadd-btn-row .btn-primary {
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #4f8cff33;
+    transition: all 0.3s ease;
+}
+
+.deviceadd-btn-row .btn-primary:hover,
+.deviceadd-btn-row .btn-primary:focus {
+    background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px #7b2ff233;
+}
+
+.deviceadd-btn-row .btn-outline-secondary {
+    color: #4f8cff;
+    border-color: #4f8cff;
+    background: transparent;
+}
+
+.deviceadd-btn-row .btn-outline-secondary:hover,
+.deviceadd-btn-row .btn-outline-secondary:focus {
+    background: #e6f0ff;
+    color: #7b2ff2;
+    border-color: #7b2ff2;
+}
+
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label {
+    color: #4f8cff;
+}
+
+.form-floating>label {
+    color: #64748b;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.deviceadd-password-section {
+    background: #f5f7fa;
+    border: 1.5px solid #cfe2ff;
+    border-radius: 10px;
+    padding: 1.2rem 1rem 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.deviceadd-btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.input-valid {
+    color: #28a745;
+    position: absolute;
+    right: 10px;
+    font-size: 1.2em;
+}
+
+.input-invalid {
+    color: #dc3545;
+    position: absolute;
+    right: 10px;
+    font-size: 1.2em;
+}
+
+@media (max-width: 600px) {
+    .modern-card {
+        padding: 16px 6px;
+    }
+
+    .device-add-responsive {
+        padding: 0 2px;
+    }
+}

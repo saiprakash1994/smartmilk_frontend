@@ -1,0 +1,34 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f8f9fa" rx="20"/>
+  
+  <!-- Milk Bottle -->
+  <g transform="translate(150, 80)">
+    <rect x="20" y="40" width="60" height="120" rx="8" fill="#667eea" stroke="#5a6fd8" stroke-width="2"/>
+    <rect x="35" y="20" width="30" height="20" rx="4" fill="#667eea" stroke="#5a6fd8" stroke-width="2"/>
+    <rect x="32" y="10" width="36" height="10" rx="5" fill="#28a745"/>
+    <rect x="22" y="140" width="56" height="18" rx="4" fill="#ffffff"/>
+  </g>
+  
+  <!-- Chart Bars -->
+  <g transform="translate(50, 180)">
+    <rect x="0" y="0" width="20" height="40" fill="#667eea" rx="2"/>
+    <rect x="30" y="0" width="20" height="60" fill="#764ba2" rx="2"/>
+    <rect x="60" y="0" width="20" height="30" fill="#667eea" rx="2"/>
+    <rect x="90" y="0" width="20" height="50" fill="#764ba2" rx="2"/>
+    <rect x="120" y="0" width="20" height="45" fill="#667eea" rx="2"/>
+  </g>
+  
+  <!-- Device Icon -->
+  <g transform="translate(280, 180)">
+    <rect x="0" y="0" width="60" height="40" rx="8" fill="#667eea" stroke="#5a6fd8" stroke-width="2"/>
+    <circle cx="30" cy="20" r="8" fill="#28a745"/>
+  </g>
+  
+  <!-- Connection Lines -->
+  <line x1="230" y1="140" x2="280" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+  <line x1="170" y1="200" x2="220" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+  
+  <!-- Status Icons -->
+  <circle cx="50" cy="50" r="15" fill="#28a745" opacity="0.8"/>
+  <circle cx="350" cy="60" r="12" fill="#ffc107" opacity="0.8"/>
+</svg> 

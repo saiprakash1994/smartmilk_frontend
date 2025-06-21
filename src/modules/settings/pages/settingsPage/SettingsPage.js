@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Row, Col, Container, Button, Spinner } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, Row, Col, Container, Button, Spinner, Card, Nav, Tab, Badge } from "react-bootstrap";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { successToast, errorToast } from "../../../../shared/utils/appToaster";
 import "./SettingsPage.scss";
@@ -13,10 +13,30 @@ import {
   useGetAllDevicesQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
+import {
+  FaServer,
+  FaCog,
+  FaCalculator,
+  FaShieldAlt,
+  FaSync,
+  FaLock,
+  FaTint,
+  FaWeightHanging,
+  FaChartLine,
+  FaUsers,
+  FaTable,
+  FaExchangeAlt,
+  FaClock,
+  FaLayerGroup,
+  FaSave,
+  FaBuilding,
+  FaDesktop
+} from "react-icons/fa";
 
 const SettingsPage = () => {
   const userType = UserTypeHook();
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
+  const location = useLocation();
   const isDairy = userType === roles.DAIRY;
   const isDevice = userType === roles.DEVICE;
   const isAdmin = userType === roles.ADMIN;
@@ -24,17 +44,21 @@ const SettingsPage = () => {
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
 
-  const [selectedDairyCode, setSelectedDairyCode] = useState("");
-  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  // Get pre-selected device from navigation state
+  const preSelectedDevice = location.state?.selectedDeviceId;
+  const preSelectedDairy = location.state?.selectedDairyCode;
+
+  const [selectedDairyCode, setSelectedDairyCode] = useState(preSelectedDairy || "");
+  const [selectedDeviceId, setSelectedDeviceId] = useState(
+    preSelectedDevice || (isDevice ? deviceid : "")
+  );
   const [originalSettings, setOriginalSettings] = useState({});
   const [settings, setSettings] = useState({});
 
   const idToFetch = isDevice ? deviceid : selectedDeviceId;
-  console.log(deviceid);
   const { data: allDevices = [] } = useGetAllDevicesQuery(undefined, {
     skip: !isAdmin,
   });
-  console.log(allDevices);
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
     skip: !isDairy,
   });
@@ -78,14 +102,14 @@ const SettingsPage = () => {
           server.analyzer === "U"
             ? "EKO Ultra"
             : server.analyzer === "P"
-            ? "Ultra Pro"
-            : server.analyzer === "L"
-            ? "Lacto Scan"
-            : server.analyzer === "K"
-            ? "Ksheera"
-            : server.analyzer === "E"
-            ? "Essae"
-            : "Milk Tester",
+              ? "Ultra Pro"
+              : server.analyzer === "L"
+                ? "Lacto Scan"
+                : server.analyzer === "K"
+                  ? "Ksheera"
+                  : server.analyzer === "E"
+                    ? "Essae"
+                    : "Milk Tester",
         useCowSnf: server.useCowSnf === "Y",
         useBufSnf: server.useBufSnf === "Y",
         highFatAccept: server.highFatAccept === "Y",
@@ -97,10 +121,8 @@ const SettingsPage = () => {
         autoShiftClose: server.autoShiftClose === "Y",
         mixedMilk: server.mixedMilk === "Y",
         machineLock: server.machineLock === "Y",
+        commissionType: server.commissionType === "Y",
         normalCommission: server.normalCommission || "00.00",
-        // specialCommission: Array.isArray(server.specialCommission)
-        //   ? server.specialCommission
-        //   : [server.specialCommission || "00.00"],
         specialCommission: Array.isArray(server.specialCommission)
           ? [...server.specialCommission, ...Array(9).fill("00.00")].slice(0, 9)
           : Array(9).fill(server.specialCommission || "00.00"),
@@ -110,6 +132,14 @@ const SettingsPage = () => {
       setOriginalSettings(mapped);
     }
   }, [deviceData]);
+
+  // Handle pre-selected device from devices page
+  useEffect(() => {
+    if (preSelectedDevice && preSelectedDairy) {
+      // Show success message when coming from devices page
+      successToast(`Device ${preSelectedDevice} selected for configuration`);
+    }
+  }, [preSelectedDevice, preSelectedDairy]);
 
   const handleChange = (field, value) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
@@ -146,14 +176,14 @@ const SettingsPage = () => {
           settings.analyzer === "EKO Ultra"
             ? "U"
             : settings.analyzer === "Ultra Pro"
-            ? "P"
-            : settings.analyzer === "Lacto Scan"
-            ? "L"
-            : settings.analyzer === "Ksheera"
-            ? "K"
-            : settings.analyzer === "Essae"
-            ? "E"
-            : "M",
+              ? "P"
+              : settings.analyzer === "Lacto Scan"
+                ? "L"
+                : settings.analyzer === "Ksheera"
+                  ? "K"
+                  : settings.analyzer === "Essae"
+                    ? "E"
+                    : "M",
         useCowSnf: settings.useCowSnf ? "Y" : "N",
         useBufSnf: settings.useBufSnf ? "Y" : "N",
         highFatAccept: settings.highFatAccept ? "Y" : "N",
@@ -165,7 +195,7 @@ const SettingsPage = () => {
         autoShiftClose: settings.autoShiftClose ? "Y" : "N",
         mixedMilk: settings.mixedMilk ? "Y" : "N",
         machineLock: settings.machineLock ? "Y" : "N",
-        commissionType: "Y",
+        commissionType: settings.commissionType ? "Y" : "N",
         normalCommission: formatCommission(settings.normalCommission),
         specialCommission: settings.specialCommission
           .filter((val) => val.trim() !== "")
@@ -183,270 +213,545 @@ const SettingsPage = () => {
     }
   };
 
-  return (
-    <>
-      <div className="d-flex justify-content-between pageTitleSpace">
-        <PageTitle name="SETTINGS" pageItems={0} />
+  const SwitchControl = ({ label, checked, onChange, icon: Icon, description }) => (
+    <div className="setting-switch-item">
+      <div className="setting-switch-content">
+        <div className="setting-switch-icon">
+          <Icon />
+        </div>
+        <div className="setting-switch-text">
+          <div className="setting-switch-label">{label}</div>
+          {description && <div className="setting-switch-description">{description}</div>}
+        </div>
       </div>
-      <Container className="settings-form">
-        {(isAdmin || isDairy) && (
-          <>
-            {isAdmin && (
-              <>
-                <Form.Group className="mb-3">
-                  <Form.Label>Select Dairy</Form.Label>
-                  <Form.Select
-                    value={selectedDairyCode}
-                    onChange={(e) => {
-                      setSelectedDairyCode(e.target.value);
-                      setSelectedDeviceId("");
-                    }}
-                  >
-                    <option value="">-- Select Dairy --</option>
-                    {dairyCodeList.map((code) => (
-                      <option key={code} value={code}>
-                        {code}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
+      <Form.Check
+        type="switch"
+        checked={checked}
+        onChange={onChange}
+        className="setting-switch"
+      />
+    </div>
+  );
 
-                {selectedDairyCode && (
-                  <Form.Group className="mb-3">
-                    <Form.Label>Select Device</Form.Label>
-                    <Form.Select
-                      value={selectedDeviceId}
-                      onChange={(e) => setSelectedDeviceId(e.target.value)}
-                    >
-                      <option value="">-- Select Device --</option>
-                      {filteredDevices?.map((dev) => (
-                        <option key={dev.deviceid} value={dev.deviceid}>
-                          {dev.deviceid}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
+  useEffect(() => {
+    if (isDevice && deviceid) {
+      setSelectedDeviceId(deviceid);
+    }
+  }, [isDevice, deviceid]);
+
+  return (
+    <div className="settings-page">
+      <Container fluid className="settings-container">
+        {/* Device Selection Card - Only show when no device is selected */}
+        {(isAdmin || isDairy) && !selectedDeviceId && (
+          <Card className="device-selection-card mb-4">
+            <Card.Header className="device-selection-header">
+              <FaBuilding className="me-2" />
+              <span>Device Selection</span>
+            </Card.Header>
+            <Card.Body>
+              <Row>
+                {isAdmin && (
+                  <>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="form-label-modern">
+                          <FaBuilding className="me-2" />
+                          Select Dairy
+                        </Form.Label>
+                        <Form.Select
+                          value={selectedDairyCode}
+                          onChange={(e) => {
+                            setSelectedDairyCode(e.target.value);
+                            setSelectedDeviceId("");
+                          }}
+                          className="form-select-modern"
+                        >
+                          <option value="">-- Select Dairy --</option>
+                          {dairyCodeList.map((code) => (
+                            <option key={code} value={code}>
+                              {code}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+
+                    {selectedDairyCode && (
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label className="form-label-modern">
+                            <FaDesktop className="me-2" />
+                            Select Device
+                          </Form.Label>
+                          <Form.Select
+                            value={selectedDeviceId}
+                            onChange={(e) => setSelectedDeviceId(e.target.value)}
+                            className="form-select-modern"
+                          >
+                            <option value="">-- Select Device --</option>
+                            {filteredDevices?.map((dev) => (
+                              <option key={dev.deviceid} value={dev.deviceid}>
+                                {dev.deviceid}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Form.Group>
+                      </Col>
+                    )}
+                  </>
                 )}
-              </>
-            )}
 
-            {isDairy && (
-              <Form.Group className="mb-3">
-                <Form.Label>Select Device</Form.Label>
-                <Form.Select
-                  value={selectedDeviceId}
-                  onChange={(e) => setSelectedDeviceId(e.target.value)}
-                >
-                  <option value="">-- Select Device --</option>
-                  {deviceList?.map((dev) => (
-                    <option key={dev.deviceid} value={dev.deviceid}>
-                      {dev.deviceid}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            )}
-          </>
+                {isDairy && (
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="form-label-modern">
+                        <FaDesktop className="me-2" />
+                        Select Device
+                      </Form.Label>
+                      <Form.Select
+                        value={selectedDeviceId}
+                        onChange={(e) => setSelectedDeviceId(e.target.value)}
+                        className="form-select-modern"
+                      >
+                        <option value="">-- Select Device --</option>
+                        {deviceList?.map((dev) => (
+                          <option key={dev.deviceid} value={dev.deviceid}>
+                            {dev.deviceid}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                )}
+              </Row>
+            </Card.Body>
+          </Card>
         )}
 
+        {/* Loading and Error States */}
         {isLoading && (
-          <div className="text-center my-4">
-            <Spinner animation="border" variant="primary" />
-            <div>Loading settings...</div>
-          </div>
+          <Card className="loading-card">
+            <Card.Body className="text-center py-5">
+              <Spinner animation="border" variant="primary" size="lg" />
+              <div className="mt-3">Loading settings...</div>
+            </Card.Body>
+          </Card>
         )}
 
-        {isError && <div>Error loading settings.</div>}
+        {isError && (
+          <Card className="error-card">
+            <Card.Body className="text-center py-5">
+              <div className="text-danger">Error loading settings.</div>
+            </Card.Body>
+          </Card>
+        )}
 
-        {!isLoading && deviceData && (
-          <Form>
-            <Row>
-              <Col md={4}>
-                <Form.Check
-                  type="switch"
-                  label="Server Control"
-                  checked={settings.serverControl}
-                  onChange={(e) =>
-                    handleChange("serverControl", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="Use Cow SNF"
-                  checked={settings.useCowSnf}
-                  onChange={(e) => handleChange("useCowSnf", e.target.checked)}
-                />
-                <Form.Check
-                  type="switch"
-                  label="Use Buf SNF"
-                  checked={settings.useBufSnf}
-                  onChange={(e) => handleChange("useBufSnf", e.target.checked)}
-                />
-                <Form.Check
-                  type="switch"
-                  label="High Fat Accept"
-                  checked={settings.highFatAccept}
-                  onChange={(e) =>
-                    handleChange("highFatAccept", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="Low Fat Accept"
-                  checked={settings.lowFatAccept}
-                  onChange={(e) =>
-                    handleChange("lowFatAccept", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="DPU Member List"
-                  checked={settings.dpuMemberList}
-                  onChange={(e) =>
-                    handleChange("dpuMemberList", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="DPU Rate Tables"
-                  checked={settings.dpuRateTables}
-                  onChange={(e) =>
-                    handleChange("dpuRateTables", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="DPU Collection Mode Control"
-                  checked={settings.dpuCollectionModeControl}
-                  onChange={(e) =>
-                    handleChange("dpuCollectionModeControl", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="Auto Transfer"
-                  checked={settings.autoTransfer}
-                  onChange={(e) =>
-                    handleChange("autoTransfer", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="Auto Shift Close"
-                  checked={settings.autoShiftClose}
-                  onChange={(e) =>
-                    handleChange("autoShiftClose", e.target.checked)
-                  }
-                />
-                <Form.Check
-                  type="switch"
-                  label="Mixed Milk"
-                  checked={settings.mixedMilk}
-                  onChange={(e) => handleChange("mixedMilk", e.target.checked)}
-                />
-                <Form.Check
-                  type="switch"
-                  label="Machine Lock"
-                  checked={settings.machineLock}
-                  onChange={(e) =>
-                    handleChange("machineLock", e.target.checked)
-                  }
-                />
-              </Col>
+        {/* Settings Tabs */}
+        {!isLoading && deviceData && selectedDeviceId && (
+          <Card className="settings-main-card">
+            <Card.Header className="settings-header">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <FaCog className="me-2" />
+                  <span>Device Configuration</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  {selectedDeviceId && (
+                    <Badge bg="primary" className="me-3 device-id-badge">
+                      {selectedDeviceId}
+                    </Badge>
+                  )}
+                  {(isAdmin || isDairy) && selectedDeviceId && (
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => setSelectedDeviceId("")}
+                      className="change-device-btn"
+                    >
+                      <FaDesktop className="me-1" />
+                      Change Device
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card.Header>
+            <Card.Body className="p-0">
+              <Tab.Container id="settings-tabs" defaultActiveKey="general">
+                <Row className="g-0">
+                  <Col md={3} className="settings-sidebar">
+                    <Nav variant="pills" className="flex-column settings-nav">
+                      <Nav.Item>
+                        <Nav.Link eventKey="general" className="settings-nav-link">
+                          <FaCog className="me-2" />
+                          General Settings
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="milk-analysis" className="settings-nav-link">
+                          <FaTint className="me-2" />
+                          Milk Analysis
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="dpu" className="settings-nav-link">
+                          <FaUsers className="me-2" />
+                          DPU Settings
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="automation" className="settings-nav-link">
+                          <FaSync className="me-2" />
+                          Automation
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="commission" className="settings-nav-link">
+                          <FaCalculator className="me-2" />
+                          Commission
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="security" className="settings-nav-link">
+                          <FaShieldAlt className="me-2" />
+                          Security
+                        </Nav.Link>
+                      </Nav.Item>
+                    </Nav>
+                  </Col>
 
-              <Col md={4}>
-                <Form.Group>
-                  <Form.Label>Weight Mode</Form.Label>
-                  <Form.Select
-                    value={settings.weightMode}
-                    onChange={(e) => handleChange("weightMode", e.target.value)}
+                  <Col md={9} className="settings-content">
+                    <Tab.Content className="settings-tab-content">
+                      {/* General Settings Tab */}
+                      <Tab.Pane eventKey="general" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaCog className="me-2" />General Settings</h5>
+                          <p>Configure basic device settings and controls</p>
+                        </div>
+                        <div className="settings-section">
+                          <SwitchControl
+                            label="Server Control"
+                            checked={settings.serverControl}
+                            onChange={(e) => handleChange("serverControl", e.target.checked)}
+                            icon={FaServer}
+                            description="Enable server-based control for this device"
+                          />
+                          <SwitchControl
+                            label="Machine Lock"
+                            checked={settings.machineLock}
+                            onChange={(e) => handleChange("machineLock", e.target.checked)}
+                            icon={FaLock}
+                            description="Lock the machine to prevent unauthorized access"
+                          />
+                        </div>
+                      </Tab.Pane>
+
+                      {/* Milk Analysis Tab */}
+                      <Tab.Pane eventKey="milk-analysis" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaTint className="me-2" />Milk Analysis Settings</h5>
+                          <p>Configure milk analysis parameters and modes</p>
+                        </div>
+                        <div className="settings-section">
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label className="form-label-modern">
+                                  <FaWeightHanging className="me-2" />
+                                  Weight Mode
+                                </Form.Label>
+                                <Form.Select
+                                  value={settings.weightMode}
+                                  onChange={(e) => handleChange("weightMode", e.target.value)}
+                                  className="form-select-modern"
+                                >
+                                  <option>AUTO</option>
+                                  <option>MANUAL</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label className="form-label-modern">
+                                  <FaTint className="me-2" />
+                                  Fat Mode
+                                </Form.Label>
+                                <Form.Select
+                                  value={settings.fatMode}
+                                  onChange={(e) => handleChange("fatMode", e.target.value)}
+                                  className="form-select-modern"
+                                >
+                                  <option>AUTO</option>
+                                  <option>MANUAL</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <Form.Group className="mb-3">
+                            <Form.Label className="form-label-modern">
+                              <FaChartLine className="me-2" />
+                              Analyzer Type
+                            </Form.Label>
+                            <Form.Select
+                              value={settings.analyzer}
+                              onChange={(e) => handleChange("analyzer", e.target.value)}
+                              className="form-select-modern"
+                            >
+                              <option>EKO Ultra</option>
+                              <option>Ultra Pro</option>
+                              <option>Lacto Scan</option>
+                              <option>Ksheera</option>
+                              <option>Essae</option>
+                              <option>Milk Tester</option>
+                            </Form.Select>
+                          </Form.Group>
+                          <Row>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Use Cow SNF"
+                                checked={settings.useCowSnf}
+                                onChange={(e) => handleChange("useCowSnf", e.target.checked)}
+                                icon={FaTint}
+                                description="Enable SNF calculation for cow milk"
+                              />
+                            </Col>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Use Buf SNF"
+                                checked={settings.useBufSnf}
+                                onChange={(e) => handleChange("useBufSnf", e.target.checked)}
+                                icon={FaTint}
+                                description="Enable SNF calculation for buffalo milk"
+                              />
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="High Fat Accept"
+                                checked={settings.highFatAccept}
+                                onChange={(e) => handleChange("highFatAccept", e.target.checked)}
+                                icon={FaTint}
+                                description="Accept milk with high fat content"
+                              />
+                            </Col>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Low Fat Accept"
+                                checked={settings.lowFatAccept}
+                                onChange={(e) => handleChange("lowFatAccept", e.target.checked)}
+                                icon={FaTint}
+                                description="Accept milk with low fat content"
+                              />
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Mixed Milk"
+                                checked={settings.mixedMilk}
+                                onChange={(e) => handleChange("mixedMilk", e.target.checked)}
+                                icon={FaLayerGroup}
+                                description="Allow processing of mixed milk types"
+                              />
+                            </Col>
+                          </Row>
+                        </div>
+                      </Tab.Pane>
+
+                      {/* DPU Settings Tab */}
+                      <Tab.Pane eventKey="dpu" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaUsers className="me-2" />DPU Settings</h5>
+                          <p>Configure Dairy Processing Unit settings</p>
+                        </div>
+                        <div className="settings-section">
+                          <SwitchControl
+                            label="DPU Member List"
+                            checked={settings.dpuMemberList}
+                            onChange={(e) => handleChange("dpuMemberList", e.target.checked)}
+                            icon={FaUsers}
+                            description="Enable DPU member list functionality"
+                          />
+                          <SwitchControl
+                            label="DPU Rate Tables"
+                            checked={settings.dpuRateTables}
+                            onChange={(e) => handleChange("dpuRateTables", e.target.checked)}
+                            icon={FaTable}
+                            description="Enable DPU rate table management"
+                          />
+                          <SwitchControl
+                            label="DPU Collection Mode Control"
+                            checked={settings.dpuCollectionModeControl}
+                            onChange={(e) => handleChange("dpuCollectionModeControl", e.target.checked)}
+                            icon={FaUsers}
+                            description="Enable DPU collection mode control"
+                          />
+                        </div>
+                      </Tab.Pane>
+
+                      {/* Automation Tab */}
+                      <Tab.Pane eventKey="automation" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaSync className="me-2" />Automation Settings</h5>
+                          <p>Configure automated processes and transfers</p>
+                        </div>
+                        <div className="settings-section">
+                          <SwitchControl
+                            label="Auto Transfer"
+                            checked={settings.autoTransfer}
+                            onChange={(e) => handleChange("autoTransfer", e.target.checked)}
+                            icon={FaExchangeAlt}
+                            description="Enable automatic data transfer"
+                          />
+                          <SwitchControl
+                            label="Auto Shift Close"
+                            checked={settings.autoShiftClose}
+                            onChange={(e) => handleChange("autoShiftClose", e.target.checked)}
+                            icon={FaClock}
+                            description="Automatically close shifts at scheduled times"
+                          />
+                        </div>
+                      </Tab.Pane>
+
+                      {/* Commission Tab */}
+                      <Tab.Pane eventKey="commission" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaCalculator className="me-2" />Commission Settings</h5>
+                          <p>Configure commission rates and calculations</p>
+                        </div>
+                        <div className="settings-section">
+                          <SwitchControl
+                            label="Commission Type"
+                            checked={settings.commissionType}
+                            onChange={(e) => handleChange("commissionType", e.target.checked)}
+                            icon={FaCalculator}
+                            description="Enable or disable commission calculations"
+                          />
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label className="form-label-modern">
+                                  <FaCalculator className="me-2" />
+                                  Normal Commission
+                                </Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="00.00"
+                                  value={settings.normalCommission}
+                                  onChange={(e) =>
+                                    handleChange("normalCommission", e.target.value)
+                                  }
+                                  onBlur={(e) =>
+                                    handleChange(
+                                      "normalCommission",
+                                      formatCommission(e.target.value)
+                                    )
+                                  }
+                                  className="form-control-modern"
+                                  disabled={!settings.commissionType}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <div className={`special-commission-section ${!settings.commissionType ? 'disabled-section' : ''}`}>
+                            <Form.Label className="form-label-modern">
+                              <FaCalculator className="me-2" />
+                              Special Commissions
+                            </Form.Label>
+                            <Row>
+                              {[...Array(9)].map((_, i) => (
+                                <Col md={4} key={i} className="mb-2">
+                                  <Form.Control
+                                    type="text"
+                                    placeholder="00.00"
+                                    value={settings.specialCommission?.[i] || ""}
+                                    onChange={(e) =>
+                                      handleSpecialCommissionChange(i, e.target.value)
+                                    }
+                                    onBlur={(e) =>
+                                      handleSpecialCommissionChange(
+                                        i,
+                                        formatCommission(e.target.value)
+                                      )
+                                    }
+                                    className="form-control-modern"
+                                    disabled={!settings.commissionType}
+                                  />
+                                </Col>
+                              ))}
+                            </Row>
+                          </div>
+                          {!settings.commissionType && (
+                            <div className="commission-disabled-message">
+                              <div className="alert alert-info" role="alert">
+                                <FaCalculator className="me-2" />
+                                Commission calculations are currently disabled. Enable "Commission Type" to configure commission rates.
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </Tab.Pane>
+
+                      {/* Security Tab */}
+                      <Tab.Pane eventKey="security" className="settings-tab-pane">
+                        <div className="tab-header">
+                          <h5><FaShieldAlt className="me-2" />Security Settings</h5>
+                          <p>Configure security and access control settings</p>
+                        </div>
+                        <div className="settings-section">
+                          <SwitchControl
+                            label="Machine Lock"
+                            checked={settings.machineLock}
+                            onChange={(e) => handleChange("machineLock", e.target.checked)}
+                            icon={FaLock}
+                            description="Lock the machine to prevent unauthorized access"
+                          />
+                        </div>
+                      </Tab.Pane>
+                    </Tab.Content>
+                  </Col>
+                </Row>
+              </Tab.Container>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Save Settings Card */}
+        {!isLoading && deviceData && selectedDeviceId && (
+          <Card className="save-settings-card mt-4">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="save-settings-info">
+                  <h6 className="save-settings-title">
+                    <FaSave className="me-2" />
+                    Save Configuration
+                  </h6>
+                  <p className="save-settings-description">
+                    {areSettingsEqual(settings, originalSettings)
+                      ? "No changes detected. Settings are up to date."
+                      : "You have unsaved changes. Click save to apply your configuration."
+                    }
+                  </p>
+                </div>
+                <div className="save-settings-actions">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={handleSave}
+                    disabled={areSettingsEqual(settings, originalSettings)}
+                    className="save-button"
                   >
-                    <option>AUTO</option>
-                    <option>MANUAL</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group>
-                  <Form.Label>Fat Mode</Form.Label>
-                  <Form.Select
-                    value={settings.fatMode}
-                    onChange={(e) => handleChange("fatMode", e.target.value)}
-                  >
-                    <option>AUTO</option>
-                    <option>MANUAL</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group>
-                  <Form.Label>Analyzer</Form.Label>
-                  <Form.Select
-                    value={settings.analyzer}
-                    onChange={(e) => handleChange("analyzer", e.target.value)}
-                  >
-                    <option>EKO Ultra</option>
-                    <option>Ultra Pro</option>
-                    <option>Lacto Scan</option>
-                    <option>Ksheera</option>
-                    <option>Essae</option>
-                    <option>Milk Tester</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group>
-                  <Form.Label>Normal Commission</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="00.00"
-                    value={settings.normalCommission}
-                    onChange={(e) =>
-                      handleChange("normalCommission", e.target.value)
-                    }
-                    onBlur={(e) =>
-                      handleChange(
-                        "normalCommission",
-                        formatCommission(e.target.value)
-                      )
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                <Form.Label>Special Commissions</Form.Label>
-                {[...Array(9)].map((_, i) => (
-                  <Form.Control
-                    key={i}
-                    className="mb-2"
-                    type="text"
-                    placeholder="00.00"
-                    value={settings.specialCommission?.[i] || ""}
-                    onChange={(e) =>
-                      handleSpecialCommissionChange(i, e.target.value)
-                    }
-                    onBlur={(e) =>
-                      handleSpecialCommissionChange(
-                        i,
-                        formatCommission(e.target.value)
-                      )
-                    }
-                  />
-                ))}
-              </Col>
-            </Row>
-
-            <div className="mt-4 text-center">
-              <Button
-                variant="outline-primary"
-                onClick={handleSave}
-                disabled={areSettingsEqual(settings, originalSettings)}
-              >
-                Save Settings
-              </Button>
-            </div>
-          </Form>
+                    <FaSave className="me-2" />
+                    Save Settings
+                  </Button>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
         )}
       </Container>
-    </>
+    </div>
   );
 };
 

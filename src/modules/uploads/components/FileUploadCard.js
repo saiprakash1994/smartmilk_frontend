@@ -1,3 +1,4 @@
+import './FileUploadCard.scss';
 import { useState, useEffect, useRef } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -70,7 +71,7 @@ const FileUploadCard = ({
     };
 
     return (
-        <Card className="mb-4 shadow-sm border-0">
+        <Card className="file-upload-card mb-4 shadow-sm border-0">
             <Card.Body>
                 <h5 className="mb-4 d-flex align-items-center gap-2 profileName">
                     <FontAwesomeIcon icon={faUpload} />
@@ -107,6 +108,7 @@ const FileUploadCard = ({
 
                 <Button
                     variant="outline-primary"
+                    className="file-upload-btn"
                     onClick={handleUpload}
                     disabled={uploading || !selectedFile}
                 >

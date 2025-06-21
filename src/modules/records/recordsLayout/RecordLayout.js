@@ -1,9 +1,11 @@
 import { Outlet } from "react-router-dom"
-const RecordLayout = () => {
 
-    return (<>
-        <Outlet></Outlet>
-    </>)
+const RecordLayout = () => {
+    return (
+        <div className="records-layout">
+            <Outlet />
+        </div>
+    );
 }
 
 export default RecordLayout

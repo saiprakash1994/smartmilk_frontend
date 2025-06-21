@@ -1,18 +1,232 @@
-#records-tabs {
+.records-page {
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
 
-
-    .nav-link {
-
-        background-color: transparent;
-        color: var(--appTheam);
-
-        transition: all 0.3s ease;
+    .records-container {
+        max-width: 1400px;
     }
 
+    .records-header-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px #4f8cff22;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
 
-    .nav-link.active {
-        background-color: var(--appTheam);
-        color: var(--appTextColor);
+        .records-header {
+            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border: none;
+            padding: 20px 25px;
+            font-weight: 600;
 
+            h2 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            p {
+                font-size: 0.95rem;
+                opacity: 0.9;
+            }
+
+            .records-badge {
+                font-size: 1rem;
+                font-weight: 600;
+                padding: 10px 18px;
+                border-radius: 25px;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 15px #4f8cff22;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3) !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px #4f8cff22;
+                }
+            }
+        }
+    }
+
+    .records-main-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px #4f8cff22;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+
+        .records-header {
+            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+            color: white;
+            border: none;
+            padding: 20px 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+
+            .records-badge {
+                font-size: 1rem;
+                font-weight: 600;
+                padding: 8px 16px;
+                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 15px #4f8cff22;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3) !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px #4f8cff22;
+                }
+            }
+        }
+
+        .records-sidebar {
+            background: linear-gradient(180deg, #fafdff 0%, #e6e6ff 100%);
+            border-right: 1px solid #dee2e6;
+            padding: 0;
+
+            .records-nav {
+                padding: 20px 0;
+
+                .records-nav-link {
+                    border: none;
+                    padding: 15px 20px;
+                    margin: 5px 15px;
+                    color: #4f8cff;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+
+                    .nav-link-title {
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                        margin-bottom: 0;
+                    }
+
+                    .nav-link-description {
+                        display: none; // Hiding description to make it look like the image
+                    }
+
+                    &:hover {
+                        background: #e6f0ff;
+                        color: #7b2ff2;
+                        transform: translateX(5px);
+                    }
+
+                    &.active {
+                        background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+                        color: white;
+                        box-shadow: 0 4px 15px rgba(79, 140, 255, 0.4);
+
+                        .nav-link-title {
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+
+        .records-content {
+            background: white;
+            flex: 1;
+
+            .records-tab-content {
+                .records-tab-pane {
+                    padding: 25px;
+                    animation: fadeIn 0.3s ease-in-out;
+
+                    .tab-header {
+                        margin-bottom: 20px;
+                        padding-bottom: 12px;
+                        border-bottom: 2px solid rgba(79, 140, 255, 0.1);
+
+                        h5 {
+                            color: #4f8cff;
+                            font-weight: 700;
+                            font-size: 1.2rem;
+                            margin-bottom: 6px;
+                        }
+
+                        p {
+                            color: #666;
+                            font-size: 0.9rem;
+                            margin: 0;
+                        }
+                    }
+
+                    .records-section {
+                        // Content area for each record type
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .records-page {
+        .records-main-card {
+            .records-sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(79, 140, 255, 0.1);
+                min-height: auto;
+                width: 100%;
+
+                .records-nav {
+                    padding: 10px 0;
+                    flex-direction: row;
+                    overflow-x: auto;
+
+                    .records-nav-link {
+                        min-width: 180px;
+                        flex-shrink: 0;
+                        padding: 10px 12px;
+
+                        .nav-link-content {
+                            .nav-link-title {
+                                font-size: 0.85rem;
+                            }
+
+                            .nav-link-description {
+                                font-size: 0.7rem;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .records-content {
+                .records-tab-content {
+                    .records-tab-pane {
+                        padding: 20px;
+                    }
+                }
+            }
+        }
     }
 }

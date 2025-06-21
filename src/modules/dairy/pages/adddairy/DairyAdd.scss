@@ -52,3 +52,241 @@
     background-color: var(--appTheam);
     border-color: var(--appTheam);
 }
+
+// Modern card styling
+.modern-card {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1.5px 4px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 32px 24px;
+    background: #fff;
+}
+
+// Floating label group
+.floating-label-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-icon-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-group input,
+.input-icon-group .form-control {
+    padding-right: 2.5rem;
+}
+
+.input-valid {
+    color: #28a745;
+    position: absolute;
+    right: 10px;
+    font-size: 1.2em;
+}
+
+.input-invalid {
+    color: #dc3545;
+    position: absolute;
+    right: 10px;
+    font-size: 1.2em;
+}
+
+.info-icon {
+    color: #0d6efd;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 32px;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 1.1em;
+}
+
+.password-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px 12px 8px 12px;
+    margin-bottom: 1.5rem;
+}
+
+.form-desc {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-left: 1rem;
+}
+
+.action-btn {
+    min-width: 110px;
+}
+
+// Responsive tweaks
+.dairy-add-responsive {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 8px;
+}
+
+@media (max-width: 600px) {
+    .modern-card {
+        padding: 16px 6px;
+    }
+
+    .dairy-add-responsive {
+        padding: 0 2px;
+    }
+}
+
+// Input focus and validation
+input:focus,
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.is-valid {
+    border-color: #28a745 !important;
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+// Center the card vertically and horizontally
+.dairyadd-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    position: relative;
+}
+
+.dairyadd-bg-illustration {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100vw;
+    height: 350px;
+    background: radial-gradient(circle at 20% 40%, #fff6 0%, #4f8cff22 60%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+    animation: floatBg 8s ease-in-out infinite alternate;
+}
+
+@keyframes floatBg {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(30px);
+    }
+}
+
+.dairyadd-card {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 4px 32px 0 #4f8cff22;
+    border-radius: 24px;
+    border: none;
+}
+
+.dairyadd-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #4f8cff;
+    text-shadow: 0 2px 8px #4f8cff33;
+}
+
+.dairyadd-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.dairyadd-btn-row .btn-primary {
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #4f8cff33;
+    transition: all 0.3s ease;
+}
+
+.dairyadd-btn-row .btn-primary:hover,
+.dairyadd-btn-row .btn-primary:focus {
+    background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px #7b2ff233;
+}
+
+.dairyadd-btn-row .btn-outline-secondary {
+    color: #4f8cff;
+    border-color: #4f8cff;
+    background: transparent;
+}
+
+.dairyadd-btn-row .btn-outline-secondary:hover,
+.dairyadd-btn-row .btn-outline-secondary:focus {
+    background: #e6f0ff;
+    color: #7b2ff2;
+    border-color: #7b2ff2;
+}
+
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label {
+    color: #4f8cff;
+}
+
+.form-floating>label {
+    color: #64748b;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.dairyadd-password-section {
+    background: #f5f7fa;
+    border: 1.5px solid #cfe2ff;
+    border-radius: 10px;
+    padding: 1.2rem 1rem 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+// Eye icon for password fields
+.dairyadd-eye-icon {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    cursor: pointer;
+    color: var(--dairyadd-primary);
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.dairyadd-eye-icon:hover {
+    opacity: 1;
+}
+
+// Helper text
+.form-text {
+    margin-top: 0.1rem;
+    color: #6c757d;
+    font-size: 0.95em;
+}
+
+// Button tweaks
+.dairyadd-btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}

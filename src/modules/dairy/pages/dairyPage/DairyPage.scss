@@ -1,10 +1,471 @@
 .DairyPage {
-    height: 93%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    position: relative;
+    padding-bottom: 64px;
+    overflow-x: hidden;
 
     .text-center {
         text-align: center;
         vertical-align: middle;
     }
+}
 
+.dairy-bg-illustration {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100vw;
+    height: 350px;
+    background: radial-gradient(circle at 20% 40%, #fff6 0%, #4f8cff22 60%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+    animation: floatBg 8s ease-in-out infinite alternate;
+}
 
+@keyframes floatBg {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(30px);
+    }
+}
+
+.dairy-hero {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 16px 24px 16px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 32px;
+    box-shadow: 0 8px 32px 0 rgba(79, 140, 255, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.dairy-hero-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 8px #4f8cff33;
+}
+
+.dairy-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dairy-card {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 24px;
+    box-shadow: 0 4px 32px 0 #4f8cff22;
+    border: none;
+    overflow: hidden;
+}
+
+.dairy-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+    width: 100%;
+    margin: 1.2rem 0;
+}
+
+.action-btn {
+    border: none;
+    background: transparent;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    font-size: 1.25rem;
+    margin: 0 2px;
+    color: #0d6efd;
+}
+
+.action-btn.delete {
+    color: #dc3545;
+}
+
+.action-btn:hover,
+.action-btn:focus {
+    background: #e6f0ff;
+    box-shadow: 0 2px 8px #0d6efd22;
+    outline: none;
+    transform: scale(1.13);
+}
+
+.action-btn.delete:hover,
+.action-btn.delete:focus {
+    background: #ffe6e6;
+    color: #b02a37;
+    box-shadow: 0 2px 8px #dc354522;
+}
+
+.dairy-table-wrapper {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    max-width: 1100px;
+    width: 100%;
+    padding: 0 8px 32px 8px;
+}
+
+.dairy-table {
+    margin-bottom: 0;
+}
+
+.dairy-table thead {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(90deg, #f5f7fa 60%, #e6e6ff 100%);
+    box-shadow: 0 2px 12px #4f8cff11;
+    z-index: 3;
+
+    th {
+        color: #4f8cff;
+        background: transparent;
+        border-bottom: 2px solid #4f8cff33;
+        font-weight: 800;
+        font-size: 1.18rem;
+        letter-spacing: 0.01em;
+        z-index: 2;
+        padding: 1.1rem 0.7rem;
+        border-right: none;
+        border-top-left-radius: 1.2rem;
+        border-top-right-radius: 1.2rem;
+    }
+}
+
+.dairy-table tbody tr {
+    transition: background 0.2s;
+}
+
+.dairy-table tbody tr:hover {
+    background: #f5faff;
+}
+
+.dairy-table tbody td {
+    padding: 1rem 0.7rem;
+    border-bottom: 1px solid #e6e6ff;
+    font-size: 1.01rem;
+    color: #2d3a4a;
+    vertical-align: middle;
+}
+
+.dairy-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.dairy-card.table-shadow {
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+    border-radius: 16px;
+    border: none;
+}
+
+.dairy-card-body {
+    padding: 0;
+}
+
+.dairy-table tbody tr.dairy-row {
+    background: rgba(255, 255, 255, 0.85);
+    transition: box-shadow 0.22s, background 0.18s, transform 0.18s;
+    cursor: pointer;
+    border-radius: 1.1rem;
+
+    &:hover,
+    &:focus {
+        background: #e6f0ff;
+        box-shadow: 0 4px 18px #4f8cff22;
+        outline: 2px solid #4f8cff;
+        z-index: 2;
+        transform: translateY(-2px) scale(1.01);
+    }
+
+    &.fade-in {
+        animation: fadeIn 0.7s;
+    }
+}
+
+.dairy-table tbody td {
+    vertical-align: middle;
+    font-size: 1.07rem;
+    color: #222;
+    border-top: 1px solid #4f8cff11;
+    border-right: none;
+    padding: 1.05rem 0.7rem;
+}
+
+.dairy-table {
+    border-radius: 1.2rem;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.actions-col,
+.dairy-table td:last-child {
+    min-width: 120px;
+    text-align: center;
+}
+
+.dairy-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 0;
+    color: #4f8cff;
+    font-size: 1.18rem;
+
+    .dairy-empty-illustration {
+        margin-bottom: 1rem;
+
+        svg {
+            width: 48px;
+            height: 48px;
+            opacity: 0.7;
+        }
+    }
+
+    .dairy-empty-message {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+}
+
+// Accessibility: focus outlines
+.dairy-table tbody tr:focus {
+    outline: 2px solid #4f8cff;
+    outline-offset: -2px;
+}
+
+// Remove vertical borders for a clean look
+table.dairy-table th,
+table.dairy-table td {
+    border-right: none !important;
+}
+
+.dairy-card-item {
+    padding: 1.3rem 1.2rem 0.8rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    position: relative;
+    animation: fadeIn 0.9s cubic-bezier(.4, 0, .2, 1);
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 24px #4f8cff22;
+}
+
+.dairy-card-item-title {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #4f8cff;
+}
+
+.dairy-card-item-code {
+    font-size: 1.05rem;
+    color: #1e40af;
+    font-weight: 500;
+}
+
+.dairy-card-item-email {
+    font-size: 0.99rem;
+    color: #64748b;
+}
+
+.dairy-card-item-actions {
+    margin-top: 0.7rem;
+}
+
+.dairy-row-hover {
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .dairy-hero {
+        padding: 32px 8px 16px 8px;
+        border-radius: 18px;
+    }
+
+    .dairy-table-wrapper {
+        padding: 0 2px 16px 2px;
+    }
+
+    .dairy-card.table-shadow {
+        border-radius: 14px;
+    }
+
+    .dairy-card-item {
+        border-radius: 1rem;
+        padding: 1rem 0.7rem 0.7rem 0.7rem;
+    }
+
+    .dairy-table thead th,
+    .dairy-table tbody td {
+        padding: 0.7rem 0.4rem;
+        font-size: 0.97rem;
+    }
+}
+
+.dairy-page-modern {
+    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+
+    .dairy-main-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px #4f8cff22;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+    }
+
+    .dairy-sidebar {
+        background: linear-gradient(180deg, #fafdff 0%, #e6e6ff 100%);
+        border-right: 1px solid #e6e6ff;
+        padding: 0;
+
+        .dairy-nav {
+            padding: 20px 0;
+
+            .dairy-nav-link {
+                border: none;
+                border-radius: 0;
+                padding: 15px 20px;
+                margin: 5px 15px;
+                color: #4f8cff;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                border-radius: 10px;
+
+                &:hover {
+                    background: #e6f0ff;
+                    color: #7b2ff2;
+                    transform: translateX(5px);
+                }
+
+                &.active {
+                    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+                    color: white;
+                    box-shadow: 0 4px 15px #4f8cff33;
+                }
+            }
+        }
+    }
+
+    .dairy-content {
+        .dairy-tab-content {
+            .dairy-tab-pane {
+                padding: 30px;
+                animation: fadeIn 0.3s ease-in-out;
+
+                .dairy-tab-header {
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid #e6e6ff;
+
+                    h5 {
+                        color: #4f8cff;
+                        font-weight: 700;
+                        margin-bottom: 8px;
+                    }
+                }
+
+                .dairy-section {
+                    background: #f5faff;
+                    border-radius: 12px;
+                    border: 1px solid #e6e6ff;
+                    padding: 20px;
+                    min-height: 300px;
+                    box-shadow: 0 2px 8px #4f8cff11;
+                }
+            }
+        }
+    }
+
+    .dairy-add-btn {
+        background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        box-shadow: 0 4px 15px #4f8cff33;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px #7b2ff233;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .dairy-main-card {
+            border-radius: 10px;
+        }
+
+        .dairy-content .dairy-tab-content .dairy-tab-pane {
+            padding: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dairy-sidebar {
+            border-right: none;
+            border-bottom: 1px solid #e6e6ff;
+
+            .dairy-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 15px;
+
+                .dairy-nav-link {
+                    white-space: nowrap;
+                    margin: 0 5px;
+                }
+            }
+        }
+
+        .dairy-content .dairy-tab-content .dairy-tab-pane {
+            padding: 10px;
+        }
+
+        .dairy-section {
+            padding: 10px;
+        }
+
+        .dairy-add-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 }

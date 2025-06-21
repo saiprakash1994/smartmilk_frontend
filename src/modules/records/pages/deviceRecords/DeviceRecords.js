@@ -1,29 +1,24 @@
-import { faFileCsv, faSearch, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch, faUsers, faFilePdf, faCalendarAlt, faFilter, faFileExport, faMicrochip, faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Table from "react-bootstrap/esm/Table";
-import Card from "react-bootstrap/esm/Card";
-import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/esm/Form";
-import Spinner from "react-bootstrap/esm/Spinner";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import { useGetDeviceByCodeQuery, useGetAllDevicesQuery } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import './DeviceRecords.scss';
+import '../../Records.scss';
 import { useLazyGetAllRecordsQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
+
 const DeviceRecords = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -46,14 +41,14 @@ const DeviceRecords = () => {
     const [date, setDate] = useState(getToday());
     const [shift, setShift] = useState('');
     const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
+    const [searchTerm, setSearchTerm] = useState('');
     const [records, setRecords] = useState([]);
     const [totals, setTotals] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
-    const [viewMode, setViewMode] = useState('ALL');
-
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
+
     useEffect(() => {
         if (isDevice && deviceid) {
             setDeviceCode(deviceid);
@@ -87,34 +82,28 @@ const DeviceRecords = () => {
 
         try {
             const result = await triggerGetRecords({
-                params: {
-                    date: formattedDate,
-                    deviceCode,
-                    ...(shift && { shift }),
-                    page: currentPage,
-                    limit: recordsPerPage,
-                },
+                params: { date: formattedDate, deviceCode, ...(shift && { shift }), page: currentPage, limit: recordsPerPage },
             }).unwrap();
-            console.log(result, 'saiii')
-
             setHasSearched(true);
             setRecords(result?.records || []);
             setTotals(result?.totals || []);
             setTotalCount(result?.pagination?.totalRecords || 0);
-            successToast("Data loaded successfully!");
+            if (result?.records?.length > 0) successToast("Data loaded successfully!");
         } catch (err) {
             console.error(err);
             errorToast("Failed to fetch data");
         }
     };
 
-    const filteredRecords = milkTypeFilter === "ALL"
-        ? records
-        : records?.filter(record => record?.MILKTYPE === milkTypeFilter);
+    const milkTypeFilteredRecords = milkTypeFilter === "ALL" ? records : records?.filter(record => record?.MILKTYPE === milkTypeFilter);
 
-    const filteredTotals = milkTypeFilter === "ALL"
-        ? totals?.filter(t => t._id.milkType !== "TOTAL")
-        : totals?.filter(t => t._id.milkType === milkTypeFilter);
+    const filteredRecords = searchTerm
+        ? milkTypeFilteredRecords?.filter(record =>
+            String(record?.CODE).toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : milkTypeFilteredRecords;
+
+    const filteredTotals = milkTypeFilter === "ALL" ? totals?.filter(t => t._id.milkType !== "TOTAL") : totals?.filter(t => t._id.milkType === milkTypeFilter);
 
     const handleExportCSV = () => {
         if (!totals?.length && !records?.length) {
@@ -169,6 +158,7 @@ const DeviceRecords = () => {
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
         saveAs(blob, `Milk_Data_${deviceCode}_${date}.csv`);
     };
+
     const handleExportPDF = () => {
         if (!totals?.length && !records?.length) {
             alert("No data available to export.");
@@ -253,225 +243,184 @@ const DeviceRecords = () => {
         doc.save(`Milk_Data_${deviceCode}_${date}.pdf`);
     };
 
+    const totalPages = Math.ceil(totalCount / recordsPerPage);
+
     return (
-        <>
-            <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name="DEVICE RECORDS" pageItems={0} />
-            </div>
+        <div className="records-container">
+            {/* Filter Card */}
+            <Card className="filter-card mb-4">
+                <Card.Header className="filter-card-header">
+                    <FontAwesomeIcon icon={faFilter} className="me-2" />
+                    Filter Device Records
+                </Card.Header>
+                <Card.Body>
+                    <Form>
+                        <Row className="align-items-end">
+                            {!isDevice && (
+                                <Col md={4}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faMicrochip} className="me-2" />Select Device</Form.Label>
+                                        <Form.Select className="form-select-modern" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                                            <option value="">-- Select Device --</option>
+                                            {deviceList?.map(dev => <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>)}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            )}
+                            <Col md={isDevice ? 4 : 3}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faCalendarAlt} className="me-2" />Select Date</Form.Label>
+                                    <Form.Control className="form-control-modern" type="date" value={date} onChange={e => setDate(e.target.value)} />
+                                </Form.Group>
+                            </Col>
+                            <Col md={isDevice ? 4 : 2}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="form-label-modern"><FontAwesomeIcon icon={faClock} className="me-2" />Shift</Form.Label>
+                                    <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
+                                        <option value="">ALL</option>
+                                        <option value="MORNING">MORNING</option>
+                                        <option value="EVENING">EVENING</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col md={isDevice ? 4 : 3}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>&nbsp;</Form.Label>
+                                    <Button variant="primary" className="w-100 modern-button" onClick={handleSearch} disabled={isFetching}>
+                                        <FontAwesomeIcon icon={faSearch} className="me-2" />
+                                        {isFetching ? 'Searching...' : 'Search'}
+                                    </Button>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Card.Body>
+            </Card>
 
-            <div className="usersPage">
-                <Card className="h-100">
-                    <div className="filters d-flex gap-3 p-3 ">
-                        {(isAdmin || isDairy) && (
-                            <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
-                                <option value="">Select Device Code</option>
-                                {deviceList?.map((dev) => (
-                                    <option key={dev.deviceid} value={dev.deviceid}>
-                                        {dev.deviceid}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        )}
-
-                        {isDevice && (
-                            <Form.Control type="text" value={deviceCode} readOnly />
-                        )}
-
-                        <Form.Control type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
-
-                        <Form.Select value={shift} onChange={e => setShift(e.target.value)}>
-                            <option value="">All Shifts</option>
-                            <option value="MORNING">MORNING</option>
-                            <option value="EVENING">EVENING</option>
-                        </Form.Select>
-
-                        <Form.Select value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
-                            <option value="ALL">All Milk Types</option>
-                            <option value="COW">COW</option>
-                            <option value="BUF">BUF</option>
-                        </Form.Select>
-                        <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
-                            <option value="ALL">Show All Records</option>
-                            <option value="RECORDS">Only Records Summary</option>
-                            <option value="TOTALS">Only Record Totals</option>
-                        </Form.Select>
-
-                        <Button variant="outline-primary" onClick={handleSearch} disabled={isFetching}>
-                            {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />}
-                        </Button>
-                    </div>
-
-                    <Card.Body className="cardbodyCss">
-                        {!hasSearched ? (
-                            <div className="text-center my-5 text-muted">
-                                Please apply filters and click <strong>Search</strong> to view records.
+            {hasSearched && (
+                <>
+                    {/* Results Card */}
+                    <Card className="results-card mb-4">
+                        <Card.Header className="results-card-header">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span><FontAwesomeIcon icon={faUsers} className="me-2" />Collection Records</span>
+                                <div className="d-flex align-items-center">
+                                    <Form.Control
+                                        type="search"
+                                        placeholder="Search by Member..."
+                                        className="form-control-modern me-2"
+                                        style={{ width: '200px' }}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                    <Form.Select size="sm" className="form-select-modern-sm me-3" value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
+                                        <option value="ALL">All Milk Types</option>
+                                        <option value="COW">Cow</option>
+                                        <option value="BUF">Buffalo</option>
+                                    </Form.Select>
+                                    <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
+                                        <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
+                                    </Button>
+                                    <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
+                                        <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
+                                    </Button>
+                                </div>
                             </div>
-                        ) : isFetching ? (
-                            <div className="text-center my-5">
-                                <Spinner animation="border" variant="primary" />
-                            </div>
-                        ) : (
-                            <>
-                                <hr />
-                                {viewMode !== "TOTALS" && (
-                                    <>
-                                        <PageTitle name="Record Summary" />
-                                        <Table striped="columns" bordered hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Code</th>
-                                                    <th>Milk Type</th>
-                                                    <th>Shift</th>
-                                                    <th>Fat</th>
-                                                    <th>SNF</th>
-                                                    <th>Qty (L)</th>
-                                                    <th>Rate</th>
-                                                    <th>Amount</th>
-                                                    <th>Incentive</th>
-                                                    <th>Total</th>
-                                                    <th>AnalyzerMode</th>
-                                                    <th>WeightMode</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredRecords?.length > 0 ? (
-                                                    filteredRecords?.map((record, index) => (
-                                                        <tr key={record._id}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{record?.CODE}</td>
-                                                            <td>{record?.MILKTYPE}</td>
-                                                            <td>{record?.SHIFT}</td>
-                                                            <td>{record?.FAT.toFixed(1)}</td>
-                                                            <td>{record?.SNF.toFixed(1)}</td>
-                                                            <td>{record?.QTY.toFixed(2)} L</td>
-                                                            <td>₹{record?.RATE.toFixed(2)}</td>
-                                                            <td>₹{record?.AMOUNT.toFixed(2)}</td>
-                                                            <td>₹{record?.INCENTIVEAMOUNT.toFixed(2)}</td>
-                                                            <td>₹{record?.TOTAL.toFixed(2)}</td>
-                                                            <td>{record?.ANALYZERMODE}</td>
-                                                            <td>{record?.WEIGHTMODE}</td>
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="12" className="text-center">No records found</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-
-
-                                    </>
-                                )}
-
-                                {viewMode !== "RECORDS" && (
-                                    <>
-                                        <PageTitle name="Total Records" />
-                                        <Table striped="columns" bordered hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>Milk Type</th>
-                                                    <th>Total Records</th>
-                                                    <th>Avg Fat</th>
-                                                    <th>Avg SNF</th>
-                                                    <th>Total Qty (L)</th>
-                                                    <th>Avg Rate</th>
-                                                    <th>Total Amount</th>
-                                                    <th>Total Incentive</th>
-                                                    <th>Grand Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredTotals?.length > 0 ? (
-                                                    filteredTotals.map((total, index) => (
-                                                        <tr key={index}>
-                                                            <td>{total?._id.milkType}</td>
-                                                            <td>{total?.totalRecords}</td>
-                                                            <td>{total?.averageFat}</td>
-                                                            <td>{total?.averageSNF}</td>
-                                                            <td>{total?.totalQuantity.toFixed(2)} L</td>
-                                                            <td>₹{total?.averageRate}</td>
-                                                            <td>₹{total?.totalAmount.toFixed(2)}</td>
-                                                            <td>₹{total?.totalIncentive.toFixed(2)}</td>
-                                                            <td>₹{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
-
-
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="9" className="text-center">No totals available</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </Table>
-                                    </>
-                                )}
-                                <Button variant="outline-primary" className="mb-3 me-2" onClick={handleExportCSV}>
-                                    <FontAwesomeIcon icon={faFileCsv} /> Export CSV
-
-                                </Button>
-                                <Button variant="outline-primary" className="mb-3" onClick={handleExportPDF}>
-                                    <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-
-                                </Button>
-
-                                {totalCount > 0 && (
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                                        {/* Page size selector */}
-                                        <div className="d-flex align-items-center gap-2">
-                                            <span className="text-muted">Rows per page:</span>
-                                            <Form.Select
-                                                size="sm"
-                                                value={recordsPerPage}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setRecordsPerPage(parseInt(value));
-                                                    setCurrentPage(1);
-
-                                                }}
-                                                style={{ width: "auto" }}
-                                            >
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                            </Form.Select>
-                                        </div>
-
-                                        {/* Page navigation */}
-                                        {totalCount > recordsPerPage && (
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(prev => prev - 1)}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    « Prev
-                                                </Button>
-                                                <span className="fw-semibold">Page {currentPage} of {Math.ceil(totalCount / recordsPerPage)}</span>
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(prev => prev + 1)}
-                                                    disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                                                >
-                                                    Next »
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-
-                            </>
-
+                        </Card.Header>
+                        <Card.Body>
+                            {isFetching ? (
+                                <div className="text-center py-5">
+                                    <Spinner animation="border" variant="primary" />
+                                    <p className="mt-2">Loading Records...</p>
+                                </div>
+                            ) : filteredRecords.length > 0 ? (
+                                <Table hover responsive className="records-table">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Member</th>
+                                            <th>Milk</th>
+                                            <th>Shift</th>
+                                            <th>FAT</th>
+                                            <th>SNF</th>
+                                            <th>Qty (L)</th>
+                                            <th>Rate</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredRecords.map((rec, index) => (
+                                            <tr key={rec._id}>
+                                                <td>{index + 1 + (currentPage - 1) * recordsPerPage}</td>
+                                                <td>{rec?.CODE}</td>
+                                                <td><Badge bg={rec?.MILKTYPE === 'COW' ? 'warning' : 'info'}>{rec?.MILKTYPE}</Badge></td>
+                                                <td>{rec?.SHIFT}</td>
+                                                <td>{rec?.FAT?.toFixed(1)}</td>
+                                                <td>{rec?.SNF?.toFixed(1)}</td>
+                                                <td>{rec?.QTY?.toFixed(2) || '0.00'}</td>
+                                                <td>{rec?.RATE?.toFixed(2)}</td>
+                                                <td>{rec?.AMOUNT?.toFixed(2) || '0.00'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            ) : (
+                                <div className="text-center py-5">No records found for the selected criteria.</div>
+                            )}
+                        </Card.Body>
+                        {filteredRecords.length > 0 && (
+                            <Card.Footer>
+                                <Pagination>
+                                    <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                                    <Pagination.Prev onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} />
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                        <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
+                                            {page}
+                                        </Pagination.Item>
+                                    ))}
+                                    <Pagination.Next onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} />
+                                    <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                                </Pagination>
+                            </Card.Footer>
                         )}
-                    </Card.Body>
-                </Card>
-            </div>
-        </>
+                    </Card>
+
+                    {/* Totals Card */}
+                    {filteredTotals.length > 0 && (
+                        <Card className="totals-card">
+                            <Card.Header className="totals-card-header">
+                                <FontAwesomeIcon icon={faFileExport} className="me-2" />
+                                Summary Totals
+                            </Card.Header>
+                            <Card.Body>
+                                <Table hover responsive className="totals-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Milk Type</th>
+                                            <th>Total Qty</th>
+                                            <th>Total Amount</th>
+                                            <th>Avg FAT</th>
+                                            <th>Avg SNF</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredTotals.map(total => (
+                                            <tr key={total._id.milkType}>
+                                                <td><Badge bg={total._id.milkType === 'COW' ? 'warning' : 'info'}>{total._id.milkType}</Badge></td>
+                                                <td>{total.totalQuantity?.toFixed(2) || '0.00'}</td>
+                                                <td>{total.totalAmount?.toFixed(2) || '0.00'}</td>
+                                                <td>{total.averageFat}</td>
+                                                <td>{total.averageSNF}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            </Card.Body>
+                        </Card>
+                    )}
+                </>
+            )}
+        </div>
     );
 };
 
