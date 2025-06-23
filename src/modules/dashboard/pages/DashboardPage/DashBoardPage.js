@@ -129,16 +129,16 @@ const DashboardPage = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between pageTitleSpace align-items-center">
+      {/* <div className="d-flex justify-content-between pageTitleSpace align-items-center">
         <PageTitle name="DASHBOARD" icon={<FontAwesomeIcon icon={faGauge} className="text-primary" />} />
-      </div>
+      </div> */}
 
       <div className="dashboard-bg-gradient min-vh-100 py-3">
         <div className="usersPage my-3 font-modern">
           <div className="dashboard-filters-card p-3 mb-4">
             <div className="filters d-flex flex-wrap gap-3 align-items-end">
               <Form.Group controlId="filterDate">
-                <Form.Label><FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-primary" /> Date</Form.Label>
+                <Form.Label><FontAwesomeIcon icon={faCalendarAlt} className="me-1" /> Date</Form.Label>
                 <Form.Control
                   type="date"
                   size="lg"
@@ -148,7 +148,7 @@ const DashboardPage = () => {
                 />
               </Form.Group>
               <Form.Group controlId="filterShift">
-                <Form.Label><FontAwesomeIcon icon={faClock} className="me-1 text-primary" /> Shift</Form.Label>
+                <Form.Label><FontAwesomeIcon icon={faClock} className="me-1" /> Shift</Form.Label>
                 <Form.Select
                   size="lg"
                   value={selectedShift}
@@ -163,7 +163,7 @@ const DashboardPage = () => {
               </Form.Group>
               {(isAdmin || isDairy) && (
                 <Form.Group controlId="filterDevice">
-                  <Form.Label><FontAwesomeIcon icon={faMicrochip} className="me-1 text-primary" /> Device</Form.Label>
+                  <Form.Label><FontAwesomeIcon icon={faMicrochip} className="me-1" /> Device</Form.Label>
                   <Form.Select
                     size="lg"
                     value={selectedDeviceId}
@@ -205,7 +205,10 @@ const DashboardPage = () => {
               </div>
             ) : totals?.length > 0 ? (
               <>
-                <h5 className="mb-4 dashboard-section-title">Summary for {formattedDate}</h5>
+                <div className="d-flex align-items-center mb-2 gap-2 dashboard-section-title">
+                  <FontAwesomeIcon icon={faChartBar} className="" />
+                  <span className="fw-semibold">Summary for {formattedDate}</span>
+                </div>
                 <div className="dashboard-cards-row mb-4">
                   {totals?.map((item, idx) => (
                     <Card
@@ -262,7 +265,7 @@ const DashboardPage = () => {
                 </div>
                 <div className="dashboard-section-card mb-4 mt-3">
                   <div className="d-flex align-items-center mb-2 gap-2 dashboard-section-title">
-                    <FontAwesomeIcon icon={faChartBar} className="text-primary" />
+                    <FontAwesomeIcon icon={faChartBar} className="" />
                     <span className="fw-semibold">Daily Milk Summary</span>
                   </div>
                   <p className="text-muted mb-3">Bar chart showing total quantity, amount, and incentive for each milk type.</p>
@@ -311,7 +314,7 @@ const DashboardPage = () => {
                 </div>
                 <div className="dashboard-section-card mb-4">
                   <div className="d-flex align-items-center mb-2 gap-2 dashboard-section-title">
-                    <FontAwesomeIcon icon={faChartBar} className="text-primary" />
+                    <FontAwesomeIcon icon={faChartBar} className="" />
                     <span className="fw-semibold">Cow vs Buffalo Milk Quantity</span>
                   </div>
                   <p className="text-muted mb-3">Pie chart comparing cow and buffalo milk quantities.</p>

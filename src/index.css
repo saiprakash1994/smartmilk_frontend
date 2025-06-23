@@ -18,9 +18,11 @@
   --appSiderbarWidth: 75px;
   --appTheam: #4f8cff;
   /* Use for solid color backgrounds, borders, etc. */
-  --appGradient: linear-gradient(135deg, #4f8cff 0%, #a084ee 100%);
+  --appGradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  --appGradientHover: linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 100%);
+
   /* Use for backgrounds where gradients are supported */
-  --appTextColor: white;
+  --appTextColor: #2c3e50;
   --appPageTitleColor: var(--bs-gray-700);
   --appTitleColor: var(--bs-gray-700);
   --appSubTitleColor: var(--bs-gray-500);

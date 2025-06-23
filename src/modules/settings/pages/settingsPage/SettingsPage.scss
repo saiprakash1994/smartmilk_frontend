@@ -1,7 +1,7 @@
 .settings-bg {
     min-height: 100vh;
     width: 100vw;
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -124,7 +124,7 @@
 
 // Modern Settings Page Styles
 .settings-page {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     min-height: 100vh;
     padding: 20px 0;
 
@@ -141,8 +141,8 @@
         backdrop-filter: blur(10px);
 
         .device-selection-header {
-            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-            color: white;
+            background: var(--appGradient);
+            color: var(--appTextColor);
             border-radius: 15px 15px 0 0;
             border: none;
             padding: 20px 25px;
@@ -175,8 +175,8 @@
         overflow: hidden;
 
         .settings-header {
-            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-            color: white;
+            background: var(--appGradient);
+            color: var(--appTextColor);
             border: none;
             padding: 20px 25px;
             font-weight: 600;
@@ -189,7 +189,7 @@
                 border-radius: 20px;
                 background: rgba(255, 255, 255, 0.2) !important;
                 border: 2px solid rgba(255, 255, 255, 0.3);
-                color: white;
+                color: var(--appTextColor);
                 backdrop-filter: blur(10px);
                 box-shadow: 0 4px 15px #4f8cff22;
                 transition: all 0.3s ease;
@@ -203,7 +203,7 @@
 
             .change-device-btn {
                 border: 2px solid rgba(255, 255, 255, 0.3);
-                color: white;
+                color: var(--appTextColor);
                 background: rgba(255, 255, 255, 0.1);
                 backdrop-filter: blur(10px);
                 font-weight: 500;
@@ -235,20 +235,20 @@
                 border-radius: 0;
                 padding: 15px 20px;
                 margin: 5px 15px;
-                color: #4f8cff;
+                color: var(--appTextColor);
                 font-weight: 500;
                 transition: all 0.3s ease;
                 border-radius: 10px;
 
                 &:hover {
-                    background: #e6f0ff;
-                    color: #7b2ff2;
+                    background: var(--appGradient);
+                    color: var(--appTextColor);
                     transform: translateX(5px);
                 }
 
                 &.active {
-                    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-                    color: white;
+                    background: var(--appGradient);
+                    color: var(--appTextColor);
                     box-shadow: 0 4px 15px #4f8cff33;
                 }
             }
@@ -267,13 +267,13 @@
                     border-bottom: 2px solid #e6e6ff;
 
                     h5 {
-                        color: #4f8cff;
+                        color: var(--appTextColor);
                         font-weight: 700;
                         margin-bottom: 8px;
                     }
 
                     p {
-                        color: #7b2ff2;
+                        color: var(--appGradient);
                         margin: 0;
                         font-size: 0.95rem;
                     }
@@ -305,25 +305,25 @@
                             .setting-switch-icon {
                                 width: 50px;
                                 height: 50px;
-                                background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+                                background: var(--appGradient);
                                 border-radius: 12px;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
                                 margin-right: 15px;
-                                color: white;
+                                color: var(--appTextColor);
                                 font-size: 1.2rem;
                             }
 
                             .setting-switch-text {
                                 .setting-switch-label {
                                     font-weight: 600;
-                                    color: #4f8cff;
+                                    color: var(--appTextColor);
                                     margin-bottom: 4px;
                                 }
 
                                 .setting-switch-description {
-                                    color: #7b2ff2;
+                                    color: var(--appTextColor);
                                     font-size: 0.85rem;
                                     line-height: 1.4;
                                 }
@@ -339,8 +339,8 @@
                                 border-radius: 1rem;
 
                                 &:checked {
-                                    background-color: #4f8cff;
-                                    border-color: #4f8cff;
+                                    background-color: var(--appTextColor);
+                                    border-color: var(--appTextColor);
                                 }
 
                                 &:focus {
@@ -357,7 +357,7 @@
     // Form Controls
     .form-label-modern {
         font-weight: 600;
-        color: #4f8cff;
+        color: var(--appTextColor);
         margin-bottom: 8px;
         display: flex;
         align-items: center;
@@ -373,13 +373,13 @@
         background: #ffffff;
 
         &:focus {
-            border-color: #4f8cff;
+            border-color: var(--appTextColor);
             box-shadow: 0 0 0 0.2rem #4f8cff33;
             outline: none;
         }
 
         &:hover {
-            border-color: #7b2ff2;
+            border-color: var(--appGradient);
         }
     }
 
@@ -445,7 +445,7 @@
         padding: 20px;
 
         .save-button {
-            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+            background: var(--appGradient);
             border: none;
             border-radius: 12px;
             padding: 15px 40px;
@@ -574,14 +574,14 @@
 
         .save-settings-info {
             .save-settings-title {
-                color: #4f8cff;
+                color: var(--appTextColor);
                 font-weight: 700;
                 margin-bottom: 8px;
                 font-size: 1.1rem;
             }
 
             .save-settings-description {
-                color: #7b2ff2;
+                color: var(--appTextColor);
                 margin: 0;
                 font-size: 0.95rem;
             }
@@ -589,7 +589,7 @@
 
         .save-settings-actions {
             .save-button {
-                background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+                background: var(--appGradient);
                 border: none;
                 border-radius: 12px;
                 padding: 12px 24px;
@@ -601,7 +601,7 @@
                 &:hover {
                     transform: translateY(-2px);
                     box-shadow: 0 8px 25px #7b2ff233;
-                    background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
+                    background: var(--appGradientHover);
                 }
 
                 &:disabled {

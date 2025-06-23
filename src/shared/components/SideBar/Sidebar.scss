@@ -1,9 +1,9 @@
 .appSidebar {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     border-right: none;
     border-radius: 0 24px 24px 0;
     box-shadow: 0 8px 32px 0 #4f8cff22;
-    color: #fff;
+    color: var(--appTextColor);
     padding: 32px 0 16px 0;
     display: flex;
     flex-direction: column;
@@ -35,7 +35,7 @@
     justify-content: flex-start;
     padding: 14px 18px;
     cursor: pointer;
-    color: #e0e7ff;
+    color: var(--appTextColor);
     border-radius: 8px 0 0 8px;
     font-size: 1.1rem;
     background: transparent;
@@ -72,9 +72,9 @@
 .module:hover,
 .module-active {
     background: rgba(255, 255, 255, 0.10);
-    color: #fff;
+    color: var(--appTextColor);
     font-weight: 700;
-    border-left: 4px solid #7b2ff2;
+    border-left: 4px solid var(--appTextColor);
     box-shadow: 0 4px 15px #4f8cff33;
 }
 

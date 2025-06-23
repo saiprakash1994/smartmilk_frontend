@@ -1,6 +1,6 @@
 .login-wrapper {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--appGradient);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -55,7 +55,7 @@
                     h3 {
                         font-size: 1.75rem;
                         margin-bottom: 0.5rem;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: var(--appTextColor);
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
                         background-clip: text;
@@ -158,10 +158,11 @@
                 height: 50px;
                 font-weight: 600;
                 font-size: 1rem;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: var(--appGradient);
                 border: none;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                color: var(--appTextColor);
 
                 &:hover:not(:disabled) {
                     transform: translateY(-2px);

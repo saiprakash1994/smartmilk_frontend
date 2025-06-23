@@ -1,6 +1,6 @@
 .uploads-page-bg {
     min-height: 100vh;
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     display: block;
     position: relative;
     padding: 2rem 0;
@@ -26,8 +26,8 @@
 }
 
 .uploads-header {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-    color: white;
+    background: var(--appGradient);
+    color: var(--appTextColor);
     border-radius: 24px 24px 0 0;
     border: none;
     padding: 24px 30px 16px 30px;
@@ -99,20 +99,20 @@
             border-radius: 0;
             padding: 15px 20px;
             margin: 5px 15px;
-            color: #4f8cff;
+            color: var(--appTextColor);
             font-weight: 500;
             transition: all 0.3s ease;
             border-radius: 10px;
 
             &:hover {
-                background: #e6f0ff;
-                color: #7b2ff2;
+                background: var(--appGradient);
+                color: var(--appTextColor);
                 transform: translateX(5px);
             }
 
             &.active {
-                background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-                color: white;
+                background: var(--appGradient);
+                color: var(--appTextColor);
                 box-shadow: 0 4px 15px #4f8cff33;
             }
         }
@@ -130,13 +130,13 @@
                 border-bottom: 2px solid #e6e6ff;
 
                 h5 {
-                    color: #4f8cff;
+                    color: var(--appGradient);
                     font-weight: 700;
                     margin-bottom: 8px;
                 }
 
                 p {
-                    color: #7b2ff2;
+                    color: var(--appGradient);
                     margin: 0;
                     font-size: 0.95rem;
                 }
@@ -225,14 +225,14 @@
 
 .uploads-summary-info {
     .uploads-summary-title {
-        color: #4f8cff;
+        color: var(--appTextColor);
         font-weight: 700;
         margin-bottom: 8px;
         font-size: 1.1rem;
     }
 
     .uploads-summary-desc {
-        color: #7b2ff2;
+        color: var(--appTextColor);
         margin: 0;
         font-size: 0.95rem;
     }

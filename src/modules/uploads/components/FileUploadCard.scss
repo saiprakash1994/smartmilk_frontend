@@ -10,22 +10,22 @@
     &:hover {
         transform: translateY(-2px) scale(1.02);
         box-shadow: 0 8px 32px #7b2ff233;
-        border-color: #7b2ff2;
+        border-color: var(--appGradient);
     }
 
     .profileName {
-        color: #4f8cff;
+        color: var(--appGradient);
         font-weight: 700;
         font-size: 1.18rem;
         margin-bottom: 1.1rem;
 
         svg {
-            color: #7b2ff2;
+            color: var(--appGradient);
         }
     }
 
     .form-label {
-        color: #4f8cff;
+        color: var(--appGradient);
         font-weight: 600;
         font-size: 1.05rem;
         margin-bottom: 0.4rem;
@@ -39,7 +39,7 @@
         font-size: 0.99rem;
 
         &:focus {
-            border-color: #4f8cff;
+            border-color: var(--appTextColor);
             box-shadow: 0 0 0 0.1rem #4f8cff33;
         }
     }
@@ -84,8 +84,8 @@
     margin-top: 0.5rem;
 
     &:hover {
-        background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
-        color: #fff !important;
+        background: var(--appGradient);
+        color: var(--appTextColor) !important;
         transform: translateY(-2px);
         box-shadow: 0 8px 25px #7b2ff233;
     }

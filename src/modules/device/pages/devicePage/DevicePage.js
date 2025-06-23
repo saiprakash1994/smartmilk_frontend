@@ -93,7 +93,7 @@ const DevicePage = () => {
                 <Card.Body className="p-0">
                     <Tab.Container id="device-tabs" defaultActiveKey="deviceList">
                         <Row className="g-0">
-                            <Col md={3} className="device-sidebar">
+                            <Col md={2} className="device-sidebar">
                                 <Nav variant="pills" className="flex-column device-nav">
                                     <Nav.Item>
                                         <Nav.Link eventKey="deviceList" className="device-nav-link">
@@ -103,7 +103,7 @@ const DevicePage = () => {
                                     {/* Future: Add more tabs here */}
                                 </Nav>
                             </Col>
-                            <Col md={9} className="device-content">
+                            <Col md={10} className="device-content">
                                 <Tab.Content className="device-tab-content">
                                     <Tab.Pane eventKey="deviceList" className="device-tab-pane">
                                         <div className="device-tab-header d-flex align-items-center justify-content-between mb-4">

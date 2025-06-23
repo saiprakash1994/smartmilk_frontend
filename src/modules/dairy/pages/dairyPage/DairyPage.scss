@@ -1,6 +1,6 @@
 .DairyPage {
     min-height: 100vh;
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     position: relative;
     padding-bottom: 64px;
     overflow-x: hidden;
@@ -134,11 +134,11 @@
     z-index: 3;
 
     th {
-        color: #4f8cff;
+        color: var(--appTextColor);
         background: transparent;
         border-bottom: 2px solid #4f8cff33;
         font-weight: 800;
-        font-size: 1.18rem;
+        // font-size: 1.18rem;
         letter-spacing: 0.01em;
         z-index: 2;
         padding: 1.1rem 0.7rem;
@@ -188,7 +188,7 @@
     &:focus {
         background: #e6f0ff;
         box-shadow: 0 4px 18px #4f8cff22;
-        outline: 2px solid #4f8cff;
+        outline: 2px solid var(--appTextColor);
         z-index: 2;
         transform: translateY(-2px) scale(1.01);
     }
@@ -322,7 +322,7 @@ table.dairy-table td {
 }
 
 .dairy-page-modern {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     min-height: 100vh;
     padding: 20px 0;
 
@@ -360,11 +360,36 @@ table.dairy-table td {
                 }
 
                 &.active {
-                    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-                    color: white;
+                    background: var(--appGradient);
+                    color: var(--appTextColor);
                     box-shadow: 0 4px 15px #4f8cff33;
                 }
             }
+        }
+    }
+
+    .pagination {
+        .page-link {
+            border-radius: 12px !important;
+            color: var(--appTextColor);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.7);
+            margin: 0 2px;
+            transition: background 0.2s, color 0.2s;
+
+            &:hover,
+            &:focus {
+                background: #e6f0ff;
+                color: var(--appGradient);
+                outline: 2px solid var(--appTextColor);
+            }
+        }
+
+        .active .page-link {
+            background: var(--appGradient);
+            color: var(--appTextColor);
+            border: none;
+            box-shadow: 0 2px 8px #4f8cff33;
         }
     }
 
@@ -380,7 +405,7 @@ table.dairy-table td {
                     border-bottom: 2px solid #e6e6ff;
 
                     h5 {
-                        color: #4f8cff;
+                        color: var(--appTextColor);
                         font-weight: 700;
                         margin-bottom: 8px;
                     }
@@ -399,8 +424,8 @@ table.dairy-table td {
     }
 
     .dairy-add-btn {
-        background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-        color: #fff;
+        background: var(--appGradient);
+        color: var(--appTextColor);
         font-weight: 600;
         border: none;
         border-radius: 10px;
@@ -409,8 +434,8 @@ table.dairy-table td {
         transition: all 0.3s ease;
 
         &:hover {
-            background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
-            color: #fff;
+            background: var(--appGradientHover);
+            color: var(--appTextColor);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px #7b2ff233;
         }

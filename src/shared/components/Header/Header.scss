@@ -1,8 +1,7 @@
 .mainHeader {
     width: 100%;
     height: var(--header-height);
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-    color: #fff;
+    background: var(--appGradient);
     border-radius: 0 0 24px 24px;
     box-shadow: 0 8px 32px 0 #4f8cff22;
     position: sticky;
@@ -30,7 +29,7 @@ img {
     font-weight: 700;
     padding-left: 10px;
     margin-bottom: 0;
-    color: #fff;
+    color: var(--appTextColor);
     letter-spacing: 0.5px;
     text-shadow: 0 2px 8px #4f8cff33;
 }
@@ -40,7 +39,7 @@ img {
     font-weight: 600;
     padding-left: 10px;
     margin-bottom: 0;
-    color: #fff;
+    color: var(--appTextColor);
 }
 
 .appbrand {
@@ -81,7 +80,7 @@ img {
 #dropdown-split-basic {
     background: rgba(255, 255, 255, 0.10);
     border: 0px;
-    color: #fff;
+    color: var(--appTextColor);
     font-weight: 600;
     border-radius: 8px;
     padding: 6px 16px;
@@ -89,8 +88,8 @@ img {
 
     &:hover,
     &:focus {
-        background: #7b2ff2;
-        color: #fff;
+        background: var(--appGradient);
+        color: var(--appTextColor);
     }
 }
 

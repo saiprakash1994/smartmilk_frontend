@@ -134,10 +134,9 @@
 
         th {
             font-weight: 700;
-            color: #4f8cff;
+            color: var(--appTextColor);
             background: transparent;
             border-bottom: 2px solid #4f8cff33;
-            font-size: 1.1rem;
             letter-spacing: 0.01em;
             z-index: 2;
         }
@@ -153,7 +152,7 @@
             &:focus {
                 background: #e6f0ff;
                 box-shadow: 0 2px 12px #4f8cff22;
-                outline: 2px solid #4f8cff;
+                outline: 2px solid var(--appTextColor);
                 z-index: 1;
             }
 
@@ -220,8 +219,8 @@
     right: 24px;
     bottom: 24px;
     z-index: 100;
-    background: linear-gradient(90deg, #4f8cff 60%, #7b2ff2 100%);
-    color: #fff;
+    background: var(--appGradient);
+    color: var(--appTextColor);
     border: none;
     border-radius: 50%;
     width: 56px;
@@ -235,9 +234,9 @@
 
     &:hover,
     &:focus {
-        background: linear-gradient(90deg, #7b2ff2 60%, #4f8cff 100%);
+        background: var(--appGradient);
         box-shadow: 0 8px 32px #7b2ff255;
-        outline: 2px solid #fff;
+        outline: 2px solid var(--appTextColor);
         transform: scale(1.08);
     }
 }
@@ -248,7 +247,7 @@
     bottom: 92px;
     z-index: 100;
     background: #fff;
-    color: #4f8cff;
+    color: var(--appTextColor);
     border: none;
     border-radius: 50%;
     width: 44px;
@@ -264,7 +263,7 @@
     &:focus {
         background: #e6f0ff;
         box-shadow: 0 4px 16px #4f8cff33;
-        outline: 2px solid #4f8cff;
+        outline: 2px solid var(--appTextColor);
         transform: scale(1.08);
     }
 }
@@ -291,7 +290,7 @@
 .pagination {
     .page-link {
         border-radius: 12px !important;
-        color: #4f8cff;
+        color: var(--appTextColor);
         font-weight: 600;
         background: rgba(255, 255, 255, 0.7);
         margin: 0 2px;
@@ -300,14 +299,14 @@
         &:hover,
         &:focus {
             background: #e6f0ff;
-            color: #7b2ff2;
-            outline: 2px solid #4f8cff;
+            color: var(--appGradient);
+            outline: 2px solid var(--appTextColor);
         }
     }
 
     .active .page-link {
-        background: linear-gradient(90deg, #4f8cff 60%, #7b2ff2 100%);
-        color: #fff;
+        background: var(--appGradient);
+        color: var(--appTextColor);
         border: none;
         box-shadow: 0 2px 8px #4f8cff33;
     }
@@ -430,7 +429,7 @@
 }
 
 .device-page-modern {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     min-height: 100vh;
     padding: 20px 0;
 
@@ -468,8 +467,8 @@
                 }
 
                 &.active {
-                    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-                    color: white;
+                    background: var(--appGradient);
+                    color: var(--appTextColor);
                     box-shadow: 0 4px 15px #4f8cff33;
                 }
             }
@@ -488,7 +487,7 @@
                     border-bottom: 2px solid #e6e6ff;
 
                     h5 {
-                        color: #4f8cff;
+                        color: var(--appTextColor);
                         font-weight: 700;
                         margin-bottom: 8px;
                     }
@@ -507,8 +506,8 @@
     }
 
     .device-add-btn {
-        background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-        color: #fff;
+        background: var(--appGradient);
+        color: var(--appTextColor);
         font-weight: 600;
         border: none;
         border-radius: 10px;
@@ -517,8 +516,8 @@
         transition: all 0.3s ease;
 
         &:hover {
-            background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
-            color: #fff;
+            background: var(--appGradientHover);
+            color: var(--appTextColor);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px #7b2ff233;
         }

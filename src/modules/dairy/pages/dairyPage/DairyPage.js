@@ -50,7 +50,7 @@ const DairyPage = () => {
                 <Card.Body className="p-0">
                     <Tab.Container id="dairy-tabs" defaultActiveKey="dairyList">
                         <Row className="g-0">
-                            <Col md={3} className="dairy-sidebar">
+                            <Col md={2} className="dairy-sidebar">
                                 <Nav variant="pills" className="flex-column dairy-nav">
                                     <Nav.Item>
                                         <Nav.Link eventKey="dairyList" className="dairy-nav-link">
@@ -60,12 +60,12 @@ const DairyPage = () => {
                                     {/* Future: Add more tabs here */}
                                 </Nav>
                             </Col>
-                            <Col md={9} className="dairy-content">
+                            <Col md={10} className="dairy-content">
                                 <Tab.Content className="dairy-tab-content">
                                     <Tab.Pane eventKey="dairyList" className="dairy-tab-pane">
                                         <div className="dairy-tab-header d-flex align-items-center justify-content-between mb-4">
                                             <div className="d-flex align-items-center gap-3">
-                                                <h5 className="mb-0"><FaTable className="me-2" />Dairy List</h5>
+                                                <h5 className="mb-0 "><FaTable className="me-2" />Dairy List</h5>
                                                 <Form className="dairy-search-form ms-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text"><FaSearch /></span>
@@ -80,7 +80,7 @@ const DairyPage = () => {
                                                 </Form>
                                             </div>
                                             <Button className="dairy-add-btn" onClick={() => navigate('dairyadd')}>
-                                                <FaPlus className="me-2" /> Add Dairy
+                                                <FaPlus className="me-2 text-" /> Add Dairy
                                             </Button>
                                         </div>
                                         <div className="dairy-section">

@@ -1,5 +1,5 @@
 .records-page {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     min-height: 100vh;
     padding: 20px 0;
 
@@ -15,8 +15,8 @@
         backdrop-filter: blur(10px);
 
         .records-header {
-            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-            color: white;
+            background: var(--appGradient);
+            color: var(--appTextColor);
             border-radius: 15px 15px 0 0;
             border: none;
             padding: 20px 25px;
@@ -40,7 +40,7 @@
                 border-radius: 25px;
                 background: rgba(255, 255, 255, 0.2) !important;
                 border: 2px solid rgba(255, 255, 255, 0.3);
-                color: white;
+                color: var(--appTextColor);
                 backdrop-filter: blur(10px);
                 box-shadow: 0 4px 15px #4f8cff22;
                 transition: all 0.3s ease;
@@ -63,8 +63,8 @@
         overflow: hidden;
 
         .records-header {
-            background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-            color: white;
+            background: var(--appGradient);
+            color: var(--appTextColor);
             border: none;
             padding: 20px 25px;
             font-weight: 600;
@@ -77,7 +77,7 @@
                 border-radius: 20px;
                 background: rgba(255, 255, 255, 0.2) !important;
                 border: 2px solid rgba(255, 255, 255, 0.3);
-                color: white;
+                color: var(--appTextColor);
                 backdrop-filter: blur(10px);
                 box-shadow: 0 4px 15px #4f8cff22;
                 transition: all 0.3s ease;
@@ -102,7 +102,7 @@
                     border: none;
                     padding: 15px 20px;
                     margin: 5px 15px;
-                    color: #4f8cff;
+                    color: var(--appTextColor);
                     font-weight: 500;
                     transition: all 0.3s ease;
                     border-radius: 10px;
@@ -121,18 +121,18 @@
                     }
 
                     &:hover {
-                        background: #e6f0ff;
-                        color: #7b2ff2;
+                        background: var(--appGradient);
+                        color: var(--appTextColor);
                         transform: translateX(5px);
                     }
 
                     &.active {
-                        background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
-                        color: white;
+                        background: var(--appGradient);
+                        color: var(--appTextColor);
                         box-shadow: 0 4px 15px rgba(79, 140, 255, 0.4);
 
                         .nav-link-title {
-                            color: white;
+                            color: var(--appTextColor);
                         }
                     }
                 }
@@ -154,7 +154,7 @@
                         border-bottom: 2px solid rgba(79, 140, 255, 0.1);
 
                         h5 {
-                            color: #4f8cff;
+                            color: var(--appTextColor);
                             font-weight: 700;
                             font-size: 1.2rem;
                             margin-bottom: 6px;

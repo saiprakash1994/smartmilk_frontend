@@ -40,7 +40,7 @@ const Header = ({ onHamburger }) => {
                 <div className="d-flex align-items-center">
                     <Dropdown as={ButtonGroup}>
                         <Dropdown.Toggle split variant="success" id="dropdown-split-basic">
-                            <span className="profileName px-2 text-capitalize fw-bold">{displayLabel}</span>
+                            <span className="profileName px-2 text-capitalize fw-bold">{displayLabel}123</span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                             <Dropdown.Item onClick={() => {
