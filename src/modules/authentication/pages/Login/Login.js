@@ -15,11 +15,11 @@ import smatrchipLogo from "../../../../assets/smatrchipLogo.png";
 import dairyManagementImage from "../../../../assets/dairy-management.svg";
 import "./Login.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-    faEye, 
-    faEyeSlash, 
-    faEnvelope, 
-    faLock, 
+import {
+    faEye,
+    faEyeSlash,
+    faEnvelope,
+    faLock,
     faUser,
     faShieldAlt,
     faArrowRight
@@ -38,17 +38,17 @@ const Login = () => {
     useEffect(() => {
         const email = loginInfo.email.trim();
         const password = loginInfo.password.trim();
-        
+
         const newErrors = {};
-        
+
         if (email && !/^\S+@\S+\.\S+$/.test(email)) {
             newErrors.email = "Please enter a valid email address";
         }
-        
+
         if (password && password.length < 6) {
             newErrors.password = "Password must be at least 6 characters";
         }
-        
+
         setErrors(newErrors);
         setIsFormValid(email && password && Object.keys(newErrors).length === 0);
     }, [loginInfo]);
@@ -134,14 +134,14 @@ const Login = () => {
                 <div className="login-form-section">
                     <div className="text-center mb-4">
                         <img src={smatrchipLogo} alt="SmartChip Logo" className="logo mb-3" />
-                        <h4 className="fw-bold text-primary mb-2">Sign in to your account</h4>
+                        <h4 className="fw-bold mb-2">Sign in to your account</h4>
                         <div className="text-muted small mb-3">Welcome back! Please enter your credentials to continue.</div>
                         <div className="security-badge">
                             <FontAwesomeIcon icon={faShieldAlt} className="me-2" />
                             <span className="small">Secure Login</span>
                         </div>
                     </div>
-                    
+
                     <Form onSubmit={handleLogin} className="px-1 px-md-2">
                         <FloatingLabel controlId="email" label="Email Address" className="mb-3">
                             <Form.Control
