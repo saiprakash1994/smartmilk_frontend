@@ -196,7 +196,7 @@ const DeviceAdd = () => {
                             </div>
                         )}
                         <Form autoComplete="off" onSubmit={submitForm}>
-                            <h5 className="mb-3" style={{ color: '#4f8cff', fontWeight: 700 }}>Device Details</h5>
+                            <h5 className="mb-3" style={{ color: '#2c3e50', fontWeight: 700 }}>Device Details</h5>
                             <Form.Group className="form-floating mb-3">
                                 {(userType === roles.ADMIN && !id) ? (
                                     <Form.Select
@@ -263,7 +263,7 @@ const DeviceAdd = () => {
                                 <Form.Label htmlFor="email">Email</Form.Label>
                                 {errors.email && <div className="text-danger mt-1">{errors.email}</div>}
                             </Form.Group>
-                            <h5 className="mb-3 mt-4" style={{ color: '#4f8cff', fontWeight: 700 }}>Set Password</h5>
+                            <h5 className="mb-3 mt-4" style={{ color: '#2c3e50', fontWeight: 700 }}>Set Password</h5>
                             <div className="deviceadd-password-section position-relative mb-3">
                                 {id && (
                                     <Form.Group className="form-floating mb-3 position-relative">

@@ -161,7 +161,7 @@ input:focus,
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     position: relative;
 }
 
@@ -198,7 +198,7 @@ input:focus,
     font-size: 2rem;
     font-weight: 700;
     letter-spacing: -1px;
-    color: #4f8cff;
+    color: var(--appTextColor);
     text-shadow: 0 2px 8px #4f8cff33;
 }
 
@@ -209,9 +209,9 @@ input:focus,
 }
 
 .dairyadd-btn-row .btn-primary {
-    background: linear-gradient(135deg, #4f8cff 0%, #7b2ff2 100%);
+    background: var(--appGradient);
     border: none;
-    color: #fff;
+    color: var(--appTextColor);
     font-weight: 600;
     border-radius: 10px;
     box-shadow: 0 4px 15px #4f8cff33;
@@ -220,28 +220,28 @@ input:focus,
 
 .dairyadd-btn-row .btn-primary:hover,
 .dairyadd-btn-row .btn-primary:focus {
-    background: linear-gradient(135deg, #7b2ff2 0%, #4f8cff 100%);
-    color: #fff;
+    background: var(--appGradientHover);
+    color: var(--appTextColor);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px #7b2ff233;
 }
 
 .dairyadd-btn-row .btn-outline-secondary {
-    color: #4f8cff;
-    border-color: #4f8cff;
+    color: var(--appTextColor);
+    border-color: var(--appTextColor);
     background: transparent;
 }
 
 .dairyadd-btn-row .btn-outline-secondary:hover,
 .dairyadd-btn-row .btn-outline-secondary:focus {
     background: #e6f0ff;
-    color: #7b2ff2;
-    border-color: #7b2ff2;
+    color: var(--appGradient);
+    border-color: var(--appGradient);
 }
 
 .form-floating>.form-control:focus~label,
 .form-floating>.form-control:not(:placeholder-shown)~label {
-    color: #4f8cff;
+    color: var(--appTextColor);
 }
 
 .form-floating>label {

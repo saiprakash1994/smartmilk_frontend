@@ -186,7 +186,7 @@ const DairyAdd = () => {
                             </div>
                         )}
                         <Form autoComplete="off">
-                            <h5 className="mb-3" style={{ color: '#4f8cff', fontWeight: 700 }}>Dairy Details</h5>
+                            <h5 className="mb-3" style={{ color: '#2c3e50', fontWeight: 700 }}>Dairy Details</h5>
                             {!id && (
                                 <Form.Group className="form-floating mb-3">
                                     <Form.Control
@@ -241,7 +241,7 @@ const DairyAdd = () => {
                                 <div className="form-text">We'll never share your email.</div>
                                 <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                             </Form.Group>
-                            <h5 className="mb-3 mt-4" style={{ color: '#4f8cff', fontWeight: 700 }}>Set Password</h5>
+                            <h5 className="mb-3 mt-4" style={{ color: '#2c3e50', fontWeight: 700 }}>Set Password</h5>
                             <div className="dairyadd-password-section position-relative mb-3">
                                 {id && (
                                     <Form.Group className="form-floating mb-3 position-relative">
