@@ -21,6 +21,7 @@ const SummaryTotalsSection = ({ milktypeStats, showHeader = true }) => (
                     <th>Samples</th>
                     <th>Avg FAT</th>
                     <th>Avg SNF</th>
+                    <th>Avg CLR</th>
                     <th>Avg Rate</th>
                     <th>Total Qty</th>
                     <th>Total Amount</th>
@@ -33,8 +34,9 @@ const SummaryTotalsSection = ({ milktypeStats, showHeader = true }) => (
                     <tr key={idx}>
                         <td>{stat?.milktype}</td>
                         <td>{stat?.totalSamples}</td>
-                        <td>{stat?.avgFat?.toFixed(2)}</td>
-                        <td>{stat?.avgSnf?.toFixed(2)}</td>
+                        <td>{stat?.avgFat?.toFixed(1)}</td>
+                        <td>{stat?.avgSnf?.toFixed(1)}</td> 
+                        <td>{stat?.avgClr?.toFixed(1)}</td>
                         <td>{stat?.avgRate?.toFixed(2)}</td>
                         <td>{stat?.totalQty?.toFixed(2)}</td>
                         <td>₹{stat?.totalAmount?.toFixed(2)}</td>

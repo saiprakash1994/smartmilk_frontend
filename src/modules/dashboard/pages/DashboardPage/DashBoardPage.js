@@ -142,10 +142,31 @@ const DashboardPage = () => {
   const pieColors = ["#1cc88a", "#36b9cc"];
 
   // Calculate total metrics
+  // const totalQuantity = cowQuantity + buffaloQuantity;
+  // const totalAmount = totals.reduce((sum, item) => sum + Number(item?.totalAmount || 0), 0);
+  // const totalIncentive = totals.reduce((sum, item) => sum + Number(item?.totalIncentive || 0), 0);
+  // const grandTotal = totalAmount + totalIncentive;
+
   const totalQuantity = cowQuantity + buffaloQuantity;
-  const totalAmount = totals.reduce((sum, item) => sum + Number(item?.totalAmount || 0), 0);
-  const totalIncentive = totals.reduce((sum, item) => sum + Number(item?.totalIncentive || 0), 0);
-  const grandTotal = totalAmount + totalIncentive;
+
+const validMilkTypes = ["COW", "BUF"];
+
+const filteredTotals = totals.filter(
+  (item) => validMilkTypes.includes(item?._id?.milkType)
+);
+
+const totalAmount = filteredTotals.reduce(
+  (sum, item) => sum + Number(item?.totalAmount || 0),
+  0
+);
+
+const totalIncentive = filteredTotals.reduce(
+  (sum, item) => sum + Number(item?.totalIncentive || 0),
+  0
+);
+
+const grandTotal = totalAmount + totalIncentive;
+
 
   useEffect(() => {
     if (deviceCodes && formattedDate) {
@@ -356,19 +377,25 @@ const DashboardPage = () => {
 
                       <div className="milk-quality-metrics mt-4">
                         <Row>
-                          <Col md={4}>
+                          <Col md={3}>
                             <div className="quality-item">
                               <span className="quality-label">Fat:</span>
                               <span className="quality-value">{item?.averageFat}</span>
                             </div>
                           </Col>
-                          <Col md={4}>
+                          <Col md={3}>
                             <div className="quality-item">
                               <span className="quality-label">SNF:</span>
                               <span className="quality-value">{item?.averageSNF}</span>
                             </div>
                           </Col>
-                          <Col md={4}>
+                          <Col md={3}>
+                            <div className="quality-item">
+                              <span className="quality-label">CLR:</span>
+                              <span className="quality-value">{item?.averageCLR}</span>
+                            </div>
+                          </Col>
+                          <Col md={3}>
                             <div className="quality-item">
                               <span className="quality-label">Rate:</span>
                               <span className="quality-value">₹{item?.averageRate}</span>

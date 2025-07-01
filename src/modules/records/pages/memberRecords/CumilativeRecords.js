@@ -166,6 +166,10 @@ const isExporting = false
   const {
     totalMembers = 0,
     grandTotalQty = 0,
+    grandAvgFat = 0,
+    grandAvgSnf = 0,
+    grandAvgClr = 0,
+    grandAvgRate = 0,
     grandTotalIncentive = 0,
     grandTotalAmount = 0,
     grandTotal = 0,
@@ -191,6 +195,9 @@ const isExporting = false
         SNO: index + 1,
         MemberCode: record?.CODE,
         MilkType: record?.MILKTYPE,
+        AvgFAT: record?.avgFat, 
+        AvgSNF: record?.avgSnf,
+        avgClr: record?.avgClr,
         TotalQty: record?.totalQty,
         AvgRate: record?.avgRate,
         TotalAmount: record?.totalAmount,
@@ -208,7 +215,11 @@ const isExporting = false
       const cowData = cowMilkTypeTotals?.map((cow) => ({
         MilkType: cow?.MILKTYPE,
         MemberCount: cow?.memberCount,
-        TotalQty: cow?.totalQty,
+        AvgFAT : cow?.avgFat,
+        AvgSNF : cow?.avgSnf,
+        AvgCLR : cow?.avgClr,
+        AvgRate : cow?.avgRate,
+        TotalQty : cow?.totalQty,
         TotalAmount: cow?.totalAmount,
         TotalIncentive: cow?.totalIncentive,
         GrandTotal: cow?.grandTotal,
@@ -224,6 +235,10 @@ const isExporting = false
       const bufData = bufMilkTypeTotals?.map((buf) => ({
         MilkType: buf?.MILKTYPE,
         MemberCount: buf?.memberCount,
+        AvgFAT : buf?.avgFat,
+        AvgSNF : buf?.avgSnf,
+        AvgCLR : buf?.avgClr,
+        AvgRate : buf?.avgRate,
         TotalQty: buf?.totalQty,
         TotalAmount: buf?.totalAmount,
         TotalIncentive: buf?.totalIncentive,
@@ -552,6 +567,9 @@ const isExporting = false
                           <th>#</th>
                           <th>Code</th>
                           <th>MILKTYPE</th>
+                          <th>Avg FAT</th>
+                          <th>Avg SNF</th>
+                          <th>Avg CLR</th>
                           <th>Total Qty</th>
                           <th>Avg Rate</th>
                           <th>Total Amount</th>
@@ -566,6 +584,9 @@ const isExporting = false
                               <td>{index + 1}</td>
                               <td>{record?.CODE}</td>
                               <td>{record?.MILKTYPE}</td>
+                              <td>{record?.avgFat}</td>
+                              <td>{record?.avgSnf}</td>
+                              <td>{record?.avgClr}</td>
                               <td>{record?.totalQty}</td>
                               <td>₹{record?.avgRate}</td>
                               <td>₹{record?.totalAmount}</td>
@@ -636,7 +657,11 @@ const isExporting = false
                         <tr>
                           <th>Milk Type</th>
                           <th>Member Count</th>
+                          <th>Avg FAT</th>
+                          <th>Avg SNF</th>
+                          <th>Avg CLR</th>                          
                           <th>Total Qty</th>
+                          <th>Avg Rate</th>
                           <th>Total Amount</th>
                           <th>Total Incentive</th>
                           <th>Grand Total</th>
@@ -648,7 +673,11 @@ const isExporting = false
                           <tr key={`cow-${idx}`}>
                             <td>{row?.MILKTYPE || 'COW'}</td>
                             <td>{row?.memberCount}</td>
+                            <td>{row?.avgFat}</td>
+                            <td>{row?.avgSnf}</td>
+                            <td>{row?.avgClr}</td>
                             <td>{row?.totalQty}</td>
+                            <td>{row?.avgRate}</td>
                             <td>₹{row?.totalAmount}</td>
                             <td>₹{row?.totalIncentive}</td>
                             <td>₹{row?.grandTotal}</td>
@@ -659,7 +688,12 @@ const isExporting = false
                           <tr key={`buff-${idx}`}>
                             <td>{row?.MILKTYPE || 'BUFFALO'}</td>
                             <td>{row?.memberCount}</td>
+                            <td>{row?.avgFat}</td>
+                            <td>{row?.avgSnf}</td>
+                            <td>{row?.avgClr}</td>
                             <td>{row?.totalQty}</td>
+                            <td>{row?.avgRate}</td>
+
                             <td>₹{row?.totalAmount}</td>
                             <td>₹{row?.totalIncentive}</td>
                             <td>₹{row?.grandTotal}</td>
@@ -669,15 +703,19 @@ const isExporting = false
                         {(viewMode === "TOTALS" || viewMode === "ALL") && (
                           <tr className="fw-bold bg-light">
                             <td>Grand Total</td>
-                            <td>{totalMembers}</td>
+                            <td>{totalMembers}</td>  
+                            <td>{grandAvgFat}</td>
+                            <td>{grandAvgSnf}</td>
+                            <td>{grandAvgClr}</td>
                             <td>₹{grandTotalQty}</td>
+                            <td>{grandAvgRate}</td>
                             <td>₹{grandTotalAmount}</td>
                             <td>₹{grandTotalIncentive}</td>
                             <td>₹{grandTotal}</td>
                           </tr>
                         )}
                       </tbody>
-                    </Table>
+                    </Table> 
                   </div>
                 </Card>
               )}

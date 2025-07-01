@@ -158,7 +158,7 @@ const MemberRecords = () => {
 
     // Header Info
     combinedCSV += `Device Code:,${deviceCode}\n`;
-    combinedCSV += `Member Code:,${memberCode.padStart(4, "0")}\n`;
+    combinedCSV += `Member Code:,${memberCode}\n`;
     combinedCSV += `Member Records From,${fromDate},To,${toDate}\n\n`;
 
     // Records
@@ -168,8 +168,9 @@ const MemberRecords = () => {
         Date: rec?.SAMPLEDATE || "",
         Shift: rec?.SHIFT || "",
         "Milk Type": rec?.MILKTYPE || "",
-        Fat: rec?.FAT ?? "",
+        FAT: rec?.FAT ?? "",
         SNF: rec?.SNF ?? "",
+        CLR: rec?.CLR ?? "",
         Qty: rec?.QTY ?? "",
         Rate: rec?.RATE ?? "",
         Amount: rec?.AMOUNT?.toFixed(2) ?? "0.00",
@@ -188,6 +189,7 @@ const MemberRecords = () => {
         "Total Samples": total?.totalRecords ?? "",
         "Avg FAT": total?.averageFat ?? "",
         "Avg SNF": total?.averageSNF ?? "",
+        "Avg CLR": total?.averageCLR ?? "",
         "Total Qty": total?.totalQuantity ?? "",
         "Avg Rate": total?.averageRate ?? "",
         "Total Amount": total?.totalAmount ?? "0.00",
@@ -202,7 +204,7 @@ const MemberRecords = () => {
     }
 
     const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, `${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.csv`);
+    saveAs(blob, `${memberCode}_Memberwise_Report_${getToday()}.csv`);
   };
 
   const handleExportPDF = () => {
@@ -224,7 +226,7 @@ const MemberRecords = () => {
     currentY += 10;
     doc.setFontSize(12);
     doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-    const memberCodeText = `Member Code: ${memberCode.padStart(4, "0")}`;
+    const memberCodeText = `Member Code: ${memberCode}`;
     doc.text(memberCodeText, pageWidth - 14 - doc.getTextWidth(memberCodeText), currentY);
 
     currentY += 7;
@@ -238,6 +240,7 @@ const MemberRecords = () => {
         record?.MILKTYPE || "",
         record?.FAT ?? "",
         record?.SNF ?? "",
+        record?.CLR ?? "",
         record?.QTY ?? "",
         record?.RATE ?? "",
         record?.AMOUNT?.toFixed(2) ?? "0.00",
@@ -248,7 +251,7 @@ const MemberRecords = () => {
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
-          "S.No", "Date", "Shift", "Milk Type", "Fat", "Snf", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
+          "S.No", "Date", "Shift", "Milk Type", "FAT", "SNF","CLR", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
         ]],
         body: recordsTable,
         theme: "grid",
@@ -267,6 +270,7 @@ const MemberRecords = () => {
         total?.totalRecords ?? "",
         total?.averageFat ?? "",
         total?.averageSNF ?? "",
+        total?.averageCLR ?? "",
         total?.totalQuantity ?? "",
         total?.averageRate ?? "",
         total?.totalAmount ?? "0.00",
@@ -280,7 +284,7 @@ const MemberRecords = () => {
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
-          "Milk Type", "Total Samples", "Avg FAT", "Avg SNF", "Total Qty", "Avg Rate",
+          "Milk Type", "Total Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Total Qty", "Avg Rate",
           "Total Amount", "Total Incentive", "Grand Total",
         ]],
         body: totalsTable,
@@ -289,7 +293,7 @@ const MemberRecords = () => {
       });
     }
 
-    doc.save(`${memberCode.padStart(4, "0")}_Memberwise_Report_${getToday()}.pdf`);
+    doc.save(`${memberCode}_Memberwise_Report_${getToday()}.pdf`);
   };
 
   return (
@@ -431,8 +435,9 @@ const MemberRecords = () => {
                             <th>Date</th>
                             <th>Shift</th>
                             <th>Milk Type</th>
-                            <th>Fat</th>
+                            <th>FAT</th>
                             <th>SNF</th>
+                            <th>CLR</th>
                             <th>Qty</th>
                             <th>Rate</th>
                             <th>Amount</th>
@@ -450,6 +455,7 @@ const MemberRecords = () => {
                                 <td>{record?.MILKTYPE}</td>
                                 <td>{record?.FAT?.toFixed(1)}</td>
                                 <td>{record?.SNF?.toFixed(1)}</td>
+                                <td>{record?.CLR?.toFixed(1)}</td>
                                 <td>{record?.QTY?.toFixed(2)}</td>
                                 <td>₹{record?.RATE?.toFixed(2)}</td>
                                 <td>₹{record?.AMOUNT?.toFixed(2) || 0}</td>

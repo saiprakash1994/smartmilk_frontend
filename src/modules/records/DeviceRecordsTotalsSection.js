@@ -21,6 +21,7 @@ const DeviceRecordsTotalsSection = ({ filteredTotals }) => {
                             <th>Total Records</th>
                             <th>Avg Fat</th>
                             <th>Avg SNF</th>
+                            <th>Avg CLR</th>
                             <th>Total Qty</th>
                             <th>Avg Rate</th>
                             <th>Total Amount</th>
@@ -35,6 +36,8 @@ const DeviceRecordsTotalsSection = ({ filteredTotals }) => {
                                 <td>{total?.totalRecords}</td>
                                 <td>{total?.averageFat}</td>
                                 <td>{total?.averageSNF}</td>
+                                <td>{total?.averageCLR}</td>
+
                                 <td>{Number(total?.totalQuantity || 0).toFixed(2)}</td>
                                 <td>₹{Number(total?.averageRate || 0).toFixed(2)}</td>
                                 <td>₹{Number(total?.totalAmount || 0).toFixed(2)}</td>

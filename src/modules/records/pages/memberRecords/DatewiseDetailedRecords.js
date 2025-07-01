@@ -201,10 +201,12 @@ const DatewiseDetailedRecords = () => {
                     MilkType: stat?.MILKTYPE,
                     FAT: stat?.FAT,
                     SNF: stat?.SNF,
+                    CLR: stat?.CLR,
                     Rate: stat?.RATE,
-                    Quantity: stat?.QTY,
-                    IncentiveAmount: stat?.INCENTIVEAMOUNT,
+                    Quantity: stat?.QTY,                    
                     TotalAmount: stat?.TOTALAMOUNT,
+                    IncentiveAmount: stat?.INCENTIVEAMOUNT,
+                    GrandTotal:(stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
                 }));
 
                 combinedCSV += "Member Records:\n";
@@ -216,8 +218,9 @@ const DatewiseDetailedRecords = () => {
                 const summaryRows = day?.milktypeStats?.map((stat) => ({
                     MilkType: stat?.milktype,
                     Samples: stat?.totalSamples,
-                    AvgFAT: stat?.avgFat.toFixed(2),
-                    AvgSNF: stat?.avgSnf.toFixed(2),
+                    AvgFAT: stat?.avgFat.toFixed(1),
+                    AvgSNF: stat?.avgSnf.toFixed(1),
+                    AvgCLR: stat?.avgSnf.toFixed(1),
                     AvgRate: stat?.avgRate.toFixed(2),
                     TotalQty: stat?.totalQty.toFixed(2),
                     TotalAmount: stat?.totalAmount.toFixed(2),
@@ -300,15 +303,17 @@ const DatewiseDetailedRecords = () => {
                     stat?.MILKTYPE,
                     stat?.FAT,
                     stat?.SNF,
+                    stat?.CLR,
                     stat?.RATE,
                     stat?.QTY,
-                    stat?.INCENTIVEAMOUNT,
                     stat?.TOTALAMOUNT,
+                    stat?.INCENTIVEAMOUNT,
+                    (stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
                 ]);
 
                 autoTable(doc, {
                     head: [[
-                        "Code", "Milk Type", "FAT", "SNF", "Rate", "Qty", "Incentive", "Total"
+                        "Code", "Milk Type", "FAT", "SNF", "CLR","Rate", "Qty", "Total","Incentive", "Grand Total"
                     ]],
                     body: memberTable,
                     startY: currentY,
@@ -324,8 +329,9 @@ const DatewiseDetailedRecords = () => {
                 const summaryTable = day?.milktypeStats?.map((stat) => [
                     stat?.milktype,
                     stat?.totalSamples,
-                    stat?.avgFat.toFixed(2),
-                    stat?.avgSnf.toFixed(2),
+                    stat?.avgFat.toFixed(1),
+                    stat?.avgSnf.toFixed(1),
+                    stat?.avgClr.toFixed(1),
                     stat?.avgRate.toFixed(2),
                     stat?.totalQty.toFixed(2),
                     stat?.totalAmount.toFixed(2),
@@ -335,7 +341,7 @@ const DatewiseDetailedRecords = () => {
 
                 autoTable(doc, {
                     head: [[
-                        "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg Rate", "Total Qty",
+                        "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Avg Rate", "Total Qty",
                         "Total Amount", "Incentive", "Grand Total"
                     ]],
                     body: summaryTable,
@@ -440,10 +446,10 @@ const DatewiseDetailedRecords = () => {
                                         <tr>
                                             {/* <th>#</th> */}
                                             <th>Code</th>
-                                            <th>Milk Type</th>
-                                                                                    
+                                            <th>Milk Type</th>                                                                                    
                                             <th>Fat</th>
-                                            <th>SNF</th>
+                                            <th>SNF</th>    
+                                            <th>CLR</th>
                                             <th>Qty</th>
                                             <th>Rate</th>
                                             <th>Amount</th>
@@ -458,6 +464,7 @@ const DatewiseDetailedRecords = () => {
                                                     <td>{stat?.MILKTYPE}</td>
                                                     <td>{stat?.FAT?.toFixed(1)}</td>
                                                     <td>{stat?.SNF?.toFixed(1)}</td>
+                                                    <td>{stat?.CLR?.toFixed(1)}</td>
                                                     <td>{stat?.QTY.toFixed(2)}</td>
                                                     <td>₹{stat?.RATE?.toFixed(2)}</td>
                                                     <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>

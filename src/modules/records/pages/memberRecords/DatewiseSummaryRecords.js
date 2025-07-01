@@ -171,8 +171,9 @@ const DatewiseSummaryRecords = () => {
                     Shift: record?.shift,
                     "Milk Type": stat?.milktype,
                     "Samples": stat?.totalSamples,
-                    "Avg FAT": stat?.avgFat?.toFixed(2),
-                    "Avg SNF": stat?.avgSnf?.toFixed(2),
+                    "Avg FAT": stat?.avgFat?.toFixed(1),
+                    "Avg SNF": stat?.avgSnf?.toFixed(1),
+                    "Avg CLR": stat?.avgClr?.toFixed(1),
                     "Avg Rate": stat?.avgRate?.toFixed(2),
                     "Total Qty": stat?.totalQty?.toFixed(2),
                     "Total Amount": stat?.totalAmount?.toFixed(2),
@@ -221,8 +222,9 @@ const DatewiseSummaryRecords = () => {
             const tableData = record.milktypeStats?.map((stat) => ([
                 stat?.milktype,
                 stat?.totalSamples,
-                stat?.avgFat.toFixed(2),
-                stat?.avgSnf.toFixed(2),
+                stat?.avgFat.toFixed(1),
+                stat?.avgSnf.toFixed(1),
+                stat?.avgClr.toFixed(1),
                 stat?.avgRate.toFixed(2),
                 stat?.totalQty.toFixed(2),
                 stat?.totalAmount.toFixed(2),
@@ -232,7 +234,7 @@ const DatewiseSummaryRecords = () => {
 
             autoTable(doc, {
                 head: [[
-                    "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg Rate",
+                    "Milk Type", "Samples", "Avg FAT", "Avg SNF","Avg CLR", "Avg Rate",
                     "Total Qty", "Total Amount", "Incentive", "Grand Total"
                 ]],
                 body: tableData,

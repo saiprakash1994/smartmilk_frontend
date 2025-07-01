@@ -160,6 +160,7 @@ const DeviceRecords = () => {
                 "Shift": rec?.SHIFT,
                 "FAT": rec?.FAT?.toFixed(1),
                 "SNF": rec?.SNF?.toFixed(1),
+                "CLR": rec?.CLR?.toFixed(1),
                 "Qty (L)": rec?.QTY?.toFixed(2) || '0.00',
                 "Rate": rec?.RATE?.toFixed(2),
                 "Amount": rec?.AMOUNT?.toFixed(2) || '0.00',
@@ -181,12 +182,16 @@ const DeviceRecords = () => {
             const totalsCSVData = totals.map(item => ({
                 "Milk Type": item._id?.milkType || '',
                 "Total Records": item.totalRecords,
-                "Total Quantity": item.totalQuantity?.toFixed(2) || '0.00',
-                "Total Amount": item.totalAmount?.toFixed(2) || '0.00',
-                "Total Incentive": item.totalIncentive?.toFixed(2) || '0.00',
                 "Average FAT": item.averageFat,
                 "Average SNF": item.averageSNF,
-                "Average Rate": item.averageRate
+                "Average CLR": item.averageCLR,
+                "Total Quantity": item.totalQuantity?.toFixed(2) || '0.00',
+                "Average Rate": item.averageRate,
+                "Total Amount": item.totalAmount?.toFixed(2) || '0.00',
+                "Total Incentive": item.totalIncentive?.toFixed(2) || '0.00',
+                "Grand Total": ((item.totalAmount || 0) + (item.totalIncentive || 0)).toFixed(2),
+                
+               
             }));
 
             combinedCSV += `Milk Totals for ${deviceCode} on ${date}\n`;
@@ -194,7 +199,7 @@ const DeviceRecords = () => {
         }
 
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `Milk_Data_${deviceCode}_${date}.csv`);
+        saveAs(blob, `Daywise_Report_${deviceCode}_${date}.csv`);
     };
     const handleExportPDF = async () => {
         if (!deviceCode || !date) {
@@ -256,6 +261,7 @@ const DeviceRecords = () => {
                 rec?.SHIFT,                
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
+                rec?.CLR?.toFixed(1),
                 rec?.QTY?.toFixed(2),
                 rec?.RATE?.toFixed(2),
                 rec?.AMOUNT?.toFixed(2),
@@ -266,7 +272,7 @@ const DeviceRecords = () => {
             autoTable(doc, {
                 startY: currentY,
                 head: [[
-                    "S.No", "Code", "Milk Type", "Date", "Shift", "Fat", "SNF", "Qty (L)",
+                    "S.No", "Code", "Milk Type", "Date", "Shift", "Fat", "SNF", "CLR","Qty (L)",
                     "Rate", "Amount", "Incentive", "Total"
                 ]],
                 body: recordTable,
@@ -310,7 +316,7 @@ const DeviceRecords = () => {
             });
         }
 
-        doc.save(`Milk_Data_${deviceCode}_${date}.pdf`);
+        doc.save(`Daywise_Report_${deviceCode}_${date}.pdf`);
     };
 
     const isExporting = false;
@@ -408,8 +414,9 @@ const DeviceRecords = () => {
                                                 <th>Milk Type</th>
                                                 <th>Date</th>
                                                 <th>Shift</th>                                               
-                                                <th>Fat</th>
+                                                <th>FAT</th>
                                                 <th>SNF</th>
+                                                <th>CLR</th>
                                                 <th>Qty</th>
                                                 <th>Rate</th>
                                                 <th>Amount</th>
@@ -430,6 +437,7 @@ const DeviceRecords = () => {
                                                         <td>{record?.SHIFT}</td>                                                       
                                                         <td>{record?.FAT.toFixed(1)}</td>
                                                         <td>{record?.SNF.toFixed(1)}</td>
+                                                        <td>{record?.CLR.toFixed(1)}</td>
                                                         <td>{record?.QTY.toFixed(2)}</td>
                                                         <td>₹{record?.RATE.toFixed(2)}</td>
                                                         <td>₹{record?.AMOUNT.toFixed(2)}</td>
