@@ -6,7 +6,8 @@ import {
   faMicrochip,
   faCalendarAlt,
   faClock,
-  faEye
+  faEye,
+  faUsers
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
@@ -339,7 +340,7 @@ const AbsentMemberRecords = () => {
                 {viewMode !== "TOTALS" && (
                   <Card className="mb-4">
                     <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
-                      <span>Absent Members</span>
+                      <span><FontAwesomeIcon icon={faUsers} className="me-2" />Absent Members</span>
                       <Form.Group style={{ width: '250px' }}>
                         <Form.Control
                           type="text"
@@ -351,6 +352,19 @@ const AbsentMemberRecords = () => {
                       </Form.Group>
                     </Card.Header>
                     <Card.Body>
+                      {/* Filters Info Row */}
+                      {filteredAbsent.length > 0 && (
+                        <div className="mb-1">
+                          <div className="results-card-header d-flex justify-content-between align-items-center">
+
+                            <strong>Device Code:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
+                            <strong>Date:</strong>{date}&nbsp; | &nbsp;
+                            <strong>Shift:</strong> {shift}&nbsp; | &nbsp;
+                            <strong>View Mode:</strong>{viewMode}
+                          </div>
+                        </div>
+
+                      )}
                       <Table hover responsive className="records-table">
                         <thead>
                           <tr>

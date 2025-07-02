@@ -44,7 +44,7 @@ const DailyRecordCard = ({ record, deviceCode }) => {
     return (
         <Card className="mb-4">
             <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
-                <div>
+                <div >
                     <strong>Date:</strong> {record?.date} &nbsp; | &nbsp;
                     <strong>Shift:</strong> {record?.shift}&nbsp; | &nbsp;
                     <strong>Device Id:</strong> {deviceCode}

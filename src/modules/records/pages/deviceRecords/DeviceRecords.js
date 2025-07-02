@@ -308,7 +308,7 @@ const DeviceRecords = () => {
                     <Card className="results-card mb-4">
                         <Card.Header className="results-card-header">
                             <div className="d-flex justify-content-between align-items-center">
-                                <span><FontAwesomeIcon icon={faUsers} className="me-2" />Collection Records</span>
+                                <span><FontAwesomeIcon icon={faUsers} className="me-2" />Device Records</span>
                                 <div className="d-flex align-items-center">
                                     <Form.Control
                                         type="search"
@@ -339,46 +339,57 @@ const DeviceRecords = () => {
                                     <p className="mt-2">Loading Records...</p>
                                 </div>
                             ) : filteredRecords.length > 0 ? (
-                                <Table hover responsive className="records-table">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No</th>
-                                            <th>Member</th>
-                                            <th>Milk</th>
-                                            <th>Shift</th>
-                                            <th>FAT</th>
-                                            <th>SNF</th>
-                                            <th>CLR</th>
-                                            <th>Qty (L)</th>
-                                            <th>Rate</th>
-                                            <th>Amount</th>
-                                            <th>Incentive</th>
-                                            <th>Total</th>
-                                            <th>AnalyzerMode</th>
-                                            <th>WeightMode</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredRecords.map((rec, index) => (
-                                            <tr key={rec._id}>
-                                                <td>{index + 1 + (currentPage - 1) * recordsPerPage}</td>
-                                                <td>{rec?.CODE}</td>
-                                                <td><Badge bg={rec?.MILKTYPE === 'COW' ? 'warning' : 'info'}>{rec?.MILKTYPE}</Badge></td>
-                                                <td>{rec?.SHIFT}</td>
-                                                <td>{rec?.FAT?.toFixed(1)}</td>
-                                                <td>{rec?.SNF?.toFixed(1)}</td>
-                                                <td>{rec?.CLR?.toFixed(1)}</td>
-                                                <td>{rec?.QTY?.toFixed(2) || '0.00'}</td>
-                                                <td>{rec?.RATE?.toFixed(2)}</td>
-                                                <td>{rec?.AMOUNT?.toFixed(2) || '0.00'}</td>
-                                                <td>₹{rec?.INCENTIVEAMOUNT.toFixed(2)}</td>
-                                                <td>₹{rec?.TOTAL.toFixed(2)}</td>
-                                                <td>{rec?.ANALYZERMODE}</td>
-                                                <td>{rec?.WEIGHTMODE}</td>
+                                <>
+                                    <div className="mb-1">
+                                        <div className="results-card-header d-flex justify-content-between align-items-center">
+                                            <strong>Device Code:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
+                                            <strong>Date:</strong> {date?.split('-').reverse().join('-')}&nbsp; | &nbsp;
+                                            <strong>Shift:</strong> {shift || 'ALL'}&nbsp; | &nbsp;
+                                            <strong>Milk Type:</strong>{milkTypeFilter || 'ALL'}
+                                        </div>
+                                    </div>
+
+                                    <Table hover responsive className="records-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Member</th>
+                                                <th>Milk</th>
+                                                <th>Shift</th>
+                                                <th>FAT</th>
+                                                <th>SNF</th>
+                                                <th>CLR</th>
+                                                <th>Qty (L)</th>
+                                                <th>Rate</th>
+                                                <th>Amount</th>
+                                                <th>Incentive</th>
+                                                <th>Total</th>
+                                                <th>AnalyzerMode</th>
+                                                <th>WeightMode</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
+                                        </thead>
+                                        <tbody>
+                                            {filteredRecords.map((rec, index) => (
+                                                <tr key={rec._id}>
+                                                    <td>{index + 1 + (currentPage - 1) * recordsPerPage}</td>
+                                                    <td>{rec?.CODE}</td>
+                                                    <td><Badge bg={rec?.MILKTYPE === 'COW' ? 'warning' : 'info'}>{rec?.MILKTYPE}</Badge></td>
+                                                    <td>{rec?.SHIFT}</td>
+                                                    <td>{rec?.FAT?.toFixed(1)}</td>
+                                                    <td>{rec?.SNF?.toFixed(1)}</td>
+                                                    <td>{rec?.CLR?.toFixed(1)}</td>
+                                                    <td>{rec?.QTY?.toFixed(2) || '0.00'}</td>
+                                                    <td>{rec?.RATE?.toFixed(2)}</td>
+                                                    <td>{rec?.AMOUNT?.toFixed(2) || '0.00'}</td>
+                                                    <td>₹{rec?.INCENTIVEAMOUNT.toFixed(2)}</td>
+                                                    <td>₹{rec?.TOTAL.toFixed(2)}</td>
+                                                    <td>{rec?.ANALYZERMODE}</td>
+                                                    <td>{rec?.WEIGHTMODE}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </Table>
+                                </>
                             ) : (
                                 <div className="text-center py-5">No records found for the selected criteria.</div>
                             )}

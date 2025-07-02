@@ -6,7 +6,8 @@ import {
   faMicrochip,
   faUser,
   faCalendarAlt,
-  faEye
+  faEye,
+  faUsers
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
@@ -424,7 +425,7 @@ const MemberRecords = () => {
                 {viewMode !== "TOTALS" && (
                   <Card className="mb-4">
                     <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
-                      <span>Record Summary</span>
+                      <span><FontAwesomeIcon icon={faUsers} className="me-2" />Member Records</span>
                       <div className="d-flex align-items-center">
                         <Form.Group style={{ width: '250px', marginRight: '1rem' }}>
                           <Form.Control
@@ -444,6 +445,19 @@ const MemberRecords = () => {
                       </div>
                     </Card.Header>
                     <Card.Body>
+                      {/* Filters Info Row */}
+                      {filteredRecords.length > 0 && (
+                        <div className="mb-1">
+                          <div className="results-card-header d-flex justify-content-between align-items-center">
+                            <strong>Device:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
+                            <strong>Member:</strong>{memberCode || '--'}&nbsp; | &nbsp;
+                            <strong>From:</strong>{fromDate}&nbsp; | &nbsp;
+                            <strong>To:</strong>{toDate}&nbsp; | &nbsp;
+                            <strong>View Mode:</strong>{viewMode}
+                          </div>
+                        </div>
+
+                      )}
                       <Table hover responsive className="records-table">
                         <thead>
                           <tr>
