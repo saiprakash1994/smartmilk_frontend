@@ -166,6 +166,8 @@ const DatewiseSummaryRecords = () => {
                     "Samples": stat?.totalSamples,
                     "Avg FAT": stat?.avgFat?.toFixed(2),
                     "Avg SNF": stat?.avgSnf?.toFixed(2),
+                    "Avg CLR": stat?.avgClr?.toFixed(2),
+
                     "Avg Rate": stat?.avgRate?.toFixed(2),
                     "Total Qty": stat?.totalQty?.toFixed(2),
                     "Total Amount": stat?.totalAmount?.toFixed(2),
@@ -216,6 +218,8 @@ const DatewiseSummaryRecords = () => {
                 stat?.totalSamples,
                 stat?.avgFat.toFixed(2),
                 stat?.avgSnf.toFixed(2),
+                stat?.avgClr.toFixed(2),
+
                 stat?.avgRate.toFixed(2),
                 stat?.totalQty.toFixed(2),
                 stat?.totalAmount.toFixed(2),
@@ -225,7 +229,7 @@ const DatewiseSummaryRecords = () => {
 
             autoTable(doc, {
                 head: [[
-                    "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg Rate",
+                    "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Avg Rate",
                     "Total Qty", "Total Amount", "Incentive", "Grand Total"
                 ]],
                 body: tableData,
@@ -414,6 +418,8 @@ const DatewiseSummaryRecords = () => {
                                                             <th>Samples</th>
                                                             <th>Avg FAT</th>
                                                             <th>Avg SNF</th>
+                                                            <th>Avg CLR</th>
+
                                                             <th>Total Qty (L)</th>
                                                             <th>Avg Rate</th>
                                                             <th>Total Amount</th>
@@ -432,6 +438,8 @@ const DatewiseSummaryRecords = () => {
                                                                 <td>{stat.totalSamples}</td>
                                                                 <td>{stat.avgFat.toFixed(2)}</td>
                                                                 <td>{stat.avgSnf.toFixed(2)}</td>
+                                                                <td>{stat.avgClr.toFixed(2)}</td>
+
                                                                 <td>{stat.totalQty.toFixed(2)} L</td>
                                                                 <td>₹{stat.avgRate.toFixed(2)}</td>
                                                                 <td>₹{stat.totalAmount.toFixed(2)}</td>

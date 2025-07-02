@@ -158,6 +158,7 @@ const MemberRecords = () => {
         "Milk Type": rec?.MILKTYPE || "",
         Fat: rec?.FAT ?? "",
         SNF: rec?.SNF ?? "",
+        CLR: rec?.CLR ?? "",
         Qty: rec?.QTY ?? "",
         Rate: rec?.RATE ?? "",
         Amount: rec?.AMOUNT?.toFixed(2) ?? "0.00",
@@ -176,6 +177,8 @@ const MemberRecords = () => {
         "Total Samples": total?.totalRecords ?? "",
         "Avg FAT": total?.averageFat ?? "",
         "Avg SNF": total?.averageSNF ?? "",
+        "Avg CLR": total?.averageCLR ?? "",
+
         "Total Qty": total?.totalQuantity ?? "",
         "Avg Rate": total?.averageRate ?? "",
         "Total Amount": total?.totalAmount ?? "0.00",
@@ -226,6 +229,8 @@ const MemberRecords = () => {
         record?.MILKTYPE || "",
         record?.FAT ?? "",
         record?.SNF ?? "",
+        record?.CLR ?? "",
+
         record?.QTY ?? "",
         record?.RATE ?? "",
         record?.AMOUNT?.toFixed(2) ?? "0.00",
@@ -236,7 +241,7 @@ const MemberRecords = () => {
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
-          "S.No", "Date", "Shift", "Milk Type", "Fat", "Snf", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
+          "S.No", "Date", "Shift", "Milk Type", "Fat", "Snf", "Clr", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
         ]],
         body: recordsTable,
         theme: "grid",
@@ -255,6 +260,7 @@ const MemberRecords = () => {
         total?.totalRecords ?? "",
         total?.averageFat ?? "",
         total?.averageSNF ?? "",
+        total?.averageCLR ?? "",
         total?.totalQuantity ?? "",
         total?.averageRate ?? "",
         total?.totalAmount ?? "0.00",
@@ -268,7 +274,7 @@ const MemberRecords = () => {
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
-          "Milk Type", "Total Samples", "Avg FAT", "Avg SNF", "Total Qty", "Avg Rate",
+          "Milk Type", "Total Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Total Qty", "Avg Rate",
           "Total Amount", "Total Incentive", "Grand Total",
         ]],
         body: totalsTable,
@@ -447,6 +453,7 @@ const MemberRecords = () => {
                             <th>Milk Type</th>
                             <th>Fat</th>
                             <th>SNF</th>
+                            <th>CLR</th>
                             <th>Qty (L)</th>
                             <th>Rate</th>
                             <th>Amount</th>
@@ -468,6 +475,8 @@ const MemberRecords = () => {
                                 </td>
                                 <td>{record?.FAT?.toFixed(1)}</td>
                                 <td>{record?.SNF?.toFixed(1)}</td>
+                                <td>{record?.CLR?.toFixed(1)}</td>
+
                                 <td>{record?.QTY?.toFixed(2)} L</td>
                                 <td>₹{record?.RATE?.toFixed(2)}</td>
                                 <td>₹{record?.AMOUNT.toFixed(2) || 0}</td>
@@ -536,6 +545,7 @@ const MemberRecords = () => {
                             <th>Total Records</th>
                             <th>Avg Fat</th>
                             <th>Avg SNF</th>
+                            <th>Avg CLR</th>
                             <th>Total Qty (L)</th>
                             <th>Avg Rate</th>
                             <th>Total Amount</th>
@@ -548,13 +558,14 @@ const MemberRecords = () => {
                             totals?.map((total, index) => (
                               <tr key={index}>
                                 <td>
-                                  <Badge bg={total?._id.milkType === 'COW' ? 'info' : 'warning'} text="dark">
+                                  <Badge bg={total?._id.milkType === 'COW' ? 'info' : total?._id.milkType === 'BUF' ? 'warning' : 'secondary'} text='dark'>
                                     {total?._id.milkType}
                                   </Badge>
                                 </td>
                                 <td>{total?.totalRecords}</td>
                                 <td>{total?.averageFat}</td>
                                 <td>{total?.averageSNF}</td>
+                                <td>{total?.averageCLR}</td>
                                 <td>{total?.totalQuantity} L</td>
                                 <td>₹{total?.averageRate}</td>
                                 <td>₹{total?.totalAmount}</td>

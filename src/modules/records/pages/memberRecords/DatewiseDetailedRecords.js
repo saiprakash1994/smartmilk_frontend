@@ -67,6 +67,7 @@ const DailyRecordCard = ({ record, deviceCode }) => {
                             <th>Milk Type</th>
                             <th>FAT</th>
                             <th>SNF</th>
+                            <th>CLR</th>
                             <th>Qty (L)</th>
                             <th>Rate</th>
                             <th>Total</th>
@@ -86,6 +87,7 @@ const DailyRecordCard = ({ record, deviceCode }) => {
                                     </td>
                                     <td>{stat?.FAT?.toFixed(1)}</td>
                                     <td>{stat?.SNF?.toFixed(1)}</td>
+                                    <td>{stat?.CLR?.toFixed(1)}</td>
                                     <td>{stat?.QTY.toFixed(2)} L</td>
                                     <td>₹{stat?.RATE?.toFixed(2)}</td>
                                     <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
@@ -109,6 +111,8 @@ const DailyRecordCard = ({ record, deviceCode }) => {
                             <th>Samples</th>
                             <th>Avg FAT</th>
                             <th>Avg SNF</th>
+                            <th>Avg CLR</th>
+
                             <th>Total Qty (L)</th>
                             <th>Avg Rate</th>
                             <th>Total Amount</th>
@@ -127,6 +131,8 @@ const DailyRecordCard = ({ record, deviceCode }) => {
                                 <td>{stat?.totalSamples}</td>
                                 <td>{stat?.avgFat.toFixed(2)}</td>
                                 <td>{stat?.avgSnf.toFixed(2)}</td>
+                                <td>{stat?.avgClr.toFixed(2)}</td>
+
                                 <td>{stat?.totalQty.toFixed(2)} L</td>
                                 <td>₹{stat?.avgRate.toFixed(2)}</td>
                                 <td>₹{stat?.totalAmount.toFixed(2)}</td>
@@ -282,6 +288,8 @@ const DatewiseDetailedRecords = () => {
                     MilkType: stat?.MILKTYPE,
                     FAT: stat?.FAT,
                     SNF: stat?.SNF,
+                    CLR: stat?.CLR,
+
                     Rate: stat?.RATE,
                     Quantity: stat?.QTY,
                     IncentiveAmount: stat?.INCENTIVEAMOUNT,
@@ -299,6 +307,8 @@ const DatewiseDetailedRecords = () => {
                     Samples: stat?.totalSamples,
                     AvgFAT: stat?.avgFat.toFixed(2),
                     AvgSNF: stat?.avgSnf.toFixed(2),
+                    AvgCLR: stat?.avgClr.toFixed(2),
+
                     AvgRate: stat?.avgRate.toFixed(2),
                     TotalQty: stat?.totalQty.toFixed(2),
                     TotalAmount: stat?.totalAmount.toFixed(2),
@@ -352,6 +362,8 @@ const DatewiseDetailedRecords = () => {
                     stat?.MILKTYPE,
                     stat?.FAT,
                     stat?.SNF,
+                    stat?.CLR,
+
                     stat?.RATE,
                     stat?.QTY,
                     stat?.INCENTIVEAMOUNT,
@@ -360,7 +372,7 @@ const DatewiseDetailedRecords = () => {
 
                 autoTable(doc, {
                     head: [[
-                        "Code", "Milk Type", "FAT", "SNF", "Rate", "Qty", "Incentive", "Total"
+                        "Code", "Milk Type", "FAT", "SNF", "CLR", "Rate", "Qty", "Incentive", "Total"
                     ]],
                     body: memberTable,
                     startY: currentY,
@@ -378,6 +390,8 @@ const DatewiseDetailedRecords = () => {
                     stat?.totalSamples,
                     stat?.avgFat.toFixed(2),
                     stat?.avgSnf.toFixed(2),
+                    stat?.avgClr.toFixed(2),
+
                     stat?.avgRate.toFixed(2),
                     stat?.totalQty.toFixed(2),
                     stat?.totalAmount.toFixed(2),
@@ -387,7 +401,7 @@ const DatewiseDetailedRecords = () => {
 
                 autoTable(doc, {
                     head: [[
-                        "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg Rate", "Total Qty",
+                        "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Avg Rate", "Total Qty",
                         "Total Amount", "Incentive", "Grand Total"
                     ]],
                     body: summaryTable,

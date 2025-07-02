@@ -122,6 +122,7 @@ const DeviceRecords = () => {
                 "Shift": rec?.SHIFT,
                 "FAT": rec?.FAT?.toFixed(1),
                 "SNF": rec?.SNF?.toFixed(1),
+                "CLR": rec?.CLR?.toFixed(1),
                 "Qty (L)": rec?.QTY?.toFixed(2) || '0.00',
                 "Rate": rec?.RATE?.toFixed(2),
                 "Amount": rec?.AMOUNT?.toFixed(2) || '0.00',
@@ -148,6 +149,7 @@ const DeviceRecords = () => {
                 "Total Incentive": item.totalIncentive?.toFixed(2) || '0.00',
                 "Average FAT": item.averageFat,
                 "Average SNF": item.averageSNF,
+                "Average CLR": item.averageCLR,
                 "Average Rate": item.averageRate
             }));
 
@@ -186,6 +188,8 @@ const DeviceRecords = () => {
                 rec?.SHIFT,
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
+                rec?.CLR?.toFixed(1),
+
                 rec?.QTY?.toFixed(2),
                 rec?.RATE?.toFixed(2),
                 rec?.AMOUNT?.toFixed(2),
@@ -196,7 +200,7 @@ const DeviceRecords = () => {
             autoTable(doc, {
                 startY: currentY,
                 head: [[
-                    "S.No", "Code", "Milk Type", "Shift", "FAT", "SNF", "Qty (L)",
+                    "S.No", "Code", "Milk Type", "Shift", "FAT", "SNF", "CLR", "Qty (L)",
                     "Rate", "Amount", "Incentive", "Total"
                 ]],
                 body: recordTable,
@@ -219,6 +223,7 @@ const DeviceRecords = () => {
                 total?.totalRecords,
                 total?.averageFat,
                 total?.averageSNF,
+                total?.averageCLR,
                 total?.totalQuantity?.toFixed(2),
                 total?.averageRate,
                 total?.totalAmount?.toFixed(2),
@@ -231,7 +236,7 @@ const DeviceRecords = () => {
             autoTable(doc, {
                 startY: currentY,
                 head: [[
-                    "Milk Type", "Total Records", "Avg FAT", "Avg SNF", "Total Qty",
+                    "Milk Type", "Total Records", "Avg FAT", "Avg SNF", "Avg CLR", "Total Qty",
                     "Avg Rate", "Total Amount", "Incentive", "Grand Total"
                 ]],
                 body: totalsTable,
@@ -343,9 +348,14 @@ const DeviceRecords = () => {
                                             <th>Shift</th>
                                             <th>FAT</th>
                                             <th>SNF</th>
+                                            <th>CLR</th>
                                             <th>Qty (L)</th>
                                             <th>Rate</th>
                                             <th>Amount</th>
+                                            <th>Incentive</th>
+                                            <th>Total</th>
+                                            <th>AnalyzerMode</th>
+                                            <th>WeightMode</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -357,9 +367,14 @@ const DeviceRecords = () => {
                                                 <td>{rec?.SHIFT}</td>
                                                 <td>{rec?.FAT?.toFixed(1)}</td>
                                                 <td>{rec?.SNF?.toFixed(1)}</td>
+                                                <td>{rec?.CLR?.toFixed(1)}</td>
                                                 <td>{rec?.QTY?.toFixed(2) || '0.00'}</td>
                                                 <td>{rec?.RATE?.toFixed(2)}</td>
                                                 <td>{rec?.AMOUNT?.toFixed(2) || '0.00'}</td>
+                                                <td>₹{rec?.INCENTIVEAMOUNT.toFixed(2)}</td>
+                                                <td>₹{rec?.TOTAL.toFixed(2)}</td>
+                                                <td>{rec?.ANALYZERMODE}</td>
+                                                <td>{rec?.WEIGHTMODE}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -368,19 +383,41 @@ const DeviceRecords = () => {
                                 <div className="text-center py-5">No records found for the selected criteria.</div>
                             )}
                         </Card.Body>
-                        {filteredRecords.length > 0 && (
+                        {totalCount > 0 && (
                             <Card.Footer>
-                                <Pagination>
-                                    <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
-                                    <Pagination.Prev onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} />
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                        <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
-                                            {page}
-                                        </Pagination.Item>
-                                    ))}
-                                    <Pagination.Next onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} />
-                                    <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
-                                </Pagination>
+                                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                    <div className="d-flex align-items-center gap-2">
+                                        <span className="text-muted">Rows per page:</span>
+                                        <Form.Select
+                                            size="sm"
+                                            className="form-select-modern-sm"
+                                            value={recordsPerPage}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setRecordsPerPage(parseInt(value));
+                                                setCurrentPage(1);
+                                            }}
+                                            style={{ width: "auto" }}
+                                        >
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                        </Form.Select>
+                                    </div>
+                                    {totalCount > recordsPerPage &&
+                                        <Pagination>
+                                            <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                                            <Pagination.Prev onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} />
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                                <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
+                                                    {page}
+                                                </Pagination.Item>
+                                            ))}
+                                            <Pagination.Next onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} />
+                                            <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                                        </Pagination>
+                                    }
+                                </div>
                             </Card.Footer>
                         )}
                     </Card>
@@ -397,20 +434,30 @@ const DeviceRecords = () => {
                                     <thead>
                                         <tr>
                                             <th>Milk Type</th>
-                                            <th>Total Qty</th>
-                                            <th>Total Amount</th>
-                                            <th>Avg FAT</th>
+                                            <th>Total Records</th>
+                                            <th>Avg Fat</th>
                                             <th>Avg SNF</th>
+                                            <th>Total Qty (L)</th>
+                                            <th>Avg Rate</th>
+                                            <th>Total Amount</th>
+                                            <th>Total Incentive</th>
+                                            <th>Grand Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredTotals.map(total => (
                                             <tr key={total._id.milkType}>
                                                 <td><Badge bg={total._id.milkType === 'COW' ? 'warning' : 'info'}>{total._id.milkType}</Badge></td>
-                                                <td>{total.totalQuantity?.toFixed(2) || '0.00'}</td>
-                                                <td>{total.totalAmount?.toFixed(2) || '0.00'}</td>
-                                                <td>{total.averageFat}</td>
-                                                <td>{total.averageSNF}</td>
+                                                <td>{total?.totalRecords}</td>
+                                                <td>{total?.averageFat}</td>
+                                                <td>{total?.averageSNF}</td>
+                                                <td>{total?.totalQuantity.toFixed(2)} L</td>
+                                                <td>₹{total?.averageRate}</td>
+                                                <td>₹{total?.totalAmount.toFixed(2)}</td>
+                                                <td>₹{total?.totalIncentive.toFixed(2)}</td>
+                                                <td>₹{(Number(total?.totalIncentive || 0) + Number(total?.totalAmount || 0)).toFixed(2)}</td>
+
+
                                             </tr>
                                         ))}
                                     </tbody>

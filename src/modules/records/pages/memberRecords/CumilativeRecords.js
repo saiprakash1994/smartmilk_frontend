@@ -165,10 +165,14 @@ const CumilativeRecords = () => {
 
   const {
     totalMembers = 0,
+    grandAvgFat = 0,
+    grandAvgSnf = 0,
+    grandAvgClr = 0,
     grandTotalQty = 0,
     grandTotalIncentive = 0,
     grandTotalAmount = 0,
     grandTotal = 0,
+
   } = resultData || {};
 
   const handleExportCSV = () => {
@@ -191,6 +195,9 @@ const CumilativeRecords = () => {
         SNO: index + 1,
         MemberCode: record?.CODE,
         MilkType: record?.MILKTYPE,
+        AvgFAT: record?.avgFat,
+        AvgSNF: record?.avgSnf,
+        avgClr: record?.avgClr,
         TotalQty: record?.totalQty,
         AvgRate: record?.avgRate,
         TotalAmount: record?.totalAmount,
@@ -208,6 +215,9 @@ const CumilativeRecords = () => {
       const cowData = cowMilkTypeTotals?.map((cow) => ({
         MilkType: cow?.MILKTYPE,
         MemberCount: cow?.memberCount,
+        AvgFAT: cow?.avgFat,
+        AvgSNF: cow?.avgSnf,
+        AvgCLR: cow?.avgClr,
         TotalQty: cow?.totalQty,
         TotalAmount: cow?.totalAmount,
         TotalIncentive: cow?.totalIncentive,
@@ -224,6 +234,9 @@ const CumilativeRecords = () => {
       const bufData = bufMilkTypeTotals?.map((buf) => ({
         MilkType: buf?.MILKTYPE,
         MemberCount: buf?.memberCount,
+        AvgFAT: buf?.avgFat,
+        AvgSNF: buf?.avgSnf,
+        AvgCLR: buf?.avgClr,
         TotalQty: buf?.totalQty,
         TotalAmount: buf?.totalAmount,
         TotalIncentive: buf?.totalIncentive,
@@ -242,6 +255,9 @@ const CumilativeRecords = () => {
         {
           MilkType: "TOTAL",
           MemberCount: totalMembers,
+          AvgFat: grandAvgFat,
+          AvgSnf: grandAvgSnf,
+          AvgClr: grandAvgClr,
           TotalQty: grandTotalQty,
           TotalAmount: grandTotalAmount,
           TotalIncentive: grandTotalIncentive,
@@ -573,6 +589,9 @@ const CumilativeRecords = () => {
                             <th>#</th>
                             <th>Code</th>
                             <th>MILKTYPE</th>
+                            <th>Avg FAT</th>
+                            <th>Avg SNF</th>
+                            <th>Avg CLR</th>
                             <th>Total Qty (L)</th>
                             <th>Avg Rate</th>
                             <th>Total Amount</th>
@@ -591,6 +610,9 @@ const CumilativeRecords = () => {
                                     {record?.MILKTYPE}
                                   </Badge>
                                 </td>
+                                <td>{record?.avgFat}</td>
+                                <td>{record?.avgSnf}</td>
+                                <td>{record?.avgClr}</td>
                                 <td>{record?.totalQty} L</td>
                                 <td>₹{record?.avgRate}</td>
                                 <td>₹{record?.totalAmount}</td>
@@ -621,6 +643,9 @@ const CumilativeRecords = () => {
                           <tr>
                             <th>Member Count</th>
                             <th>MILKTYPE</th>
+                            <th>Avg FAT</th>
+                            <th>Avg SNF</th>
+                            <th>Avg CLR</th>
                             <th>Total Qty (L)</th>
                             <th>Total Amount</th>
                             <th>total Incentive</th>
@@ -637,6 +662,10 @@ const CumilativeRecords = () => {
                                     {cow?.MILKTYPE}
                                   </Badge>
                                 </td>
+                                <td>{cow?.avgFat} </td>
+                                <td>{cow?.avgSnf} </td>
+                                <td>{cow?.avgClr} </td>
+
                                 <td>{cow?.totalQty} L</td>
                                 <td>₹{cow?.totalAmount}</td>
                                 <td>₹{cow?.totalIncentive}</td>
@@ -664,7 +693,10 @@ const CumilativeRecords = () => {
                           <tr>
                             <th>Member Count</th>
                             <th>MILKTYPE</th>
-                            <th>Total Qty</th>
+                            <th>Avg FAT</th>
+                            <th>Avg SNF</th>
+                            <th>Avg CLR</th>
+                            <th>Total Qty (L)</th>
                             <th>Total Amount</th>
                             <th>total Incentive</th>
                             <th>Grand Total</th>
@@ -680,6 +712,10 @@ const CumilativeRecords = () => {
                                     {buf?.MILKTYPE}
                                   </Badge>
                                 </td>
+                                <td>{buf?.avgFat} </td>
+                                <td>{buf?.avgSnf} </td>
+                                <td>{buf?.avgClr} </td>
+
                                 <td>{buf?.totalQty} L</td>
                                 <td>₹{buf?.totalAmount}</td>
                                 <td>₹{buf?.totalIncentive}</td>
@@ -706,7 +742,10 @@ const CumilativeRecords = () => {
                         <thead>
                           <tr>
                             <th>Total Members</th>
-                            <th>Grand Total Qty</th>
+                            <th>Avg FAT</th>
+                            <th>Avg SNF</th>
+                            <th>Avg CLR</th>
+                            <th>Grand Total Qty (L)</th>
                             <th>Grand Total Incentive</th>
                             <th>Grand Total Amount</th>
                             <th>Grand Total</th>
@@ -715,6 +754,9 @@ const CumilativeRecords = () => {
                         <tbody>
                           <tr>
                             <td>{totalMembers}</td>
+                            <td>{grandAvgFat}</td>
+                            <td>{grandAvgSnf}</td>
+                            <td>{grandAvgClr}</td>
                             <td>{grandTotalQty} L</td>
                             <td>₹{grandTotalIncentive}</td>
                             <td>₹{grandTotalAmount}</td>
