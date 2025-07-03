@@ -77,37 +77,33 @@
     gap: 1.2rem;
     width: 100%;
     margin: 1.2rem 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.action-btn {
-    border: none;
-    background: transparent;
-    width: 38px;
-    height: 38px;
-    display: inline-flex;
+.dairy-action-btn {
+    display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     border-radius: 50%;
+    font-size: 1.18rem;
     transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
-    font-size: 1.25rem;
-    margin: 0 2px;
-    color: #0d6efd;
 }
 
-.action-btn.delete {
-    color: #dc3545;
-}
-
-.action-btn:hover,
-.action-btn:focus {
+.dairy-action-btn:focus,
+.dairy-action-btn:hover {
     background: #e6f0ff;
-    box-shadow: 0 2px 8px #0d6efd22;
+    box-shadow: 0 2px 8px #4f8cff22;
     outline: none;
     transform: scale(1.13);
 }
 
-.action-btn.delete:hover,
-.action-btn.delete:focus {
+.dairy-action-btn.btn-outline-danger:focus,
+.dairy-action-btn.btn-outline-danger:hover {
     background: #ffe6e6;
     color: #b02a37;
     box-shadow: 0 2px 8px #dc354522;
@@ -257,38 +253,127 @@ table.dairy-table td {
     border-right: none !important;
 }
 
+.dairy-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f8cff 60%, #7b2ff2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px #4f8cff33;
+    flex-shrink: 0;
+}
+
+.dairy-card-serial {
+    font-size: 1.02rem;
+    color: #b0b7c3;
+    font-weight: 600;
+    background: #f5faff;
+    border-radius: 8px;
+    padding: 2px 10px;
+    margin-left: 8px;
+}
+
 .dairy-card-item {
-    padding: 1.3rem 1.2rem 0.8rem 1.2rem;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.7rem;
+    min-height: 200px;
+    padding: 1.5rem 1.3rem 2.2rem 1.3rem;
     position: relative;
-    animation: fadeIn 0.9s cubic-bezier(.4, 0, .2, 1);
-    background: rgba(255, 255, 255, 0.96);
+    background: linear-gradient(120deg, #fafdff 80%, #e6e6ff 100%);
+    border: 1.5px solid #e6e6ff;
+    box-shadow: 0 4px 24px #4f8cff22, 0 1.5px 8px #7b2ff233;
     border-radius: 1.5rem;
-    box-shadow: 0 4px 24px #4f8cff22;
+    margin-bottom: 0.2rem;
+    transition: box-shadow 0.22s, background 0.18s, transform 0.18s;
+    gap: 0.2rem;
+    overflow: hidden;
+}
+
+.dairy-card-item-actions {
+    position: absolute;
+    bottom: 1.1rem;
+    right: 1.2rem;
+    z-index: 2;
 }
 
 .dairy-card-item-title {
     font-size: 1.18rem;
     font-weight: 700;
-    color: #4f8cff;
+    color: var(--appTextColor);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dairy-card-item-code {
     font-size: 1.05rem;
-    color: #1e40af;
+    color: var(--appTextColor);
     font-weight: 500;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dairy-card-item-email {
     font-size: 0.99rem;
     color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.dairy-card-item-actions {
-    margin-top: 0.7rem;
+.dairy-card-item-devices {
+    font-size: 1.01rem;
+    color: var(--appTextColor);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.dairy-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--appGradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--appTextColor);
+    font-size: 1.6rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px #4f8cff33;
+    flex-shrink: 0;
+}
+
+.d-flex.align-items-center.mb-3.w-100 {
+    min-height: 48px;
+}
+
+// Remove table styles for card layout
+.dairy-table,
+.dairy-table-wrapper,
+.dairy-table thead,
+.dairy-table tbody,
+.dairy-table th,
+.dairy-table td,
+.dairy-row-hover {
+    display: none !important;
 }
 
 .dairy-row-hover {
@@ -310,14 +395,24 @@ table.dairy-table td {
     }
 
     .dairy-card-item {
-        border-radius: 1rem;
-        padding: 1rem 0.7rem 0.7rem 0.7rem;
+        min-height: 140px;
+        padding: 1rem 0.7rem 2.5rem 0.7rem;
+    }
+
+    .dairy-card-item-actions {
+        right: 0.7rem;
+        bottom: 0.7rem;
     }
 
     .dairy-table thead th,
     .dairy-table tbody td {
         padding: 0.7rem 0.4rem;
         font-size: 0.97rem;
+    }
+
+    .dairy-card-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
     }
 }
 
@@ -427,7 +522,7 @@ table.dairy-table td {
         background: var(--appGradient);
         color: var(--appTextColor);
         font-weight: 600;
-        border: none;
+        border: 1px solid var(--appTextColor);
         border-radius: 10px;
         padding: 10px 24px;
         box-shadow: 0 4px 15px #4f8cff33;
@@ -492,5 +587,63 @@ table.dairy-table td {
             opacity: 1;
             transform: translateY(0);
         }
+    }
+}
+
+@media (max-width: 1100px) {
+    .dairy-card-grid {
+        max-width: 1000px;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .dairy-card-grid {
+        max-width: 700px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .dairy-card-item {
+        min-height: 160px;
+        padding: 1rem 0.7rem 2.2rem 0.7rem;
+    }
+
+    .dairy-card-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .dairy-card-grid {
+        max-width: 98vw;
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+
+    .dairy-card-item {
+        min-width: 0;
+        padding: 0.7rem 0.5rem 2rem 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .dairy-card-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .dairy-card-item-title {
+        font-size: 1.05rem;
+    }
+
+    .dairy-card-item-code {
+        font-size: 0.97rem;
+    }
+
+    .dairy-card-item-email {
+        font-size: 0.93rem;
     }
 }

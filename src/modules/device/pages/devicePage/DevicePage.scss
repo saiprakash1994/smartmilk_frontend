@@ -72,37 +72,112 @@
     gap: 1.2rem;
     width: 100%;
     margin: 1.2rem 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.action-btn {
-    border: none;
-    background: transparent;
-    width: 38px;
-    height: 38px;
-    display: inline-flex;
+.device-card-item {
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+    padding: 1.3rem 1.1rem 2rem 1.1rem;
+    position: relative;
+    background: linear-gradient(120deg, #fafdff 80%, #e6e6ff 100%);
+    border: 1.5px solid #e6e6ff;
+    box-shadow: 0 4px 24px #4f8cff22, 0 1.5px 8px #7b2ff233;
+    border-radius: 1.5rem;
+    margin-bottom: 0.2rem;
+    transition: box-shadow 0.22s, background 0.18s, transform 0.18s;
+    gap: 0.3rem;
+    overflow: hidden;
+}
+
+.device-card-item:hover,
+.device-card-item:focus {
+    box-shadow: 0 8px 32px #4f8cff33;
+    transform: translateY(-2px) scale(1.01);
+}
+
+.device-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--appGradient);
+    display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--appTextColor);
+    font-size: 1.3rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px #4f8cff33;
+    flex-shrink: 0;
+}
+
+.device-card-item-title {
+    font-size: 1.13rem;
+    font-weight: 700;
+    color: var(--appTextColor);
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.1rem;
+}
+
+.device-card-item-email {
+    font-size: 0.97rem;
+    color: #7b8a99;
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.2rem;
+}
+
+.device-card-serial {
+    font-size: 0.98rem;
+    color: #b0b7c3;
+    font-weight: 600;
+    background: #f5faff;
+    border-radius: 8px;
+    padding: 2px 10px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.device-card-status {
+    margin-bottom: 0.7rem;
+    margin-top: 0.2rem;
+    text-align: left;
+}
+
+.device-card-item-actions {
+    margin-top: 0.2rem;
+}
+
+.device-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     border-radius: 50%;
+    font-size: 1.18rem;
     transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
-    font-size: 1.25rem;
-    margin: 0 2px;
-    color: #0d6efd;
 }
 
-.action-btn.delete {
-    color: #dc3545;
-}
-
-.action-btn:hover,
-.action-btn:focus {
+.device-action-btn:focus,
+.device-action-btn:hover {
     background: #e6f0ff;
-    box-shadow: 0 2px 8px #0d6efd22;
+    box-shadow: 0 2px 8px #4f8cff22;
     outline: none;
     transform: scale(1.13);
 }
 
-.action-btn.delete:hover,
-.action-btn.delete:focus {
+.device-action-btn.btn-outline-danger:focus,
+.device-action-btn.btn-outline-danger:hover {
     background: #ffe6e6;
     color: #b02a37;
     box-shadow: 0 2px 8px #dc354522;
@@ -509,7 +584,7 @@
         background: var(--appGradient);
         color: var(--appTextColor);
         font-weight: 600;
-        border: none;
+        border: 1px solid var(--appTextColor);
         border-radius: 10px;
         padding: 10px 24px;
         box-shadow: 0 4px 15px #4f8cff33;
@@ -574,5 +649,52 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+}
+
+@media (max-width: 900px) {
+    .device-card-grid {
+        max-width: 700px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .device-card-item {
+        min-height: 160px;
+        padding: 1rem 0.7rem 2.2rem 0.7rem;
+    }
+
+    .device-card-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .device-card-grid {
+        max-width: 98vw;
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+
+    .device-card-item {
+        min-width: 0;
+        padding: 0.7rem 0.5rem 2rem 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .device-card-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .device-card-item-title {
+        font-size: 1.05rem;
+    }
+
+    .device-card-item-email {
+        font-size: 0.93rem;
     }
 }
