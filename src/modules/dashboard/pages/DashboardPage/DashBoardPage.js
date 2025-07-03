@@ -212,55 +212,55 @@ const DashboardPage = () => {
                 <Row className="g-4 mb-2 dashboard-summary-row">
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-quantity">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faTint} /><span className="summary-label">Total Quantity</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faTint} />&nbsp;<span className="summary-label">Total Quantity</span></div>
                       <div className="summary-value">{totals?.[2]?.totalQuantity?.toFixed(2) || '0.00'} L</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-amount">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faRupeeSign} /><span className="summary-label">Total Amount</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faRupeeSign} />&nbsp;<span className="summary-label">Total Amount</span></div>
                       <div className="summary-value">₹{totals?.[2]?.totalAmount?.toFixed(2) || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-incentive">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faArrowUp} /><span className="summary-label">Total Incentive</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faArrowUp} />&nbsp;<span className="summary-label">Total Incentive</span></div>
                       <div className="summary-value">₹{totals?.[2]?.totalIncentive?.toFixed(2) || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-grand">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faEquals} /><span className="summary-label">Grand Total</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faEquals} />&nbsp;<span className="summary-label">Grand Total</span></div>
                       <div className="summary-value">₹{(totals?.[2]?.totalIncentive + totals?.[2]?.totalAmount).toFixed(2) || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-clr">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faFlask} /><span className="summary-label">Avg CLR</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faFlask} />&nbsp;<span className="summary-label">Avg CLR</span></div>
                       <div className="summary-value">{totals?.[2]?.averageCLR || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-fat">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faPercentage} /><span className="summary-label">Avg Fat</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faPercentage} />&nbsp;<span className="summary-label">Avg Fat</span></div>
                       <div className="summary-value">{totals?.[2]?.averageFat || '0.00'}%</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-rate">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faChartLine} /><span className="summary-label">Avg Rate</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faChartLine} />&nbsp;<span className="summary-label">Avg Rate</span></div>
                       <div className="summary-value">₹{totals?.[2]?.averageRate || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-snf">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faFlask} /><span className="summary-label">Avg SNF</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faFlask} />&nbsp;<span className="summary-label">Avg SNF</span></div>
                       <div className="summary-value">{totals?.[0]?.averageSNF || '0.00'}</div>
                     </Card>
                   </Col>
                   <Col xs={12} sm={6} md={2}>
                     <Card className="dashboard-summary-card summary-records">
-                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faListOl} /><span className="summary-label">Total Records</span></div>
+                      <div className="summary-icon-bg"><FontAwesomeIcon icon={faListOl} />&nbsp;<span className="summary-label">Total Records</span></div>
                       <div className="summary-value">{totals?.[2]?.totalRecords || 0}</div>
                     </Card>
                   </Col>
@@ -346,8 +346,8 @@ const DashboardPage = () => {
                                     entry.dataKey === 'totalAmount' || entry.dataKey === 'totalIncentive'
                                       ? `₹${Number(entry.value).toFixed(2)}`
                                       : entry.dataKey === 'totalQuantity'
-                                        ? `${entry.value}L`
-                                        : entry.value
+                                        ? `${entry.value.toFixed(2)}L`
+                                        : entry.value.toFixed(2)
                                   }</b>
                                 </div>
                               ))}
@@ -383,7 +383,7 @@ const DashboardPage = () => {
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
-                        label={({ name, percent, value }) => `${name}: ${value}L (${(percent * 100).toFixed(1)}%)`}
+                        label={({ name, percent, value }) => `${name}: ${value.toFixed(2)}L (${(percent * 100).toFixed(1)}%)`}
                         isAnimationActive
                         stroke="#fff"
                         strokeWidth={2}
