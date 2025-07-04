@@ -7,7 +7,9 @@ import {
   faCalendarAlt,
   faClock,
   faEye,
-  faUsers
+  faUsers,
+  faCow,
+  faHippo
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
@@ -58,6 +60,7 @@ const AbsentMemberRecords = () => {
   const [date, setDate] = useState(getToday());
   const [shift, setShift] = useState("MORNING");
   const [viewMode, setViewMode] = useState("ALL");
+  const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
@@ -111,8 +114,9 @@ const AbsentMemberRecords = () => {
   const totalPages = Math.ceil(totalCount / recordsPerPage);
 
   const filteredAbsent = absent.filter(member =>
-    String(member.CODE).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (member.MEMBERNAME && member.MEMBERNAME.toLowerCase().includes(searchTerm.toLowerCase()))
+    (milkTypeFilter === 'ALL' || member.MILKTYPE === milkTypeFilter) &&
+    (String(member.CODE).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.MEMBERNAME && member.MEMBERNAME.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   const {
@@ -329,14 +333,7 @@ const AbsentMemberRecords = () => {
               </div>
             ) : (
               <>
-                <div className="d-flex justify-content-end mb-3">
-                  <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
-                    <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
-                  </Button>
-                  <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
-                    <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
-                  </Button>
-                </div>
+
                 {viewMode !== "TOTALS" && (
                   <Card className="mb-4">
                     <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
@@ -350,54 +347,71 @@ const AbsentMemberRecords = () => {
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
                       </Form.Group>
+                      <div >
+                        <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
+                          <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
+                        </Button>
+                        <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
+                          <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
+                        </Button>
+                      </div>
                     </Card.Header>
                     <Card.Body>
-                      {/* Filters Info Row */}
-                      {filteredAbsent.length > 0 && (
-                        <div className="mb-1">
-                          <div className="results-card-header d-flex justify-content-between align-items-center">
-
-                            <strong>Device Code:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
-                            <strong>Date:</strong>{date}&nbsp; | &nbsp;
-                            <strong>Shift:</strong> {shift}&nbsp; | &nbsp;
-                            <strong>View Mode:</strong>{viewMode}
-                          </div>
+                      {/* Filter Bar */}
+                      <div className="filter-buttons-group mb-3 d-flex align-items-center">
+                        <Button
+                          variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-secondary'}
+                          className={`me-2 btn ${milkTypeFilter === 'ALL' ? 'active' : ''}`}
+                          onClick={() => setMilkTypeFilter('ALL')}
+                        >
+                          <FontAwesomeIcon icon={faUsers} className="fa-icon me-1" />All
+                        </Button>
+                        <Button
+                          variant={milkTypeFilter === 'C' ? 'info' : 'outline-info'}
+                          className={`me-2 btn ${milkTypeFilter === 'C' ? 'active cow' : ''}`}
+                          onClick={() => setMilkTypeFilter('C')}
+                        >
+                          <FontAwesomeIcon icon={faCow} className="fa-icon me-1" />Cow
+                        </Button>
+                        <Button
+                          variant={milkTypeFilter === 'B' ? 'warning' : 'outline-warning'}
+                          className={`btn ${milkTypeFilter === 'B' ? 'active buf' : ''}`}
+                          onClick={() => setMilkTypeFilter('B')}
+                        >
+                          <FontAwesomeIcon icon={faHippo} className="fa-icon me-1" />Buffalo
+                        </Button>
+                      </div>
+                      {/* Card Grid */}
+                      {filteredAbsent.length > 0 ? (
+                        <div className="records-card-grid">
+                          {filteredAbsent.map((record, index) => (
+                            <div
+                              className={`record-card ${record.MILKTYPE === 'C' ? 'cow' : record.MILKTYPE === 'B' ? 'buf' : 'other'}`}
+                              key={index}
+                            >
+                              <div className="record-card-header">
+                                <span className="record-date">
+                                  <FontAwesomeIcon icon={record.MILKTYPE === 'C' ? faCow : faHippo} className="record-value-icon" />
+                                  {record.MILKTYPE === 'C' ? 'Cow' : 'Buffalo'}
+                                </span>
+                                <Badge bg={record.MILKTYPE === 'C' ? 'info' : 'warning'} text="dark">
+                                  {record.MILKTYPE === 'C' ? 'COW' : 'BUF'}
+                                </Badge>
+                              </div>
+                              <div className="px-3 py-2">
+                                <div><strong>Member Code:</strong> {record.CODE}</div>
+                                <div><strong>Name:</strong> {record.MEMBERNAME || '-'}</div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-
+                      ) : (
+                        <div className="text-center text-muted my-4">
+                          {searchTerm ? "No members found matching your search." : "No absent members found"}
+                        </div>
                       )}
-                      <Table hover responsive className="records-table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Member Code</th>
-                            <th>Member Name</th>
-                            <th>Milk Type</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredAbsent.length > 0 ? (
-                            filteredAbsent.map((record, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{record?.CODE}</td>
-                                <td>{record?.MEMBERNAME || "-"}</td>
-                                <td>
-                                  <Badge bg={record?.MILKTYPE === 'C' ? 'info' : 'warning'} text="dark">
-                                    {record?.MILKTYPE === "C" ? "COW" : "BUF"}
-                                  </Badge>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="4" className="text-center">
-                                {searchTerm ? "No members found matching your search." : "No absent members found"}
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
                     </Card.Body>
+                    {/* Pagination and rows per page */}
                     {totalCount > 0 && (
                       <Card.Footer>
                         <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">

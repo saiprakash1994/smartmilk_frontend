@@ -6,7 +6,9 @@ import {
     faMicrochip,
     faUser,
     faCalendarAlt,
-    faClock
+    faClock,
+    faCow,
+    faHippo
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
@@ -67,6 +69,7 @@ const DatewiseSummaryRecords = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
     const [searchParams, setSearchParams] = useState(null);
+    const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
 
     // Set default deviceCode for device user
     useEffect(() => {
@@ -387,112 +390,128 @@ const DatewiseSummaryRecords = () => {
             {searchParams && (
                 <Card className="results-card">
                     <Card.Body>
-                        {isFetching ? (
-                            <div className="text-center my-5">
-                                <Spinner animation="border" variant="primary" />
-                            </div>
+                        {/* Export Buttons */}
+                        <div className="d-flex justify-content-end mb-3">
+                            <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
+                                <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
+                            </Button>
+                            <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
+                                <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
+                            </Button>
+                        </div>
+                        {/* Filter Bar */}
+                        <div className="filter-buttons-group mb-3 d-flex align-items-center">
+                            <Button
+                                variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-secondary'}
+                                className={`me-2 btn ${milkTypeFilter === 'ALL' ? 'active' : ''}`}
+                                onClick={() => setMilkTypeFilter('ALL')}
+                            >
+                                <FontAwesomeIcon icon={faUser} className="fa-icon me-1" />All
+                            </Button>
+                            <Button
+                                variant={milkTypeFilter === 'COW' ? 'info' : 'outline-info'}
+                                className={`me-2 btn ${milkTypeFilter === 'COW' ? 'active cow' : ''}`}
+                                onClick={() => setMilkTypeFilter('COW')}
+                            >
+                                <FontAwesomeIcon icon={faCow} className="fa-icon me-1" />Cow
+                            </Button>
+                            <Button
+                                variant={milkTypeFilter === 'BUF' ? 'warning' : 'outline-warning'}
+                                className={`btn ${milkTypeFilter === 'BUF' ? 'active buf' : ''}`}
+                                onClick={() => setMilkTypeFilter('BUF')}
+                            >
+                                <FontAwesomeIcon icon={faHippo} className="fa-icon me-1" />Buffalo
+                            </Button>
+
+                        </div>
+                        {/* Card Grid for Milk Type Stats */}
+                        {records?.length === 0 ? (
+                            <div className="text-center text-muted">No summary data available.</div>
                         ) : (
-                            <>
-                                <div className="d-flex justify-content-end mb-3">
-                                    <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
-                                        <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
-                                    </Button>
-                                    <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
-                                        <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
-                                    </Button>
-                                </div>
-                                {records?.length === 0 ? (
-                                    <div className="text-center text-muted">No summary data available.</div>
-                                ) : (
-                                    records?.map((record, index) => (
-                                        <Card key={index} className="mb-4">
-                                            <Card.Header className="results-card-header">
-                                                <strong>Date:</strong> {record.date} &nbsp; | &nbsp;
-                                                <strong>Shift:</strong> {record.shift}
-                                            </Card.Header>
-                                            <Card.Body>
-                                                <Table hover responsive className="records-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Milk Type</th>
-                                                            <th>Samples</th>
-                                                            <th>Avg FAT</th>
-                                                            <th>Avg SNF</th>
-                                                            <th>Avg CLR</th>
-
-                                                            <th>Total Qty (L)</th>
-                                                            <th>Avg Rate</th>
-                                                            <th>Total Amount</th>
-                                                            <th>Incentive</th>
-                                                            <th>Grand Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {record.milktypeStats.map((stat, statIndex) => (
-                                                            <tr key={statIndex}>
-                                                                <td>
-                                                                    <Badge bg={stat.milktype === 'COW' ? 'info' : 'warning'} text="dark">
-                                                                        {stat.milktype}
-                                                                    </Badge>
-                                                                </td>
-                                                                <td>{stat.totalSamples}</td>
-                                                                <td>{stat.avgFat.toFixed(2)}</td>
-                                                                <td>{stat.avgSnf.toFixed(2)}</td>
-                                                                <td>{stat.avgClr.toFixed(2)}</td>
-
-                                                                <td>{stat.totalQty.toFixed(2)} L</td>
-                                                                <td>₹{stat.avgRate.toFixed(2)}</td>
-                                                                <td>₹{stat.totalAmount.toFixed(2)}</td>
-                                                                <td>₹{stat.totalIncentive.toFixed(2)}</td>
-                                                                <td>₹{stat.grandTotal.toFixed(2)}</td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </Table>
-                                            </Card.Body>
-                                        </Card>
-                                    ))
-                                )}
-                                <hr />
-
-                                {totalCount > 0 && (
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-                                        <div className="d-flex align-items-center gap-2">
-                                            <span className="text-muted">Rows per page:</span>
-                                            <Form.Select
-                                                size="sm"
-                                                className="form-select-modern-sm"
-                                                value={recordsPerPage}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setRecordsPerPage(parseInt(value));
-                                                    setCurrentPage(1);
-                                                }}
-                                                style={{ width: "auto" }}
-                                            >
-                                                <option value="5">5</option>
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                            </Form.Select>
+                            records?.map((record, index) => (
+                                <Card key={index} className="mb-4">
+                                    <Card.Header className="results-card-header justify-content-between align-items-center">
+                                        <span className="fw-semibold me-2">Date:  {record.date}</span>| &nbsp;
+                                        <span className="fw-semibold me-2">Shift: {record.shift}</span>
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <div className="records-card-grid">
+                                            {record.milktypeStats.filter(stat => milkTypeFilter === 'ALL' || stat.milktype === milkTypeFilter).map((stat, statIndex) => (
+                                                <div
+                                                    className={`record-card ${stat.milktype === 'COW' ? 'cow' : stat.milktype === 'BUF' ? 'buf' : 'other'}`}
+                                                    key={statIndex}
+                                                    tabIndex={0}
+                                                    aria-label={`Milk type ${stat.milktype} summary card`}
+                                                    style={{ minHeight: 240, boxShadow: '0 6px 24px 0 rgba(99,102,241,0.10)', transition: 'box-shadow 0.2s, transform 0.2s', outline: 'none' }}
+                                                    onMouseOver={e => e.currentTarget.style.boxShadow = '0 12px 32px 0 rgba(99,102,241,0.18)'}
+                                                    onMouseOut={e => e.currentTarget.style.boxShadow = '0 6px 24px 0 rgba(99,102,241,0.10)'}
+                                                >
+                                                    <div className="record-card-header" style={{ background: stat.milktype === 'COW' ? 'linear-gradient(90deg,#e0e7ff 0%,#f1f5ff 100%)' : 'linear-gradient(90deg,#fff7ed 0%,#fef6e4 100%)', borderBottom: '1.5px solid #e0e7ef', display: 'flex', alignItems: 'center', gap: '0.7em' }}>
+                                                        <FontAwesomeIcon icon={stat.milktype === 'COW' ? faCow : faHippo} style={{ fontSize: '2rem', opacity: 0.85 }} />
+                                                        <span style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '0.02em' }}>{stat.milktype}</span>
+                                                        <Badge bg={stat.milktype === 'COW' ? 'info' : 'warning'} text="dark" style={{ fontSize: '1em', marginLeft: 'auto' }}>{stat.milktype}</Badge>
+                                                    </div>
+                                                    <div className="px-3 py-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em 1.2em', alignItems: 'center' }}>
+                                                        <div><FontAwesomeIcon icon={faUser} className="me-1" aria-label="Samples" /> <strong>Samples:</strong> {stat.totalSamples}</div>
+                                                        <div><FontAwesomeIcon icon={faFileCsv} className="me-1" aria-label="Avg FAT" /> <strong>Avg FAT:</strong> {stat.avgFat.toFixed(2)}</div>
+                                                        <div><FontAwesomeIcon icon={faFilePdf} className="me-1" aria-label="Avg SNF" /> <strong>Avg SNF:</strong> {stat.avgSnf.toFixed(2)}</div>
+                                                        <div><FontAwesomeIcon icon={faClock} className="me-1" aria-label="Avg CLR" /> <strong>Avg CLR:</strong> {stat.avgClr.toFixed(2)}</div>
+                                                        <div><FontAwesomeIcon icon={faCalendarAlt} className="me-1" aria-label="Total Qty" /> <strong>Total Qty:</strong> {stat.totalQty.toFixed(2)} L</div>
+                                                        <div><FontAwesomeIcon icon={faSearch} className="me-1" aria-label="Avg Rate" /> <strong>Avg Rate:</strong> ₹{stat.avgRate.toFixed(2)}</div>
+                                                        <div><FontAwesomeIcon icon={faMicrochip} className="me-1" aria-label="Total Amount" /> <strong>Total Amount:</strong> ₹{stat.totalAmount.toFixed(2)}</div>
+                                                        <div><FontAwesomeIcon icon={faFilter} className="me-1" aria-label="Incentive" /> <strong>Incentive:</strong> ₹{stat.totalIncentive.toFixed(2)}</div>
+                                                        <div style={{ gridColumn: '1 / span 2', marginTop: '0.5em', textAlign: 'center' }}>
+                                                            <FontAwesomeIcon icon={faFilePdf} className="me-1" aria-label="Grand Total" style={{ color: '#22c55e', fontSize: '1.2em' }} />
+                                                            <span className="record-total" style={{ fontSize: '1.4em', color: '#22c55e', fontWeight: 700 }}>
+                                                                Grand Total: ₹{stat.grandTotal.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
+                                    </Card.Body>
+                                </Card>
+                            ))
+                        )}
+                        <hr />
 
-                                        {totalCount > recordsPerPage && (
-                                            <Pagination>
-                                                <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
-                                                <Pagination.Prev onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} />
-                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                                    <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
-                                                        {page}
-                                                    </Pagination.Item>
-                                                ))}
-                                                <Pagination.Next onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} />
-                                                <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
-                                            </Pagination>
-                                        )}
-                                    </div>
+                        {totalCount > 0 && (
+                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                                <div className="d-flex align-items-center gap-2">
+                                    <span className="text-muted">Rows per page:</span>
+                                    <Form.Select
+                                        size="sm"
+                                        className="form-select-modern-sm"
+                                        value={recordsPerPage}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            setRecordsPerPage(parseInt(value));
+                                            setCurrentPage(1);
+                                        }}
+                                        style={{ width: "auto" }}
+                                    >
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </Form.Select>
+                                </div>
+
+                                {totalCount > recordsPerPage && (
+                                    <Pagination>
+                                        <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                                        <Pagination.Prev onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} />
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                            <Pagination.Item key={page} active={page === currentPage} onClick={() => setCurrentPage(page)}>
+                                                {page}
+                                            </Pagination.Item>
+                                        ))}
+                                        <Pagination.Next onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} />
+                                        <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                                    </Pagination>
                                 )}
-                            </>
+                            </div>
                         )}
                     </Card.Body>
                 </Card>

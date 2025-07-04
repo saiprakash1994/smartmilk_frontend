@@ -7,10 +7,12 @@ import {
   faUser,
   faCalendarAlt,
   faEye,
-  faUsers
+  faUsers,
+  faCow,
+  faHippo
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination, ButtonGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -70,6 +72,7 @@ const CumilativeRecords = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -155,9 +158,12 @@ const CumilativeRecords = () => {
   const totalCount = resultData?.pagination?.totalRecords;
   const totalPages = Math.ceil(totalCount / recordsPerPage);
 
-  const filteredRecords = records.filter(record =>
-    String(record.CODE).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecords = records.filter(record => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = String(record.CODE).toLowerCase().includes(searchLower);
+    const matchesMilkType = milkTypeFilter === 'ALL' || record.MILKTYPE === milkTypeFilter;
+    return matchesSearch && matchesMilkType;
+  });
 
   const cowMilkTypeTotals =
     resultData?.milkTypeTotals.filter((cow) => cow?.MILKTYPE === "COW") || [];
@@ -560,14 +566,7 @@ const CumilativeRecords = () => {
               </div>
             ) : (
               <>
-                <div className="d-flex justify-content-end mb-3">
-                  <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
-                    <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
-                  </Button>
-                  <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
-                    <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
-                  </Button>
-                </div>
+
 
                 {(viewMode === "DATA" || viewMode === "ALL") && (
                   <Card className="mb-4">
@@ -582,72 +581,73 @@ const CumilativeRecords = () => {
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
                       </Form.Group>
+                      <div >
+                        <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
+                          <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
+                        </Button>
+                        <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
+                          <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
+                        </Button>
+                      </div>
                     </Card.Header>
-                    <Card.Body>
-                      {/* Filters Info Row */}
-                      {filteredRecords.length > 0 && (
+                    {filteredRecords.length > 0 && (
+                      <Card.Header className="filter-card-header">
                         <div className="mb-1">
-                          <div className="results-card-header" >
-                            <strong>Device:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
-                            <strong>From Member:</strong>{fromCode || '--'}&nbsp; | &nbsp;
-                            <strong>To Member:</strong> {toCode || '--'}&nbsp; | &nbsp;
-
-                            <strong>From Date:</strong> {fromDate}&nbsp; | &nbsp;
-                            <br />
-
-                            <strong>To Date:</strong>  {toDate}&nbsp; | &nbsp;
-
-                            <strong>View Mode:</strong>{viewMode}
+                          <div className="results-card-header d-flex justify-content-between align-items-center" >
+                            <span className="fw-semibold me-2">Device:{deviceCode || '--'}</span> |
+                            <span className="fw-semibold me-2">From(M): {fromCode || '--'}</span>|
+                            <span className="fw-semibold me-2">To(M): {toCode || '--'}</span>|
+                            <span className="fw-semibold me-2">From(D): {fromDate || '--'}</span> |
+                            <span className="fw-semibold me-2">To(D): {toDate || '--'}</span>|
+                            <span className="fw-semibold me-2">View Mode: {viewMode || '--'}</span>
                           </div>
                         </div>
+                      </Card.Header>
+                    )}
+                    <Card.Body>
+                      {/* Filters Info Row */}
 
-                      )}
-                      <Table hover responsive className="records-table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Code</th>
-                            <th>MILKTYPE</th>
-                            <th>Avg FAT</th>
-                            <th>Avg SNF</th>
-                            <th>Avg CLR</th>
-                            <th>Total Qty (L)</th>
-                            <th>Avg Rate</th>
-                            <th>Total Amount</th>
-                            <th>Total Incentive</th>
-                            <th>Grand Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredRecords.length > 0 ? (
-                            filteredRecords.map((record, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{record?.CODE}</td>
-                                <td>
-                                  <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
-                                    {record?.MILKTYPE}
-                                  </Badge>
-                                </td>
-                                <td>{record?.avgFat}</td>
-                                <td>{record?.avgSnf}</td>
-                                <td>{record?.avgClr}</td>
-                                <td>{record?.totalQty} L</td>
-                                <td>₹{record?.avgRate}</td>
-                                <td>₹{record?.totalAmount}</td>
-                                <td>₹{record?.totalIncentive}</td>
-                                <td>₹{record?.grandTotal}</td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="8" className="text-center">
-                                {searchTerm ? "No members found matching your search." : "No totals available"}
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
+                      {/* Filter Bar */}
+                      <div className="mb-3 d-flex flex-wrap gap-2 align-items-center filter-buttons-group">
+                        <span className="fw-semibold me-2">Filter:</span>
+                        <ButtonGroup>
+                          <Button active={milkTypeFilter === 'ALL'} variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setMilkTypeFilter('ALL')}>All Milk</Button>
+                          <Button active={milkTypeFilter === 'COW'} variant={milkTypeFilter === 'COW' ? 'info' : 'outline-info'} size="sm" onClick={() => setMilkTypeFilter('COW')}><FontAwesomeIcon icon={faCow} className="me-1" />Cow</Button>
+                          <Button active={milkTypeFilter === 'BUF'} variant={milkTypeFilter === 'BUF' ? 'warning' : 'outline-warning'} size="sm" onClick={() => setMilkTypeFilter('BUF')}><FontAwesomeIcon icon={faHippo} className="me-1" />Buffalo</Button>
+                        </ButtonGroup>
+                      </div>
+                      {/* Card Grid for Member Records */}
+                      <div className="records-card-grid">
+                        {filteredRecords.map((record, index) => (
+                          <Card key={index} className={`record-card mb-3 ${record?.MILKTYPE === 'COW' ? 'cow' : record?.MILKTYPE === 'BUF' ? 'buf' : 'other'}`}>
+                            <div className="record-card-header">
+                              <span className="record-date fw-bold">
+                                <FontAwesomeIcon icon={faUser} className="me-1 text-primary" />
+                                Member:{record?.CODE}
+                              </span>
+                              <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                {record?.MILKTYPE}
+                              </Badge>
+                            </div>
+                            <Card.Body>
+                              <div className="d-flex flex-wrap gap-2 mb-2">
+                                <span className="record-fat badge bg-primary-subtle text-primary">Fat: {record?.avgFat}</span>
+                                <span className="record-snf badge bg-success-subtle text-success">SNF: {record?.avgSnf}</span>
+                                <span className="record-clr badge bg-info-subtle text-info">CLR: {record?.avgClr}</span>
+                              </div>
+                              <div className="d-flex flex-wrap gap-3 mb-2">
+                                <span className="record-qty"><strong>Qty:</strong> {record?.totalQty}</span>
+                                <span className="record-rate"><strong>Rate:</strong> ₹{record?.avgRate}</span>
+                              </div>
+                              <div className="d-flex flex-wrap gap-3 mb-2">
+                                <span className="record-amount"><strong>Amount:</strong> ₹{record?.totalAmount}</span>
+                                <span className="record-incentive"><strong>Incentive:</strong> ₹{record?.totalIncentive}</span>
+                                <span className="record-total"><strong>Grand Total:</strong> <span className="record-total">₹{record?.grandTotal}</span></span>
+                              </div>
+                            </Card.Body>
+                          </Card>
+                        ))}
+                      </div>
                     </Card.Body>
                   </Card>
                 )}

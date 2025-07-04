@@ -7,10 +7,22 @@ import {
   faUser,
   faCalendarAlt,
   faEye,
-  faUsers
+  faUsers,
+  faTint,
+  faFlask,
+  faBottleWater,
+  faChartLine,
+  faRupeeSign,
+  faArrowUp,
+  faEquals,
+  faCow,
+  faHippo,
+  faSun,
+  faMoon,
+  faClipboardList
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination, ButtonGroup } from "react-bootstrap";
 import { data, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -66,6 +78,8 @@ const MemberRecords = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
+  const [shiftFilter, setShiftFilter] = useState('ALL');
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -130,11 +144,13 @@ const MemberRecords = () => {
 
   const filteredRecords = records.filter(record => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       record.SAMPLEDATE.toLowerCase().includes(searchLower) ||
       record.SHIFT.toLowerCase().includes(searchLower) ||
-      record.MILKTYPE.toLowerCase().includes(searchLower)
-    );
+      record.MILKTYPE.toLowerCase().includes(searchLower);
+    const matchesMilkType = milkTypeFilter === 'ALL' || record.MILKTYPE === milkTypeFilter;
+    const matchesShift = shiftFilter === 'ALL' || record.SHIFT === shiftFilter;
+    return matchesSearch && matchesMilkType && matchesShift;
   });
 
   const handleExportCSV = () => {
@@ -413,6 +429,7 @@ const MemberRecords = () => {
         </Card.Body>
       </Card>
 
+
       {searchParams && (
         <Card className="results-card">
           <Card.Body>
@@ -444,69 +461,71 @@ const MemberRecords = () => {
                         </Button>
                       </div>
                     </Card.Header>
-                    <Card.Body>
-                      {/* Filters Info Row */}
+                    <Card.Header className="filter-card-header">
+
                       {filteredRecords.length > 0 && (
                         <div className="mb-1">
                           <div className="results-card-header d-flex justify-content-between align-items-center">
-                            <strong>Device:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
-                            <strong>Member:</strong>{memberCode || '--'}&nbsp; | &nbsp;
-                            <strong>From:</strong>{fromDate}&nbsp; | &nbsp;
-                            <strong>To:</strong>{toDate}&nbsp; | &nbsp;
-                            <strong>View Mode:</strong>{viewMode}
+                            <span className="fw-semibold me-2">Device: {deviceCode || '--'}</span>&nbsp; | &nbsp;
+                            <span className="fw-semibold me-2">Member: {memberCode || '--'}</span>&nbsp; | &nbsp;
+                            <span className="fw-semibold me-2">From: {fromDate || '--'}</span>&nbsp; | &nbsp;
+                            <span className="fw-semibold me-2">To: {toDate || '--'}</span>&nbsp; | &nbsp;
+                            <span className="fw-semibold me-2">View Mode: {viewMode || '--'}</span>
                           </div>
                         </div>
 
                       )}
-                      <Table hover responsive className="records-table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Shift</th>
-                            <th>Milk Type</th>
-                            <th>Fat</th>
-                            <th>SNF</th>
-                            <th>CLR</th>
-                            <th>Qty (L)</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Incentive</th>
-                            <th>Grand Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredRecords.length > 0 ? (
-                            filteredRecords.map((record, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{record?.SAMPLEDATE}</td>
-                                <td>{record?.SHIFT}</td>
-                                <td>
-                                  <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
-                                    {record?.MILKTYPE}
-                                  </Badge>
-                                </td>
-                                <td>{record?.FAT?.toFixed(1)}</td>
-                                <td>{record?.SNF?.toFixed(1)}</td>
-                                <td>{record?.CLR?.toFixed(1)}</td>
+                    </Card.Header>
 
-                                <td>{record?.QTY?.toFixed(2)} L</td>
-                                <td>₹{record?.RATE?.toFixed(2)}</td>
-                                <td>₹{record?.AMOUNT.toFixed(2) || 0}</td>
-                                <td>₹{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</td>
-                                <td>₹{record?.TOTAL.toFixed(2)}</td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="11" className="text-center">
-                                {searchTerm ? "No records found matching your search." : "No records found"}
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
+                    <Card.Body>
+                      {/* Filters Info Row */}
+
+                      {/* Modern Filter Block */}
+                      <div className="mb-3 d-flex flex-wrap gap-2 align-items-center filter-buttons-group">
+                        <span className="fw-semibold me-2">Filter:</span>
+                        <ButtonGroup>
+                          <Button active={milkTypeFilter === 'ALL'} variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setMilkTypeFilter('ALL')} aria-label="Show all milk types" title="Show all milk types">All Milk</Button>
+                          <Button active={milkTypeFilter === 'COW'} variant={milkTypeFilter === 'COW' ? 'info' : 'outline-info'} size="sm" onClick={() => setMilkTypeFilter('COW')} aria-label="Cow Milk" title="Cow Milk"><FontAwesomeIcon icon={faCow} className="me-1" />Cow</Button>
+                          <Button active={milkTypeFilter === 'BUF'} variant={milkTypeFilter === 'BUF' ? 'warning' : 'outline-warning'} size="sm" onClick={() => setMilkTypeFilter('BUF')} aria-label="Buffalo Milk" title="Buffalo Milk"><FontAwesomeIcon icon={faHippo} className="me-1" />Buffalo</Button>
+                        </ButtonGroup>
+                        <span className="mx-3 border-start" style={{ height: '24px' }}></span>
+                        <ButtonGroup>
+                          <Button active={shiftFilter === 'ALL'} variant={shiftFilter === 'ALL' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setShiftFilter('ALL')} aria-label="All Shifts" title="All Shifts">All Shifts</Button>
+                          <Button active={shiftFilter === 'MORNING'} variant={shiftFilter === 'MORNING' ? 'success' : 'outline-success'} size="sm" onClick={() => setShiftFilter('MORNING')} aria-label="Morning" title="Morning"><FontAwesomeIcon icon={faSun} className="me-1" />Morning</Button>
+                          <Button active={shiftFilter === 'EVENING'} variant={shiftFilter === 'EVENING' ? 'secondary' : 'outline-secondary'} size="sm" onClick={() => setShiftFilter('EVENING')} aria-label="Evening" title="Evening"><FontAwesomeIcon icon={faMoon} className="me-1" />Evening</Button>
+                        </ButtonGroup>
+                      </div>                      <div className="records-card-grid">
+                        {filteredRecords.map((record, index) => (
+                          <Card key={index} className={`record-card mb-3 ${record?.MILKTYPE === 'COW' ? 'cow' : record?.MILKTYPE === 'BUF' ? 'buf' : 'other'}`}>
+                            <div className="record-card-header">
+                              <span className="record-date fw-bold">
+                                <FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-primary" />
+                                {record?.SAMPLEDATE}
+                              </span>
+                              <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                {record?.MILKTYPE}
+                              </Badge>
+                            </div>
+                            <Card.Body>
+                              <div className="d-flex flex-wrap gap-2 mb-2">
+                                <span className="record-shift badge bg-light text-dark"><FontAwesomeIcon icon={faEye} className="record-value-icon" />{record?.SHIFT}</span>
+                                <span className="record-fat badge bg-primary-subtle text-primary"><FontAwesomeIcon icon={faTint} className="record-value-icon" />Fat: {record?.FAT?.toFixed(1)}</span>
+                                <span className="record-snf badge bg-success-subtle text-success"><FontAwesomeIcon icon={faFlask} className="record-value-icon" />SNF: {record?.SNF?.toFixed(1)}</span>
+                                <span className="record-clr badge bg-info-subtle text-info"><FontAwesomeIcon icon={faFlask} className="record-value-icon" />CLR: {record?.CLR?.toFixed(1)}</span>
+                              </div>
+                              <div className="d-flex flex-wrap gap-3 mb-2">
+                                <span className="record-qty"><FontAwesomeIcon icon={faBottleWater} className="record-value-icon text-info" /><strong>Qty:</strong> {record?.QTY?.toFixed(2)} L</span>
+                                <span className="record-rate"><FontAwesomeIcon icon={faChartLine} className="record-value-icon text-primary" /><strong>Rate:</strong> ₹{record?.RATE?.toFixed(2)}</span>
+                              </div>
+                              <div className="d-flex flex-wrap gap-3 mb-2">
+                                <span className="record-amount"><FontAwesomeIcon icon={faRupeeSign} className="record-value-icon text-success" /><strong>Amount:</strong> ₹{record?.AMOUNT.toFixed(2) || 0}</span>
+                                <span className="record-incentive"><FontAwesomeIcon icon={faArrowUp} className="record-value-icon text-warning" /><strong>Incentive:</strong> ₹{record?.INCENTIVEAMOUNT.toFixed(2) || 0}</span>
+                                <span className="record-total"><FontAwesomeIcon icon={faEquals} className="record-value-icon text-success" /><strong>Grand Total:</strong> <span className="record-total">₹{record?.TOTAL.toFixed(2)}</span></span>
+                              </div>
+                            </Card.Body>
+                          </Card>
+                        ))}
+                      </div>
                     </Card.Body>
                     {viewMode !== "TOTALS" && totalCount > 0 && (
                       <Card.Footer>
@@ -550,7 +569,8 @@ const MemberRecords = () => {
                 )}
                 {viewMode !== "RECORDS" && (
                   <Card>
-                    <Card.Header className="results-card-header">Total Records</Card.Header>
+                    <Card.Header className="results-card-header">
+                      <FontAwesomeIcon icon={faClipboardList} className="me-2" />Total Records</Card.Header>
                     <Card.Body>
                       <Table hover responsive className="totals-table">
                         <thead>

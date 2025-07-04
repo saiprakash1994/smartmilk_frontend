@@ -6,7 +6,9 @@ import {
     faMicrochip,
     faUser,
     faCalendarAlt,
-    faClock
+    faClock,
+    faCow,
+    faHippo
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
@@ -36,8 +38,10 @@ const getToday = () => {
 
 const DailyRecordCard = ({ record, deviceCode }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [milkTypeFilter, setMilkTypeFilter] = useState('ALL');
 
     const filteredRecords = record.records.filter(r =>
+        (milkTypeFilter === 'ALL' || r.MILKTYPE === milkTypeFilter) &&
         String(r.CODE).toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -45,9 +49,9 @@ const DailyRecordCard = ({ record, deviceCode }) => {
         <Card className="mb-4">
             <Card.Header className="results-card-header d-flex justify-content-between align-items-center">
                 <div >
-                    <strong>Date:</strong> {record?.date} &nbsp; | &nbsp;
-                    <strong>Shift:</strong> {record?.shift}&nbsp; | &nbsp;
-                    <strong>Device Id:</strong> {deviceCode}
+                    <span className="fw-semibold me-2">Date: {record?.date}</span> | &nbsp;
+                    <span className="fw-semibold me-2">Shift: {record?.shift}</span>  | &nbsp;
+                    <span className="fw-semibold me-2">Device Id:{deviceCode}</span>
                 </div>
                 <Form.Group style={{ width: '250px' }}>
                     <Form.Control
@@ -60,88 +64,82 @@ const DailyRecordCard = ({ record, deviceCode }) => {
                 </Form.Group>
             </Card.Header>
             <Card.Body>
-                <Table hover responsive className="records-table">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Milk Type</th>
-                            <th>FAT</th>
-                            <th>SNF</th>
-                            <th>CLR</th>
-                            <th>Qty (L)</th>
-                            <th>Rate</th>
-                            <th>Total</th>
-                            <th>Incentive</th>
-                            <th>Grand Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredRecords.length > 0 ? (
-                            filteredRecords.map((stat, statIndex) => (
-                                <tr key={statIndex}>
-                                    <td>{stat?.CODE}</td>
-                                    <td>
-                                        <Badge bg={stat?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
-                                            {stat?.MILKTYPE}
-                                        </Badge>
-                                    </td>
-                                    <td>{stat?.FAT?.toFixed(1)}</td>
-                                    <td>{stat?.SNF?.toFixed(1)}</td>
-                                    <td>{stat?.CLR?.toFixed(1)}</td>
-                                    <td>{stat?.QTY.toFixed(2)} L</td>
-                                    <td>₹{stat?.RATE?.toFixed(2)}</td>
-                                    <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
-                                    <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
-                                    <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="9" className="text-center">
-                                    {searchTerm ? "No members found matching your search." : "No records for this period."}
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-                <Table hover responsive className="totals-table mt-3">
-                    <thead>
-                        <tr>
-                            <th>Milk Type</th>
-                            <th>Samples</th>
-                            <th>Avg FAT</th>
-                            <th>Avg SNF</th>
-                            <th>Avg CLR</th>
-
-                            <th>Total Qty (L)</th>
-                            <th>Avg Rate</th>
-                            <th>Total Amount</th>
-                            <th>Incentive</th>
-                            <th>Grand Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {record.milktypeStats.map((stat, statIndex) => (
-                            <tr key={statIndex}>
-                                <td>
-                                    <Badge bg={stat?.milktype === 'COW' ? 'info' : 'warning'} text="dark">
-                                        {stat?.milktype}
-                                    </Badge>
-                                </td>
-                                <td>{stat?.totalSamples}</td>
-                                <td>{stat?.avgFat.toFixed(2)}</td>
-                                <td>{stat?.avgSnf.toFixed(2)}</td>
-                                <td>{stat?.avgClr.toFixed(2)}</td>
-
-                                <td>{stat?.totalQty.toFixed(2)} L</td>
-                                <td>₹{stat?.avgRate.toFixed(2)}</td>
-                                <td>₹{stat?.totalAmount.toFixed(2)}</td>
-                                <td>₹{stat?.totalIncentive.toFixed(2)}</td>
-                                <td>₹{stat?.grandTotal.toFixed(2)}</td>
-                            </tr>
+                {/* Filter Bar */}
+                <div className="filter-buttons-group mb-3 d-flex align-items-center">
+                    <Button
+                        variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-secondary'}
+                        className={`me-2 btn ${milkTypeFilter === 'ALL' ? 'active' : ''}`}
+                        onClick={() => setMilkTypeFilter('ALL')}
+                    >
+                        <FontAwesomeIcon icon={faUser} className="fa-icon me-1" />All
+                    </Button>
+                    <Button
+                        variant={milkTypeFilter === 'COW' ? 'info' : 'outline-info'}
+                        className={`me-2 btn ${milkTypeFilter === 'COW' ? 'active cow' : ''}`}
+                        onClick={() => setMilkTypeFilter('COW')}
+                    >
+                        <FontAwesomeIcon icon={faCow} className="fa-icon me-1" />Cow
+                    </Button>
+                    <Button
+                        variant={milkTypeFilter === 'BUF' ? 'warning' : 'outline-warning'}
+                        className={`btn ${milkTypeFilter === 'BUF' ? 'active buf' : ''}`}
+                        onClick={() => setMilkTypeFilter('BUF')}
+                    >
+                        <FontAwesomeIcon icon={faHippo} className="fa-icon me-1" />Buffalo
+                    </Button>
+                </div>
+                {/* Card Grid for Member Records */}
+                {filteredRecords.length > 0 ? (
+                    <div className="records-card-grid">
+                        {filteredRecords.map((stat, statIndex) => (
+                            <div
+                                className={`record-card ${stat.MILKTYPE === 'COW' ? 'cow' : stat.MILKTYPE === 'BUF' ? 'buf' : 'other'}`}
+                                key={statIndex}
+                                tabIndex={0}
+                                aria-label={`Milk type ${stat.MILKTYPE} member record card`}
+                                style={{ minHeight: 240, boxShadow: '0 6px 24px 0 rgba(99,102,241,0.10)', transition: 'box-shadow 0.2s, transform 0.2s', outline: 'none' }}
+                                onMouseOver={e => e.currentTarget.style.boxShadow = '0 12px 32px 0 rgba(99,102,241,0.18)'}
+                                onMouseOut={e => e.currentTarget.style.boxShadow = '0 6px 24px 0 rgba(99,102,241,0.10)'}
+                            >
+                                <div
+                                    className="record-card-header"
+                                    style={{
+                                        background: stat.MILKTYPE === 'COW'
+                                            ? 'linear-gradient(90deg,#e0e7ff 0%,#f1f5ff 100%)'
+                                            : 'linear-gradient(90deg,#fff7ed 0%,#fef6e4 100%)',
+                                        borderBottom: '1.5px solid #e0e7ef',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.7em'
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={stat.MILKTYPE === 'COW' ? faCow : faHippo} style={{ fontSize: '2rem', opacity: 0.85 }} />
+                                    <span style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '0.02em' }}>{stat.MILKTYPE}</span>
+                                    <Badge bg={stat.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark" style={{ fontSize: '1em', marginLeft: 'auto' }}>{stat.MILKTYPE}</Badge>
+                                </div>
+                                <div className="px-3 py-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em 1.2em', alignItems: 'center' }}>
+                                    <div><b>Code:</b> {stat.CODE}</div>
+                                    <div><b>FAT:</b> {stat.FAT?.toFixed(1)}</div>
+                                    <div><b>SNF:</b> {stat.SNF?.toFixed(1)}</div>
+                                    <div><b>CLR:</b> {stat.CLR?.toFixed(1)}</div>
+                                    <div><b>Qty:</b> {stat.QTY.toFixed(2)} L</div>
+                                    <div><b>Rate:</b> ₹{stat.RATE?.toFixed(2)}</div>
+                                    <div><b>Total:</b> ₹{stat.TOTALAMOUNT?.toFixed(2)}</div>
+                                    <div><b>Incentive:</b> ₹{stat.INCENTIVEAMOUNT?.toFixed(2)}</div>
+                                    <div style={{ gridColumn: '1 / span 2', marginTop: '0.5em', textAlign: 'center' }}>
+                                        <span className="record-total" style={{ fontSize: '1.4em', color: '#22c55e', fontWeight: 700 }}>
+                                            Grand Total: ₹{(Number(stat.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
-                    </tbody>
-                </Table>
+                    </div>
+                ) : (
+                    <div className="text-center text-muted my-4">
+                        {searchTerm ? "No members found matching your search." : "No records for this period."}
+                    </div>
+                )}
             </Card.Body>
         </Card>
     );

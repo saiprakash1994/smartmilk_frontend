@@ -37,7 +37,7 @@
 
     .results-card-header,
     .totals-card-header {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background: var(--appGradient);
         color: #343a40;
         font-weight: 600;
         font-size: 1.1rem;
@@ -73,7 +73,7 @@
     .modern-button {
         background: var(--appGradient);
         color: var(--appTextColor);
-        border: none;
+        border: 1px solid var(--appTextColor);
         font-weight: 600;
         border-radius: 8px;
         transition: all 0.3s ease;
@@ -176,5 +176,184 @@
     .page-item:first-child .page-link,
     .page-item:last-child .page-link {
         border-radius: 0.5rem !important;
+    }
+}
+
+.records-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.record-card {
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 18px 0 rgba(30, 64, 175, 0.09);
+    border: 1.5px solid #e0e7ef;
+    border-left-width: 8px;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.record-card.cow {
+    border-left-color: #0dcaf0;
+}
+
+.record-card.buf {
+    border-left-color: #f59e42;
+}
+
+.record-card.other {
+    border-left-color: #22c55e;
+}
+
+.record-card-header {
+    background: linear-gradient(90deg, #f1f5ff 0%, #e0e7ff 100%);
+    padding: 0.5rem 1rem;
+    border-radius: 1.2rem 1.2rem 0 0;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.record-date {
+    font-size: 1.1rem;
+}
+
+.record-total {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #22c55e;
+}
+
+.record-value-icon {
+    margin-right: 0.3em;
+    opacity: 0.7;
+}
+
+@media (max-width: 900px) {
+    .records-card-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .record-card {
+        padding: 0.7rem 0.5rem;
+        border-radius: 0.8rem;
+    }
+
+    .record-card-header {
+        border-radius: 0.8rem 0.8rem 0 0;
+    }
+}
+
+.filter-buttons-group .btn {
+    border-radius: 999px !important;
+    font-size: 1rem;
+    padding: 0.35rem 1.1rem;
+    margin-right: 0.2rem;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-buttons-group .btn:not(.active) {
+    background: #fff !important;
+    color: #22223b !important;
+    border: 1.5px solid #e0e7ef !important;
+}
+
+.filter-buttons-group .btn .fa-icon {
+    margin-right: 0.4em;
+}
+
+.filter-buttons-group .border-start {
+    border-left: 1.5px solid #e0e7ef !important;
+    margin: 0 0.7rem;
+    height: 24px;
+}
+
+@media (max-width: 600px) {
+    .filter-buttons-group .btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.95rem;
+    }
+
+    .filter-buttons-group .border-start {
+        margin: 0 0.5rem;
+        height: 20px;
+    }
+}
+
+.modern-filter-block {
+    background: linear-gradient(90deg, #f8fafc 0%, #e0e7ff 100%) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 4px 24px 0 rgba(99, 102, 241, 0.10) !important;
+    border: none !important;
+}
+
+.modern-btn-group .modern-filter-btn {
+    border-radius: 999px !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.7rem 2.2rem;
+    margin-right: 0.5rem;
+    box-shadow: 0 2px 8px 0 rgba(99, 102, 241, 0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.modern-btn-group .modern-filter-btn.active,
+.modern-btn-group .modern-filter-btn:active,
+.modern-btn-group .modern-filter-btn:focus {
+    box-shadow: 0 6px 24px 0 rgba(99, 102, 241, 0.13);
+    filter: brightness(1.09);
+    transform: scale(1.04);
+}
+
+.modern-btn-group .modern-filter-btn:hover {
+    filter: brightness(1.07);
+    box-shadow: 0 6px 24px 0 rgba(99, 102, 241, 0.13);
+    transform: scale(1.03);
+}
+
+.modern-filter-divider {
+    border-left: 2.5px solid #c7d2fe !important;
+    margin: 0 1.5rem;
+    height: 38px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+    .modern-btn-group .modern-filter-btn {
+        padding: 0.5rem 1.1rem;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modern-filter-divider {
+        margin: 0 0.7rem;
+        height: 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .modern-filter-block {
+        padding: 0.7rem 0.3rem !important;
+        border-radius: 1rem !important;
+    }
+
+    .modern-btn-group .modern-filter-btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.95rem;
+    }
+
+    .modern-filter-divider {
+        margin: 0 0.3rem;
+        height: 18px;
     }
 }

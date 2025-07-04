@@ -68,7 +68,7 @@ const RecordsPage = () => {
     <div className="records-page">
       <Container fluid className="records-container">
         {/* Header Card */}
-        <Card className="records-header-card mb-4">
+        {/* <Card className="records-header-card mb-4">
           <Card.Header className="records-header">
             <div className="d-flex align-items-center justify-content-between">
               <div>
@@ -80,7 +80,7 @@ const RecordsPage = () => {
               </Badge>
             </div>
           </Card.Header>
-        </Card>
+        </Card> */}
 
         {/* Main Records Card with Sidebar */}
         <Card className="records-main-card">

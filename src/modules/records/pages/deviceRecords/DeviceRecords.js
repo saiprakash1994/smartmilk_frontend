@@ -1,6 +1,6 @@
-import { faFileCsv, faSearch, faUsers, faFilePdf, faCalendarAlt, faFilter, faFileExport, faMicrochip, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faSearch, faUsers, faFilePdf, faCalendarAlt, faFilter, faFileExport, faMicrochip, faClock, faCow, faHippo, faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination } from "react-bootstrap";
+import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination, ButtonGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -318,17 +318,23 @@ const DeviceRecords = () => {
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
-                                    <Form.Select size="sm" className="form-select-modern-sm me-3" value={milkTypeFilter} onChange={e => setMilkTypeFilter(e.target.value)}>
-                                        <option value="ALL">All Milk Types</option>
-                                        <option value="COW">Cow</option>
-                                        <option value="BUF">Buffalo</option>
-                                    </Form.Select>
+
                                     <Button variant="outline-success" size="sm" className="export-button me-2" onClick={handleExportCSV}>
                                         <FontAwesomeIcon icon={faFileCsv} className="me-2" />CSV
                                     </Button>
                                     <Button variant="outline-danger" size="sm" className="export-button" onClick={handleExportPDF}>
                                         <FontAwesomeIcon icon={faFilePdf} className="me-2" />PDF
                                     </Button>
+                                </div>
+                            </div>
+                        </Card.Header>
+                        <Card.Header className="filter-card-header">
+                            <div className="mb-1">
+                                <div className="results-card-header d-flex justify-content-between align-items-center">
+                                    <span className="fw-semibold me-2">Device Code: {deviceCode || '--'}</span>&nbsp; | &nbsp;
+                                    <span className="fw-semibold me-2">Date: {date?.split('-').reverse().join('-')}</span> &nbsp; | &nbsp;
+                                    <span className="fw-semibold me-2">Shift: {shift || 'ALL'}</span> &nbsp; | &nbsp;
+                                    <span className="fw-semibold me-2">Milk Type: {milkTypeFilter || 'ALL'}</span>
                                 </div>
                             </div>
                         </Card.Header>
@@ -340,55 +346,56 @@ const DeviceRecords = () => {
                                 </div>
                             ) : filteredRecords.length > 0 ? (
                                 <>
-                                    <div className="mb-1">
-                                        <div className="results-card-header d-flex justify-content-between align-items-center">
-                                            <strong>Device Code:</strong>{deviceCode || '--'}&nbsp; | &nbsp;
-                                            <strong>Date:</strong> {date?.split('-').reverse().join('-')}&nbsp; | &nbsp;
-                                            <strong>Shift:</strong> {shift || 'ALL'}&nbsp; | &nbsp;
-                                            <strong>Milk Type:</strong>{milkTypeFilter || 'ALL'}
-                                        </div>
-                                    </div>
 
-                                    <Table hover responsive className="records-table">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No</th>
-                                                <th>Member</th>
-                                                <th>Milk</th>
-                                                <th>Shift</th>
-                                                <th>FAT</th>
-                                                <th>SNF</th>
-                                                <th>CLR</th>
-                                                <th>Qty (L)</th>
-                                                <th>Rate</th>
-                                                <th>Amount</th>
-                                                <th>Incentive</th>
-                                                <th>Total</th>
-                                                <th>AnalyzerMode</th>
-                                                <th>WeightMode</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {filteredRecords.map((rec, index) => (
-                                                <tr key={rec._id}>
-                                                    <td>{index + 1 + (currentPage - 1) * recordsPerPage}</td>
-                                                    <td>{rec?.CODE}</td>
-                                                    <td><Badge bg={rec?.MILKTYPE === 'COW' ? 'warning' : 'info'}>{rec?.MILKTYPE}</Badge></td>
-                                                    <td>{rec?.SHIFT}</td>
-                                                    <td>{rec?.FAT?.toFixed(1)}</td>
-                                                    <td>{rec?.SNF?.toFixed(1)}</td>
-                                                    <td>{rec?.CLR?.toFixed(1)}</td>
-                                                    <td>{rec?.QTY?.toFixed(2) || '0.00'}</td>
-                                                    <td>{rec?.RATE?.toFixed(2)}</td>
-                                                    <td>{rec?.AMOUNT?.toFixed(2) || '0.00'}</td>
-                                                    <td>₹{rec?.INCENTIVEAMOUNT.toFixed(2)}</td>
-                                                    <td>₹{rec?.TOTAL.toFixed(2)}</td>
-                                                    <td>{rec?.ANALYZERMODE}</td>
-                                                    <td>{rec?.WEIGHTMODE}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </Table>
+
+                                    {/* Add filter bar above the grid */}
+                                    <div className="mb-3 d-flex flex-wrap gap-2 align-items-center filter-buttons-group">
+                                        <span className="fw-semibold me-2">Filter:</span>
+                                        <ButtonGroup>
+                                            <Button active={milkTypeFilter === 'ALL'} variant={milkTypeFilter === 'ALL' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setMilkTypeFilter('ALL')}>All Milk</Button>
+                                            <Button active={milkTypeFilter === 'COW'} variant={milkTypeFilter === 'COW' ? 'info' : 'outline-info'} size="sm" onClick={() => setMilkTypeFilter('COW')}><FontAwesomeIcon icon={faCow} className="me-1" />Cow</Button>
+                                            <Button active={milkTypeFilter === 'BUF'} variant={milkTypeFilter === 'BUF' ? 'warning' : 'outline-warning'} size="sm" onClick={() => setMilkTypeFilter('BUF')}><FontAwesomeIcon icon={faHippo} className="me-1" />Buffalo</Button>
+                                        </ButtonGroup>
+                                        <span className="mx-3 border-start" style={{ height: '24px' }}></span>
+                                        <ButtonGroup>
+                                            <Button active={shift === ''} variant={shift === '' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setShift('')}>All Shifts</Button>
+                                            <Button active={shift === 'MORNING'} variant={shift === 'MORNING' ? 'success' : 'outline-success'} size="sm" onClick={() => setShift('MORNING')}><FontAwesomeIcon icon={faSun} className="me-1" />Morning</Button>
+                                            <Button active={shift === 'EVENING'} variant={shift === 'EVENING' ? 'secondary' : 'outline-secondary'} size="sm" onClick={() => setShift('EVENING')}><FontAwesomeIcon icon={faMoon} className="me-1" />Evening</Button>
+                                        </ButtonGroup>
+                                    </div>
+                                    {/* Card grid for records */}
+                                    <div className="records-card-grid">
+                                        {filteredRecords.map((record, index) => (
+                                            <Card key={index} className={`record-card mb-3 ${record?.MILKTYPE === 'COW' ? 'cow' : record?.MILKTYPE === 'BUF' ? 'buf' : 'other'}`}>
+                                                <div className="record-card-header">
+                                                    <span className="record-date fw-bold">
+                                                        <FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-primary" />
+                                                        {date}
+                                                    </span>
+                                                    <Badge bg={record?.MILKTYPE === 'COW' ? 'info' : 'warning'} text="dark">
+                                                        {record?.MILKTYPE}
+                                                    </Badge>
+                                                </div>
+                                                <Card.Body>
+                                                    <div className="d-flex flex-wrap gap-2 mb-2">
+                                                        <span className="record-shift badge bg-light text-dark"><FontAwesomeIcon icon={faClock} className="record-value-icon" />{record?.SHIFT}</span>
+                                                        <span className="record-fat badge bg-primary-subtle text-primary">Fat: {record?.FAT?.toFixed(1)}</span>
+                                                        <span className="record-snf badge bg-success-subtle text-success">SNF: {record?.SNF?.toFixed(1)}</span>
+                                                        <span className="record-clr badge bg-info-subtle text-info">CLR: {record?.CLR?.toFixed(1)}</span>
+                                                    </div>
+                                                    <div className="d-flex flex-wrap gap-3 mb-2">
+                                                        <span className="record-qty"><strong>Qty:</strong> {record?.QTY?.toFixed(2)} L</span>
+                                                        <span className="record-rate"><strong>Rate:</strong> ₹{record?.RATE?.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="d-flex flex-wrap gap-3 mb-2">
+                                                        <span className="record-amount"><strong>Amount:</strong> ₹{record?.AMOUNT?.toFixed(2) || 0}</span>
+                                                        <span className="record-incentive"><strong>Incentive:</strong> ₹{record?.INCENTIVEAMOUNT?.toFixed(2) || 0}</span>
+                                                        <span className="record-total"><strong>Grand Total:</strong> <span className="record-total">₹{record?.TOTAL?.toFixed(2)}</span></span>
+                                                    </div>
+                                                </Card.Body>
+                                            </Card>
+                                        ))}
+                                    </div>
                                 </>
                             ) : (
                                 <div className="text-center py-5">No records found for the selected criteria.</div>
@@ -448,6 +455,7 @@ const DeviceRecords = () => {
                                             <th>Total Records</th>
                                             <th>Avg Fat</th>
                                             <th>Avg SNF</th>
+                                            <th>Avg CLR</th>
                                             <th>Total Qty (L)</th>
                                             <th>Avg Rate</th>
                                             <th>Total Amount</th>
@@ -462,6 +470,7 @@ const DeviceRecords = () => {
                                                 <td>{total?.totalRecords}</td>
                                                 <td>{total?.averageFat}</td>
                                                 <td>{total?.averageSNF}</td>
+                                                <td>{total?.averageCLR}</td>
                                                 <td>{total?.totalQuantity.toFixed(2)} L</td>
                                                 <td>₹{total?.averageRate}</td>
                                                 <td>₹{total?.totalAmount.toFixed(2)}</td>
