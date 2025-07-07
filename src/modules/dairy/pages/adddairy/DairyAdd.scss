@@ -1,6 +1,6 @@
 // Modern Dairy Add Page Styles
 .dairy-add-page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
   min-height: 100vh;
   padding: 20px 0;
   position: relative;
@@ -217,6 +217,25 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
+    }
+
+    .dairy-form-card label, .dairy-form-card .form-label, .dairy-form-card .form-label-modern {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .dairy-form-card input,
+    .dairy-form-card textarea,
+    .dairy-form-card .form-control {
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 14px 16px;
+    }
+
+    .dairy-form-card input[name="dairyCode"] {
+      width: auto !important;
+      min-width: 60px;
+      display: inline-block;
     }
   }
 

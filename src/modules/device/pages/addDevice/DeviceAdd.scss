@@ -1,6 +1,6 @@
 // Modern Device Add Page Styles
 .device-add-page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
   min-height: 100vh;
   padding: 20px 0;
 
@@ -277,5 +277,23 @@
     &:hover {
       background: #a8a8a8;
     }
+  }
+
+  .device-form-card label, .device-form-card .form-label, .device-form-card .form-label-modern {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .device-form-card input,
+  .device-form-card textarea,
+  .device-form-card .form-control {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 14px 16px;
+  }
+
+  .device-form-card input[name="deviceIdSuffix"] {
+    width: 120px !important;
+    display: inline-block;
   }
 }

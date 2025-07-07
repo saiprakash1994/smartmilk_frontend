@@ -163,8 +163,13 @@ const DairyAdd = () => {
 
             navigate("/dairy");
         } catch (err) {
-            const message = err?.data?.error || "Failed to save dairy.";
-            errorToast(message);
+            const message = err?.data?.error || err?.data?.message || "Failed to save dairy.";
+            const msg = typeof message === 'string' ? message.toLowerCase() : '';
+            if (msg.includes('email') && (msg.includes('exist') || msg.includes('in use'))) {
+                errorToast('This email is already registered. Please use a different email.');
+            } else {
+                errorToast(message);
+            }
             console.error(err);
         }
     };
@@ -173,27 +178,6 @@ const DairyAdd = () => {
 
     return (
         <div className="dairy-add-page">
-            <div className="d-flex justify-content-between pageTitleSpace">
-                <div className="d-flex align-items-center">
-                    <Button 
-                        variant="outline-secondary" 
-                        size="sm" 
-                        onClick={() => navigate("/dairy")}
-                        className="me-3 back-btn"
-                    >
-                        <FaArrowLeft className="me-2" />
-                        Back
-                    </Button>
-                    <PageTitle name={id ? "Edit Dairy" : "Add New Dairy"} pageItems={0} />
-                </div>
-                {id && (
-                    <Badge bg="info" className="edit-badge">
-                        <FaCheckCircle className="me-2" />
-                        Edit Mode
-                    </Badge>
-                )}
-            </div>
-
             <Container fluid className="dairy-add-container">
                 <Row className="justify-content-center">
                     <Col lg={8} xl={6}>
@@ -370,7 +354,7 @@ const DairyAdd = () => {
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="form-actions">
+                                        <div className="form-actions d-flex justify-content-end">
                                             <Button 
                                                 variant="outline-secondary" 
                                                 onClick={() => navigate("/dairy")} 
@@ -384,7 +368,7 @@ const DairyAdd = () => {
                                                 variant="primary" 
                                                 onClick={onSave} 
                                                 disabled={saving}
-                                                className="save-btn"
+                                                className="save-btn ms-3"
                                             >
                                                 {saving ? (
                                                     <>
