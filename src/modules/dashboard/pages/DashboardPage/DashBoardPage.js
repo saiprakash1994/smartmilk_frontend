@@ -33,25 +33,27 @@ import {
 import { useGetMultipleRecordsQuery } from "../../../records/store/recordEndPoint";
 import "./DashBoardPage.scss";
 import SkeletonHome from "../../../../shared/utils/skeleton/SkeletonHome";
-import { 
-    FaChartBar, 
-    FaChartPie, 
-    FaChartLine, 
-    FaCalendarAlt, 
-    FaClock, 
-    FaDesktop,
-    FaTint,
-    FaServer,
-    FaRupeeSign,
-    FaUsers,
-    FaIndustry,
-    FaArrowUp,
-    FaArrowDown,
-    FaEquals,
-    FaSearch
+import {
+  FaChartBar,
+  FaChartPie,
+  FaChartLine,
+  FaCalendarAlt,
+  FaClock,
+  FaDesktop,
+  FaTint,
+  FaServer,
+  FaRupeeSign,
+  FaUsers,
+  FaIndustry,
+  FaArrowUp,
+  FaArrowDown,
+  FaEquals,
+  FaSearch
 } from "react-icons/fa";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
+import { faDesktop } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const shifts = [
   { value: "", label: "All Shifts", icon: FaClock },
@@ -64,8 +66,8 @@ const DashboardPage = () => {
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
   const userType = userInfo?.role;
 
-  const isAdmin = userType === roles?.ADMIN;
   const isDairy = userType === roles?.DAIRY;
+  const isDevice = userType === roles.DEVICE;
 
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
@@ -75,27 +77,24 @@ const DashboardPage = () => {
     return today?.toISOString()?.slice(0, 10);
   });
   const [selectedShift, setSelectedShift] = useState("");
-  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [selectedDeviceId, setSelectedDeviceId] = useState('');
 
-  const { data: allDevices = [] } = useGetAllDevicesQuery(undefined, {
-    skip: !isAdmin,
-  });
+
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
     skip: !isDairy,
   });
 
   const deviceList = useMemo(() => {
-    if (isAdmin) return allDevices;
     if (isDairy) return dairyDevices;
     return deviceid ? [{ deviceid }] : [];
-  }, [isAdmin, isDairy, allDevices, dairyDevices, deviceid]);
+  }, [isDairy, dairyDevices, deviceid]);
 
   const deviceCodes = useMemo(() => {
-    if (isAdmin || isDairy) {
+    if (isDairy) {
       return selectedDeviceId || deviceList?.map((d) => d?.deviceid)?.join(",");
     }
     return deviceid || "";
-  }, [isAdmin, isDairy, selectedDeviceId, deviceList, deviceid]);
+  }, [isDairy, selectedDeviceId, deviceList, deviceid]);
 
   const formattedDate = useMemo(() => {
     if (!selectedDate) return "";
@@ -149,23 +148,23 @@ const DashboardPage = () => {
 
   const totalQuantity = cowQuantity + buffaloQuantity;
 
-const validMilkTypes = ["COW", "BUF"];
+  const validMilkTypes = ["COW", "BUF"];
 
-const filteredTotals = totals.filter(
-  (item) => validMilkTypes.includes(item?._id?.milkType)
-);
+  const filteredTotals = totals.filter(
+    (item) => validMilkTypes.includes(item?._id?.milkType)
+  );
 
-const totalAmount = filteredTotals.reduce(
-  (sum, item) => sum + Number(item?.totalAmount || 0),
-  0
-);
+  const totalAmount = filteredTotals.reduce(
+    (sum, item) => sum + Number(item?.totalAmount || 0),
+    0
+  );
 
-const totalIncentive = filteredTotals.reduce(
-  (sum, item) => sum + Number(item?.totalIncentive || 0),
-  0
-);
+  const totalIncentive = filteredTotals.reduce(
+    (sum, item) => sum + Number(item?.totalIncentive || 0),
+    0
+  );
 
-const grandTotal = totalAmount + totalIncentive;
+  const grandTotal = totalAmount + totalIncentive;
 
 
   useEffect(() => {
@@ -181,7 +180,7 @@ const grandTotal = totalAmount + totalIncentive;
   const getMilkTypeColor = (milkType) => {
     return milkType === "COW" ? "primary" : "info";
   };
-
+  console.log(deviceCodes, 'sai')
   return (
     <div className="dashboard-page">
       <Container fluid className="dashboard-container">
@@ -218,33 +217,46 @@ const grandTotal = totalAmount + totalIncentive;
                       onChange={e => setSelectedShift(e.target.value)}
                       className="form-select-modern select-shift"
                     >
-                      <option value="">All Shifts</option>
-                      <option value="MORNING">Morning</option>
-                      <option value="EVENING">Evening</option>
-                    </Form.Select>
-                  </InputGroup>
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group controlId="filterDevice">
-                  <Form.Label className="form-label-modern">
-                    <FaDesktop className="me-2" /> Device
-                  </Form.Label>
-                  <InputGroup>
-                    <InputGroup.Text><FaDesktop /></InputGroup.Text>
-                    <Form.Select
-                      value={selectedDeviceId}
-                      onChange={e => setSelectedDeviceId(e.target.value)}
-                      className="form-select-modern select-device"
-                    >
-                      <option value="">All Devices</option>
-                      {deviceList?.map((dev) => (
-                        <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                      {shifts.map(s => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
                       ))}
                     </Form.Select>
                   </InputGroup>
                 </Form.Group>
               </Col>
+              {(isDairy || isDevice) && (
+                <Col md={3}>
+                  {isDairy && (
+                    <Form.Group controlId="filterDevice">
+                      <Form.Label className="form-label-modern">
+                        <FaDesktop className="me-2" /> Device
+                      </Form.Label>
+                      <InputGroup>
+                        <InputGroup.Text><FaDesktop /></InputGroup.Text>
+                        <Form.Select
+                          value={selectedDeviceId}
+                          onChange={e => setSelectedDeviceId(e.target.value)}
+                          className="form-select-modern select-device"
+                        >
+                          <option value="">All Devices</option>
+                          {deviceList?.map((dev) => (
+                            <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                          ))}
+                        </Form.Select>
+                      </InputGroup>
+                    </Form.Group>
+                  )}
+                  {isDevice && (
+                    <Form.Group controlId="deviceCode">
+                      <Form.Label className="form-label-modern">Device Code</Form.Label>
+                      <InputGroup>
+                        <InputGroup.Text><FaDesktop /></InputGroup.Text>
+                        <Form.Control className="form-control-modern select-device" type="text" value={deviceCodes} readOnly />
+                      </InputGroup>
+                    </Form.Group>
+                  )}
+                </Col>
+              )}
               <Col md={3} className="ms-auto d-flex align-items-end justify-content-end">
                 <Button className="w-100 export-btn" variant="primary" onClick={refetch} type="button">
                   <FaSearch /> Search
@@ -346,8 +358,8 @@ const grandTotal = totalAmount + totalIncentive;
                           <h4 className="milk-type-title">{item?._id.milkType} Milk</h4>
                           <p className="milk-type-subtitle">Summary for {formattedDate}</p>
                         </div>
-                        <Badge 
-                          bg={getMilkTypeColor(item?._id.milkType)} 
+                        <Badge
+                          bg={getMilkTypeColor(item?._id.milkType)}
                           className="milk-type-badge"
                         >
                           {item?._id.milkType}
@@ -425,7 +437,7 @@ const grandTotal = totalAmount + totalIncentive;
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="_id.milkType" stroke="#666" />
                         <YAxis stroke="#666" />
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             border: 'none',
@@ -468,7 +480,7 @@ const grandTotal = totalAmount + totalIncentive;
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             border: 'none',

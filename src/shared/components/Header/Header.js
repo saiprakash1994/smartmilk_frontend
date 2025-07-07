@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Header.scss';
 import { faSignOut } from '@fortawesome/free-solid-svg-icons';
 import { ButtonGroup, Dropdown } from 'react-bootstrap';
-import smatrchipLogo from '../../../assets/smatrchipLogo.png';
+import sunimpex from '../../../assets/sunimpexLogo.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { clearUserInfo } from '../../../modules/authentication/store/userInfoSlice';
@@ -35,10 +35,10 @@ const Header = () => {
             <div className="h-100 appNav d-flex justify-content-between w-100">
                 <div className="d-flex appbrand align-items-center">
                     <a href='/'>
-                        <img src={smatrchipLogo} width={80} height={50} alt="Logo" />
+                        <img src={sunimpex} width={80} height={50} alt="Logo" />
 
                     </a>
-                    <p className="brand m-0 px-2">SMARTCHIP TECHNOLOGIES</p>
+                    <p className="brand m-0 px-2">SUN IMPEX</p>
                 </div>
 
                 <div className="d-flex align-items-center">

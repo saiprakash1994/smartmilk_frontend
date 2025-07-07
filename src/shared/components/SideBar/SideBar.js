@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
 import Tooltip from "react-bootstrap/esm/Tooltip";
 import { useCallback, useEffect, useState } from "react";
-import { Admin, Dairy, Device } from "../../utils/appConstants";
+import { Dairy, Device } from "../../utils/appConstants";
 import { UserTypeHook } from "../../hooks/userTypeHook";
 import { roles } from "../../utils/appRoles";
 import { useSelector } from "react-redux";
@@ -22,10 +22,6 @@ const SideBar = () => {
         return location.pathname.includes(path) ? 'module-active' : '';
     }, [location.pathname]);
     useEffect(() => {
-        if (userType === roles.ADMIN) {
-            setSidebarOptions(Admin);
-            return;
-        }
         if (userType === roles.DAIRY) {
             setSidebarOptions(Dairy);
             return;

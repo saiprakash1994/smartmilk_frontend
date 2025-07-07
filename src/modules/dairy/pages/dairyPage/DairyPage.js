@@ -1,29 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { 
-    Card, 
-    Button, 
-    Table, 
-    Badge, 
-    Container, 
-    Row, 
-    Col, 
+import {
+    Card,
+    Button,
+    Table,
+    Badge,
+    Container,
+    Row,
+    Col,
     Form,
     Spinner,
     Alert
 } from "react-bootstrap";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
-import { useDeleteDairyMutation, useGetAllDairysQuery } from "../../store/dairyEndPoint";
+import { useDeleteDairyMutation } from "../../store/dairyEndPoint";
 import { useGetAllDevicesQuery } from "../../../device/store/deviceEndPoint";
 import DairySkeletonRow from "../../../../shared/utils/skeleton/DairySkeletonRow";
-import { 
-    FaPlus, 
-    FaEdit, 
-    FaTrash, 
-    FaSearch, 
-    FaBuilding, 
-    FaEnvelope, 
+import {
+    FaPlus,
+    FaEdit,
+    FaTrash,
+    FaSearch,
+    FaBuilding,
+    FaEnvelope,
     FaUser,
     FaFilter,
     FaSort,
@@ -38,8 +38,9 @@ import './DairyPage.scss';
 const DairyPage = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
-    const { data: dairies = [], isLoading, isError } = useGetAllDairysQuery();
-    const { data: allDevices = [] } = useGetAllDevicesQuery();
+    // Only fetch dairy info for the current user's dairy
+    // Remove all admin-related queries and logic
+    const { data: allDevices = [], isLoading, isError } = useGetAllDevicesQuery();
     const [deleteDairy] = useDeleteDairyMutation();
     const [selectedDairy, setSelectedDairy] = useState("");
 
@@ -68,10 +69,10 @@ const DairyPage = () => {
     }, 0);
 
     // Filter dairies based on search
-    const filteredDairies = dairies.filter(dairy => {
-        const matchesSearch = dairy.dairyCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            dairy.dairyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            dairy.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredDairies = allDevices.filter(device => {
+        const matchesSearch = device.dairyCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            device.dairyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            device.email?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesSearch;
     });
 
@@ -95,7 +96,7 @@ const DairyPage = () => {
                                     <FaIndustry />
                                 </div>
                                 <div className="stats-content">
-                                    <h3 className="stats-value">{dairies.length}</h3>
+                                    <h3 className="stats-value">{allDevices.length}</h3>
                                     <p className="stats-label">Total Dairies</p>
                                 </div>
                             </Card.Body>
@@ -110,7 +111,7 @@ const DairyPage = () => {
                                 </div>
                                 <div className="stats-content">
                                     <h3 className="stats-value">
-                                        {dairies.filter(d => getDeviceCountForDairy(d.dairyCode) > 0).length}
+                                        {allDevices.filter(d => getDeviceCountForDairy(d.dairyCode) > 0).length}
                                     </h3>
                                     <p className="stats-label">Dairies with Devices</p>
                                 </div>
@@ -175,7 +176,7 @@ const DairyPage = () => {
                             <Col md={3}>
                                 <div className="d-flex align-items-end h-100">
                                     <Badge bg="light" text="dark" className="filter-badge">
-                                        {filteredDairies.length} of {dairies.length} dairies
+                                        {filteredDairies.length} of {allDevices.length} dairies
                                     </Badge>
                                 </div>
                             </Col>
@@ -237,21 +238,21 @@ const DairyPage = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredDairies.map((dairy, index) => (
-                                            <tr key={dairy._id} className="dairy-row">
+                                        {filteredDairies.map((device, index) => (
+                                            <tr key={device._id} className="dairy-row">
                                                 <td className="dairy-index">{index + 1}</td>
                                                 <td className="dairy-code">
                                                     <Badge bg="info" className="code-badge">
-                                                        {dairy.dairyCode}
+                                                        {device.dairyCode}
                                                     </Badge>
                                                 </td>
                                                 <td className="dairy-name">
-                                                    <strong>{dairy.dairyName}</strong>
+                                                    <strong>{device.dairyName}</strong>
                                                 </td>
-                                                <td className="dairy-email">{dairy.email}</td>
+                                                <td className="dairy-email">{device.email}</td>
                                                 <td className="dairy-devices">
                                                     <Badge bg="success" className="device-count-badge">
-                                                        {getDeviceCountForDairy(dairy.dairyCode)} devices
+                                                        {getDeviceCountForDairy(device.dairyCode)} devices
                                                     </Badge>
                                                 </td>
                                                 <td className="dairy-actions">
@@ -259,7 +260,7 @@ const DairyPage = () => {
                                                         size="sm"
                                                         variant="outline-primary"
                                                         className="action-btn me-2"
-                                                        onClick={() => navigate(`edit/${dairy.dairyCode}`)}
+                                                        onClick={() => navigate(`edit/${device.dairyCode}`)}
                                                         title="Edit Dairy"
                                                     >
                                                         <FaEdit />
@@ -268,7 +269,7 @@ const DairyPage = () => {
                                                         size="sm"
                                                         variant="outline-danger"
                                                         className="action-btn"
-                                                        onClick={() => handleDelete(dairy.dairyCode)}
+                                                        onClick={() => handleDelete(device.dairyCode)}
                                                         title="Delete Dairy"
                                                     >
                                                         <FaTrash />

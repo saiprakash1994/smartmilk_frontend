@@ -25,11 +25,10 @@ import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
     useGetDeviceByCodeQuery,
-    useGetAllDevicesQuery,
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetCumulativeReportQuery, useGetDatewiseDetailedReportQuery, useLazyGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
+import { useGetDatewiseDetailedReportQuery, useLazyGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
@@ -63,16 +62,13 @@ const DatewiseDetailedRecords = () => {
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
     const userType = UserTypeHook();
 
-    const isAdmin = userType === roles.ADMIN;
     const isDairy = userType === roles.DAIRY;
     const isDevice = userType === roles.DEVICE;
 
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    // Queries for Admin and Dairy
-    const { data: allDevices = [], isLoading: isAdminLoading } =
-        useGetAllDevicesQuery(undefined, { skip: !isAdmin });
+    // Queries for Dairy
     const { data: dairyDevices = [], isLoading: isDairyLoading } =
         useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
 
@@ -80,7 +76,7 @@ const DatewiseDetailedRecords = () => {
     const { data: deviceData, isLoading: isDeviceLoading } =
         useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
 
-    const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
+    const deviceList = isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
@@ -217,10 +213,10 @@ const DatewiseDetailedRecords = () => {
                         SNF: stat?.SNF,
                         CLR: stat?.CLR,
                         Rate: stat?.RATE,
-                        Quantity: stat?.QTY,                    
+                        Quantity: stat?.QTY,
                         TotalAmount: stat?.TOTALAMOUNT,
                         IncentiveAmount: stat?.INCENTIVEAMOUNT,
-                        GrandTotal:(stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
+                        GrandTotal: (stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
                     }));
 
                 combinedCSV += "Member Records:\n";
@@ -345,7 +341,7 @@ const DatewiseDetailedRecords = () => {
 
                 autoTable(doc, {
                     head: [[
-                        "Code", "Milk Type", "FAT", "SNF", "CLR","Rate", "Qty", "Total","Incentive", "Grand Total"
+                        "Code", "Milk Type", "FAT", "SNF", "CLR", "Rate", "Qty", "Total", "Incentive", "Grand Total"
                     ]],
                     body: memberTable,
                     startY: currentY,
@@ -400,10 +396,8 @@ const DatewiseDetailedRecords = () => {
                 {/* <PageTitle name="DATEWISE DETAILED RECORDS" pageItems={0} /> */}
                 <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
                     <FilterSection
-                        isAdmin={isAdmin}
                         isDairy={isDairy}
                         isDevice={isDevice}
-                        isAdminLoading={isAdminLoading}
                         isDairyLoading={isDairyLoading}
                         isDeviceLoading={isDeviceLoading}
                         deviceList={deviceList}
@@ -428,14 +422,14 @@ const DatewiseDetailedRecords = () => {
                 {totalCount > 0 && (
                     <div className=" mb-3">
                         {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
-                            <ExportButtonsSection
-                                handleExportCSV={handleExportCSV}
-                                handleExportPDF={handleExportPDF}
-                                isFetching={isFetching}
-                                isExporting={isExporting}
-                            />
+                        <ExportButtonsSection
+                            handleExportCSV={handleExportCSV}
+                            handleExportPDF={handleExportPDF}
+                            isFetching={isFetching}
+                            isExporting={isExporting}
+                        />
                         {/* </Card> */}
-                       
+
                     </div>
                 )}
                 {!searchParams ? (
@@ -462,8 +456,8 @@ const DatewiseDetailedRecords = () => {
                     </Card>
                 ) : (
                     records.map((record, groupIdx) => (
-                        <Card key={`${record.date}-${record.shift}`} className="mb-4" style={{ padding:20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
-                             <div className="table-responsive">
+                        <Card key={`${record.date}-${record.shift}`} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                            <div className="table-responsive">
                                 <Table className="records-table" hover responsive>
                                     <tbody>
                                         <tr className="table-group-header">
@@ -478,16 +472,16 @@ const DatewiseDetailedRecords = () => {
                                         <tr>
                                             {/* <th>#</th> */}
                                             <th>Code</th>
-                                            <th>Milk Type</th>                                                                                    
+                                            <th>Milk Type</th>
                                             <th>Fat</th>
-                                            <th>SNF</th>    
+                                            <th>SNF</th>
                                             <th>CLR</th>
                                             <th>Qty</th>
                                             <th>Rate</th>
                                             <th>Amount</th>
                                             <th>Incentive</th>
                                             <th>Total</th>
-                                            
+
                                         </tr>
                                         {record?.records?.length > 0 ? (
                                             [...record.records]
@@ -514,7 +508,7 @@ const DatewiseDetailedRecords = () => {
                                         {record?.milktypeStats?.length > 0 && (
                                             <tr>
                                                 <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
-                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats}  showHeader={true}/>
+                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={true} />
                                                 </td>
                                             </tr>
                                         )}
@@ -525,7 +519,7 @@ const DatewiseDetailedRecords = () => {
                     ))
                 )}
                 {totalCount > 0 && (
-                  
+
                     <PaginationSection
                         totalCount={totalCount}
                         recordsPerPage={recordsPerPage}
@@ -533,7 +527,7 @@ const DatewiseDetailedRecords = () => {
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
                     />
-                    
+
                 )}
             </div>
         </div>

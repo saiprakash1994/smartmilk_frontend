@@ -58,27 +58,11 @@ export default function AppRoutes() {
                 </Suspense>
               }></Route>
           </Route>
-          <Route path="/dairy"
-            element={
-              <Suspense>
-                < DairyLayout />
-              </Suspense>
-            }>
-            <Route path=""
-              element={
-                <Suspense>
-                  < DairyPage />
-                </Suspense>
-              }></Route>
-            <Route path="dairyadd"
-              element={
-                <Suspense>
-                  < DairyAdd />
-                </Suspense>
-              }></Route>
-            <Route path="edit/:dairyCode" element={<DairyAdd />} />
 
-          </Route>
+
+
+          <Route path="dairy/edit/:dairyCode" element={<DairyAdd />} />
+
           <Route path="/device"
             element={
               <Suspense>
@@ -157,6 +141,6 @@ export default function AppRoutes() {
 
         </Route>
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter >
   )
 }

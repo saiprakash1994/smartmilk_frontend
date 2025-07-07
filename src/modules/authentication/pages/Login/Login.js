@@ -10,7 +10,8 @@ import { adduserInfo } from "../../store/userInfoSlice";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import { AppConstants, setItemToLocalStorage } from "../../../../shared/utils/localStorage";
 import { roles } from "../../../../shared/utils/appRoles";
-import smatrchipLogo from "../../../../assets/smatrchipLogo.png";
+import sunimpexLogo from "../../../../assets/sunimpexLogo.jpg";
+
 import loginImage from "../../../../assets/login-rounded-right.png";
 import "./Login.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -88,7 +89,7 @@ const Login = () => {
             setItemToLocalStorage(AppConstants?.userInfo, userInfo);
 
             setLoginInfo({ email: "", password: "" });
-            
+
             // Smooth redirect after success message
             setTimeout(() => navigate("/"), 1500);
         } catch (err) {
@@ -109,15 +110,15 @@ const Login = () => {
             <div className="login-background">
                 <div className="login-background-overlay"></div>
             </div>
-            
+
             <div className="login-content">
                 <div className="login-card">
                     <div className="login-header">
                         <div className="logo-container">
-                            <img src={smatrchipLogo} alt="SmartChip Logo" className="logo" />
+                            <img src={sunimpexLogo} alt="SmartChip Logo" className="logo" />
                         </div>
                         <h1 className="welcome-text">Welcome Back</h1>
-                        <p className="subtitle">Sign in to your SmartMilk account</p>
+                        <p className="subtitle">Sign in to your Sun Impex account</p>
                     </div>
 
                     <Form onSubmit={handleLogin} className="login-form">
@@ -191,7 +192,7 @@ const Login = () => {
 
                     <div className="login-footer">
                         <p className="footer-text">
-                            Secure login powered by SmartChip Technology
+                            Secure login powered by Sun Impex
                         </p>
                     </div>
                 </div>

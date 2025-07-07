@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
-import { 
-    Button, 
-    Card, 
-    Form, 
-    Spinner, 
-    Container, 
-    Row, 
-    Col, 
+import {
+    Button,
+    Card,
+    Form,
+    Spinner,
+    Container,
+    Row,
+    Col,
     Alert,
     Badge
 } from "react-bootstrap";
@@ -19,13 +19,13 @@ import {
     useEditDairyMutation,
     useGetDairyByIdQuery,
 } from "../../store/dairyEndPoint";
-import { 
-    FaIndustry, 
-    FaBuilding, 
-    FaEnvelope, 
-    FaLock, 
-    FaSave, 
-    FaTimes, 
+import {
+    FaIndustry,
+    FaBuilding,
+    FaEnvelope,
+    FaLock,
+    FaSave,
+    FaTimes,
     FaArrowLeft,
     FaUserShield,
     FaKey,
@@ -161,7 +161,7 @@ const DairyAdd = () => {
                 successToast("Dairy created successfully.");
             }
 
-            navigate("/dairy");
+            navigate("/");
         } catch (err) {
             const message = err?.data?.error || err?.data?.message || "Failed to save dairy.";
             const msg = typeof message === 'string' ? message.toLowerCase() : '';
@@ -355,18 +355,18 @@ const DairyAdd = () => {
 
                                         {/* Action Buttons */}
                                         <div className="form-actions d-flex justify-content-end">
-                                            <Button 
-                                                variant="outline-secondary" 
-                                                onClick={() => navigate("/dairy")} 
+                                            <Button
+                                                variant="outline-secondary"
+                                                onClick={() => navigate("/")}
                                                 disabled={saving}
                                                 className="cancel-btn"
                                             >
                                                 <FaTimes className="me-2" />
                                                 Cancel
                                             </Button>
-                                            <Button 
-                                                variant="primary" 
-                                                onClick={onSave} 
+                                            <Button
+                                                variant="primary"
+                                                onClick={onSave}
                                                 disabled={saving}
                                                 className="save-btn ms-3"
                                             >

@@ -26,7 +26,6 @@ import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
   useGetDeviceByCodeQuery,
-  useGetAllDevicesQuery,
   useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
@@ -60,22 +59,19 @@ const MemberRecords = () => {
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
   const userType = UserTypeHook();
 
-  const isAdmin = userType === roles.ADMIN;
   const isDairy = userType === roles.DAIRY;
   const isDevice = userType === roles.DEVICE;
 
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
 
-  const { data: allDevices = [], isLoading: isAdminLoading } =
-    useGetAllDevicesQuery(undefined, { skip: !isAdmin });
   const { data: dairyDevices = [], isLoading: isDairyLoading } =
     useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
 
   const { data: deviceData, isLoading: isDeviceLoading } =
     useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
 
-  const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
+  const deviceList = isDairy ? dairyDevices : [];
 
   const [deviceCode, setDeviceCode] = useState("");
   const [memberCode, setMemberCode] = useState("");
@@ -283,7 +279,7 @@ const MemberRecords = () => {
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
-          "S.No", "Date", "Shift", "Milk Type", "FAT", "SNF","CLR", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
+          "S.No", "Date", "Shift", "Milk Type", "FAT", "SNF", "CLR", "Qty", "Rate", "Amount", "Incentive", "Grand Total",
         ]],
         body: recordsTable,
         theme: "grid",
@@ -329,234 +325,220 @@ const MemberRecords = () => {
         <PageTitle name="MEMBER RECORDS" pageItems={0} />
       </div> */}
 
-    <div className="device-records-page">
-      <div className="records-container">
-        <Card className="filters-card">
-          <Form className="row g-3 align-items-end">
-            {(isAdmin || isDairy) && (
+      <div className="device-records-page">
+        <div className="records-container">
+          <Card className="filters-card">
+            <Form className="row g-3 align-items-end">
+              {isDevice && (
+                <Form.Group className="col-md-2">
+                  <Form.Label>Device Code</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <Form.Control type="text" value={deviceCode} readOnly />
+                  </InputGroup>
+                </Form.Group>
+              )}
               <Form.Group className="col-md-2">
-                <Form.Label>Device Code</Form.Label>
+                <Form.Label>Member Code</Form.Label>
                 <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
-                  <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
-                    <option value="">Select Device Code</option>
-                    {deviceList?.map((dev) => (
-                      <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                  <InputGroup.Text><FontAwesomeIcon icon={faUser} /></InputGroup.Text>
+                  <Form.Select value={memberCode} onChange={e => setMemberCode(e.target.value)}>
+                    <option value="">Select Member Code</option>
+                    {memberCodes?.map((code, idx) => (
+                      <option key={idx} value={code.CODE}>{`${code.CODE} - ${code.MEMBERNAME}`}</option>
                     ))}
                   </Form.Select>
                 </InputGroup>
               </Form.Group>
-            )}
-            {isDevice && (
               <Form.Group className="col-md-2">
-                <Form.Label>Device Code</Form.Label>
+                <Form.Label>From Date</Form.Label>
                 <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
-                  <Form.Control type="text" value={deviceCode} readOnly />
+                  {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
+                  <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
                 </InputGroup>
               </Form.Group>
-            )}
-            <Form.Group className="col-md-2">
-              <Form.Label>Member Code</Form.Label>
-              <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faUser} /></InputGroup.Text>
-                <Form.Select value={memberCode} onChange={e => setMemberCode(e.target.value)}>
-                  <option value="">Select Member Code</option>
-                  {memberCodes?.map((code, idx) => (
-                    <option key={idx} value={code.CODE}>{`${code.CODE} - ${code.MEMBERNAME}`}</option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="col-md-2">
-              <Form.Label>From Date</Form.Label>
-              <InputGroup>
-                {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
-                <Form.Control type="date" value={fromDate} max={getToday()} onChange={e => setFromDate(e.target.value)} />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="col-md-2">
-              <Form.Label>To Date</Form.Label>
-              <InputGroup>
-                {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
-                <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="col-md-2">
-              <Form.Label>View Mode</Form.Label>
-              <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
-                <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
-                  <option value="ALL">Show All</option>
-                  <option value="RECORDS">Only Records</option>
-                  <option value="TOTALS">Only Totals</option>
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="col-md-2 d-flex align-items-end">
-            <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
-                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
-            </Button>
-        </Form.Group>
-          </Form>
-        </Card>
-         {/* Actions Section: Export */}
-         {totalCount > 0 && (
-                    <div className=" mb-3">
-                        {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
-                            <ExportButtonsSection
-                                handleExportCSV={handleExportCSV}
-                                handleExportPDF={handleExportPDF}
-                                isFetching={isFetching}
-                                isExporting={isExporting}
-                            />
-                        {/* </Card> */}
-                       
-                    </div>
-                )}
-        <Card className="h-100">
-          <Card.Body className="cardbodyCss">
-            {!searchParams ? (
-              <div className="text-center my-5 text-muted">
-                Please apply filters and click <strong>Search</strong> to view
-                records.
-              </div>
-            ) : isFetching ? (
-              <div className="text-center my-5">
-                <Spinner animation="border" variant="primary" />
-              </div>
-            ) : (
-              <>
-                {/* Modern Gradient Header Section */}
-                <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                  style={{
-                    gap: 16,
-                    borderRadius: 12,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: '#fff',
-                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                  }}>
-                  <div style={{minWidth: 120}}>
-                    <div className="fw-semibold" style={{color: '#fff', fontSize: '1.08rem'}}>
-                      Device Code: <span style={{color: '#fff',fontWeight: 700}}>{deviceCode}</span>
-                      <span className="mx-2">|</span>
-                      Member Code: <span style={{color: '#fff', fontWeight: 700}}>{String(memberCode || '').padStart(4, '0')}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-grow-1 text-center" style={{fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1}}>
-                    MEMBERWISE REPORT
-                  </div>
-                  <div className="fw-semibold text-end" style={{minWidth: 220, fontSize: '1.08rem'}}>
-                    From: <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(toDate)}</span>
-                  </div>
+              <Form.Group className="col-md-2">
+                <Form.Label>To Date</Form.Label>
+                <InputGroup>
+                  {/* <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text> */}
+                  <Form.Control type="date" value={toDate} max={getToday()} onChange={e => setToDate(e.target.value)} />
+                </InputGroup>
+              </Form.Group>
+              <Form.Group className="col-md-2">
+                <Form.Label>View Mode</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
+                  <Form.Select value={viewMode} onChange={e => setViewMode(e.target.value)}>
+                    <option value="ALL">Show All</option>
+                    <option value="RECORDS">Only Records</option>
+                    <option value="TOTALS">Only Totals</option>
+                  </Form.Select>
+                </InputGroup>
+              </Form.Group>
+              <Form.Group className="col-md-2 d-flex align-items-end">
+                <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
+                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                </Button>
+              </Form.Group>
+            </Form>
+          </Card>
+          {/* Actions Section: Export */}
+          {totalCount > 0 && (
+            <div className=" mb-3">
+              {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
+              <ExportButtonsSection
+                handleExportCSV={handleExportCSV}
+                handleExportPDF={handleExportPDF}
+                isFetching={isFetching}
+                isExporting={isExporting}
+              />
+              {/* </Card> */}
+
+            </div>
+          )}
+          <Card className="h-100">
+            <Card.Body className="cardbodyCss">
+              {!searchParams ? (
+                <div className="text-center my-5 text-muted">
+                  Please apply filters and click <strong>Search</strong> to view
+                  records.
                 </div>
-                <hr />
-                {viewMode !== "TOTALS" && (
-                  <Card className="records-card mb-4">
-                    <div className="table-responsive">
-                      <Table className="records-table" hover responsive>
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Shift</th>
-                            <th>Milk Type</th>
-                            <th>FAT</th>
-                            <th>SNF</th>
-                            <th>CLR</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Incentive</th>
-                            <th>Grand Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {records.length > 0 ? (
-                            records.map((record, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{record?.SAMPLEDATE}</td>
-                                <td>{record?.SHIFT}</td>
-                                <td>{record?.MILKTYPE}</td>
-                                <td>{record?.FAT?.toFixed(1)}</td>
-                                <td>{record?.SNF?.toFixed(1)}</td>
-                                <td>{record?.CLR?.toFixed(1)}</td>
-                                <td>{record?.QTY?.toFixed(2)}</td>
-                                <td>₹{record?.RATE?.toFixed(2)}</td>
-                                <td>₹{record?.AMOUNT?.toFixed(2) || 0}</td>
-                                <td>₹{record?.INCENTIVEAMOUNT?.toFixed(2) || 0}</td>
-                                <td>₹{record?.TOTAL?.toFixed(2)}</td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="11" className="text-center">No records found</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
-                    </div>
-                    {/* Pagination Controls */}
-                    {totalCount > 0 && (
-                      <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
-                        <div className="d-flex align-items-center gap-2">
-                          <span className="text-muted">Rows per page:</span>
-                          <Form.Select
-                            size="sm"
-                            style={{ width: 'auto' }}
-                            value={recordsPerPage}
-                            onChange={e => {
-                              setRecordsPerPage(Number(e.target.value));
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <option value={5}>5</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                          </Form.Select>
-                        </div>
-                        <div className="flex-grow-1 text-center fw-semibold">
-                          Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
-                        </div>
-                        <div className="d-flex align-items-center gap-2 justify-content-end">
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            className="me-2"
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                          >
-                            Previous
-                          </Button>
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                          >
-                            Next
-                          </Button>
-                        </div>
+              ) : isFetching ? (
+                <div className="text-center my-5">
+                  <Spinner animation="border" variant="primary" />
+                </div>
+              ) : (
+                <>
+                  {/* Modern Gradient Header Section */}
+                  <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
+                    style={{
+                      gap: 16,
+                      borderRadius: 12,
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: '#fff',
+                      boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
+                    }}>
+                    <div style={{ minWidth: 120 }}>
+                      <div className="fw-semibold" style={{ color: '#fff', fontSize: '1.08rem' }}>
+                        Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                        <span className="mx-2">|</span>
+                        Member Code: <span style={{ color: '#fff', fontWeight: 700 }}>{String(memberCode || '').padStart(4, '0')}</span>
                       </div>
-                    )}
-                  </Card>
-                )}
-                {viewMode !== "RECORDS" && (
-                  <Card className="totals-card">
-                    <Card.Body>
-                      <DeviceRecordsTotalsSection filteredTotals={filteredTotals} />
-                    </Card.Body>
-                  </Card>
-                )}
-              </>
-            )}
-          </Card.Body>
-        </Card>
-      </div>
+                    </div>
+
+                    <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                      MEMBERWISE REPORT
+                    </div>
+                    <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
+                      From: <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(toDate)}</span>
+                    </div>
+                  </div>
+                  <hr />
+                  {viewMode !== "TOTALS" && (
+                    <Card className="records-card mb-4">
+                      <div className="table-responsive">
+                        <Table className="records-table" hover responsive>
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Date</th>
+                              <th>Shift</th>
+                              <th>Milk Type</th>
+                              <th>FAT</th>
+                              <th>SNF</th>
+                              <th>CLR</th>
+                              <th>Qty</th>
+                              <th>Rate</th>
+                              <th>Amount</th>
+                              <th>Incentive</th>
+                              <th>Grand Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {records.length > 0 ? (
+                              records.map((record, index) => (
+                                <tr key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>{record?.SAMPLEDATE}</td>
+                                  <td>{record?.SHIFT}</td>
+                                  <td>{record?.MILKTYPE}</td>
+                                  <td>{record?.FAT?.toFixed(1)}</td>
+                                  <td>{record?.SNF?.toFixed(1)}</td>
+                                  <td>{record?.CLR?.toFixed(1)}</td>
+                                  <td>{record?.QTY?.toFixed(2)}</td>
+                                  <td>₹{record?.RATE?.toFixed(2)}</td>
+                                  <td>₹{record?.AMOUNT?.toFixed(2) || 0}</td>
+                                  <td>₹{record?.INCENTIVEAMOUNT?.toFixed(2) || 0}</td>
+                                  <td>₹{record?.TOTAL?.toFixed(2)}</td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan="11" className="text-center">No records found</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      </div>
+                      {/* Pagination Controls */}
+                      {totalCount > 0 && (
+                        <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="text-muted">Rows per page:</span>
+                            <Form.Select
+                              size="sm"
+                              style={{ width: 'auto' }}
+                              value={recordsPerPage}
+                              onChange={e => {
+                                setRecordsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                              }}
+                            >
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={20}>20</option>
+                              <option value={50}>50</option>
+                              <option value={100}>100</option>
+                            </Form.Select>
+                          </div>
+                          <div className="flex-grow-1 text-center fw-semibold">
+                            Page {currentPage} of {Math.max(1, Math.ceil(totalCount / recordsPerPage))}
+                          </div>
+                          <div className="d-flex align-items-center gap-2 justify-content-end">
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              className="me-2"
+                              disabled={currentPage === 1}
+                              onClick={() => setCurrentPage(currentPage - 1)}
+                            >
+                              Previous
+                            </Button>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              disabled={currentPage >= Math.ceil(totalCount / recordsPerPage)}
+                              onClick={() => setCurrentPage(currentPage + 1)}
+                            >
+                              Next
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  )}
+                  {viewMode !== "RECORDS" && (
+                    <Card className="totals-card">
+                      <Card.Body>
+                        <DeviceRecordsTotalsSection filteredTotals={filteredTotals} />
+                      </Card.Body>
+                    </Card>
+                  )}
+                </>
+              )}
+            </Card.Body>
+          </Card>
+        </div>
       </div>
     </>
   );

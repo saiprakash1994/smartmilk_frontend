@@ -21,7 +21,6 @@ import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
     useGetDeviceByCodeQuery,
-    useGetAllDevicesQuery,
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
@@ -47,16 +46,13 @@ const DatewiseSummaryRecords = () => {
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
     const userType = UserTypeHook();
 
-    const isAdmin = userType === roles.ADMIN;
     const isDairy = userType === roles.DAIRY;
     const isDevice = userType === roles.DEVICE;
 
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    // Queries for Admin and Dairy
-    const { data: allDevices = [], isLoading: isAdminLoading } =
-        useGetAllDevicesQuery(undefined, { skip: !isAdmin });
+    // Queries for Dairy
     const { data: dairyDevices = [], isLoading: isDairyLoading } =
         useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
 
@@ -64,7 +60,7 @@ const DatewiseSummaryRecords = () => {
     const { data: deviceData, isLoading: isDeviceLoading } =
         useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
 
-    const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
+    const deviceList = isDairy ? dairyDevices : [];
 
     const [deviceCode, setDeviceCode] = useState("");
     const [fromCode, setFromCode] = useState("");
@@ -279,7 +275,7 @@ const DatewiseSummaryRecords = () => {
             ]));
             autoTable(doc, {
                 head: [[
-                    "Milk Type", "Samples", "Avg FAT", "Avg SNF","Avg CLR", "Avg Rate",
+                    "Milk Type", "Samples", "Avg FAT", "Avg SNF", "Avg CLR", "Avg Rate",
                     "Total Qty", "Total Amount", "Incentive", "Grand Total"
                 ]],
                 body: tableData,
@@ -308,10 +304,8 @@ const DatewiseSummaryRecords = () => {
                 <div className="container" style={{ maxWidth: 1400 }}>
                     <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
                         <FilterSection
-                            isAdmin={isAdmin}
                             isDairy={isDairy}
                             isDevice={isDevice}
-                            isAdminLoading={isAdminLoading}
                             isDairyLoading={isDairyLoading}
                             isDeviceLoading={isDeviceLoading}
                             deviceList={deviceList}
@@ -337,14 +331,14 @@ const DatewiseSummaryRecords = () => {
                     {totalCount > 0 && (
                         <div className="mb-3">
                             {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
-                                <ExportButtonsSection
-                                    handleExportCSV={handleExportCSV}
-                                    handleExportPDF={handleExportPDF}
-                                    isFetching={isFetching}
-                                    isExporting={isExporting}
-                                />
+                            <ExportButtonsSection
+                                handleExportCSV={handleExportCSV}
+                                handleExportPDF={handleExportPDF}
+                                isFetching={isFetching}
+                                isExporting={isExporting}
+                            />
                             {/* </Card> */}
-                         
+
                         </div>
                     )}
                     {!searchParams ? (
@@ -383,11 +377,11 @@ const DatewiseSummaryRecords = () => {
                                                 </div>
                                             </td>
                                         </tr>
-                                      
+
                                         {record?.milktypeStats?.length > 0 && (
-                                            <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : { }}>
+                                            <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : {}}>
                                                 <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
-                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false}/>
+                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false} />
                                                 </td>
                                             </tr>
                                         )}
@@ -405,7 +399,7 @@ const DatewiseSummaryRecords = () => {
                             setCurrentPage={setCurrentPage}
                         />
                     )}
-              
+
                 </div>
             </div>
 

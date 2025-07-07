@@ -13,7 +13,6 @@ import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
   useGetDeviceByCodeQuery,
-  useGetAllDevicesQuery,
   useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
@@ -35,22 +34,17 @@ const AbsentMemberRecords = () => {
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
   const userType = UserTypeHook();
 
-  const isAdmin = userType === roles.ADMIN;
   const isDairy = userType === roles.DAIRY;
   const isDevice = userType === roles.DEVICE;
 
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
 
-  const { data: allDevices = [], isLoading: isAdminLoading } = useGetAllDevicesQuery(undefined, {
-    skip: !isAdmin,
-  });
-
   const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, {
     skip: !isDairy,
   });
 
-  const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];
+  const deviceList = isDairy ? dairyDevices : [];
 
   const [deviceCode, setDeviceCode] = useState("");
   const [date, setDate] = useState(getToday());
@@ -230,11 +224,11 @@ const AbsentMemberRecords = () => {
         <div className="container" style={{ maxWidth: 1400 }}>
           <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
             <Form className="row g-3 align-items-end">
-              {(isAdmin || isDairy) && (
+              {isDairy && (
                 <Form.Group className="col-md-3">
                   <Form.Label className="form-label-modern">Device Code</Form.Label>
                   <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
                     <Form.Select className="form-select-modern select-device" value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
                       <option value="">Select Device</option>
                       {deviceList?.map((dev) => (
@@ -248,7 +242,7 @@ const AbsentMemberRecords = () => {
                 <Form.Group className="col-md-3">
                   <Form.Label className="form-label-modern">Device Code</Form.Label>
                   <InputGroup>
-                  <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
                     <Form.Control className="form-control-modern select-device" type="text" value={deviceCode} readOnly />
                   </InputGroup>
                 </Form.Group>
@@ -256,7 +250,7 @@ const AbsentMemberRecords = () => {
               <Form.Group className="col-md-2">
                 <Form.Label className="form-label-modern">Shift</Form.Label>
                 <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faClock} /></InputGroup.Text>
+                  <InputGroup.Text><FontAwesomeIcon icon={faClock} /></InputGroup.Text>
                   <Form.Select className="form-select-modern" value={shift} onChange={e => setShift(e.target.value)}>
                     <option value="MORNING">MORNING</option>
                     <option value="EVENING">EVENING</option>
@@ -272,7 +266,7 @@ const AbsentMemberRecords = () => {
               <Form.Group className="col-md-2">
                 <Form.Label className="form-label-modern">View Mode</Form.Label>
                 <InputGroup>
-                <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
+                  <InputGroup.Text><FontAwesomeIcon icon={faEye} /></InputGroup.Text>
                   <Form.Select className="form-select-modern" value={viewMode} onChange={e => setViewMode(e.target.value)}>
                     <option value="ALL">Show All</option>
                     <option value="TOTALS">Summary</option>
@@ -288,19 +282,19 @@ const AbsentMemberRecords = () => {
             </Form>
           </Card>
           {/* Actions Section: Export */}
-         {totalCount > 0 && (
-                    <div className=" mb-3">
-                        {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
-                            <ExportButtonsSection
-                                handleExportCSV={handleExportCSV}
-                                handleExportPDF={handleExportPDF}
-                                isFetching={isFetching}
-                                isExporting={isExporting}
-                            />
-                        {/* </Card> */}
-                       
-                    </div>
-                )}
+          {totalCount > 0 && (
+            <div className=" mb-3">
+              {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
+              <ExportButtonsSection
+                handleExportCSV={handleExportCSV}
+                handleExportPDF={handleExportPDF}
+                isFetching={isFetching}
+                isExporting={isExporting}
+              />
+              {/* </Card> */}
+
+            </div>
+          )}
           <Card.Body className="cardbodyCss">
             {!searchParams ? (
               <div className="text-center my-5 text-muted">
@@ -317,29 +311,29 @@ const AbsentMemberRecords = () => {
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
                     <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                        style={{
-                            gap: 16,
-                            borderRadius: 12,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: '#fff',
-                            boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                        }}>
-                        <div className="fw-semibold" style={{minWidth: 120, fontSize: '1.08rem'}}>
-                            Device Code: <span style={{color: '#fff', fontWeight: 700}}>{deviceCode}</span>
-                        </div>
-                        <div className="flex-grow-1 text-center" style={{fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1}}>
-                            ABSENT MEMBERS REPORT
-                        </div>
-                        <div className="fw-semibold text-end" style={{minWidth: 220, fontSize: '1.08rem'}}>
-                            Date: <span style={{color: '#fff', fontWeight: 700}}>{formatDateDMY(date)}</span>
-                            <span className="mx-2">|</span>
-                            Shift: <span style={{color: '#fff', fontWeight: 700}}>{shift}</span>
-                        </div>
+                      style={{
+                        gap: 16,
+                        borderRadius: 12,
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: '#fff',
+                        boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
+                      }}>
+                      <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
+                        Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                      </div>
+                      <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                        ABSENT MEMBERS REPORT
+                      </div>
+                      <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
+                        Date: <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(date)}</span>
+                        <span className="mx-2">|</span>
+                        Shift: <span style={{ color: '#fff', fontWeight: 700 }}>{shift}</span>
+                      </div>
                     </div>
                     <div className="table-responsive">
                       <Table className="records-table" hover responsive>
                         <thead>
-                       
+
                           <tr>
                             <th>#</th>
                             <th>CODE</th>

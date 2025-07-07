@@ -10,15 +10,14 @@ import {
   useGetDeviceByCodeQuery,
   useGetDeviceByIdQuery,
   useEditDeviceMutation,
-  useGetAllDevicesQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { 
-  FaServer, 
-  FaCog, 
-  FaCalculator, 
-  FaShieldAlt, 
-  FaSync, 
+import {
+  FaServer,
+  FaCog,
+  FaCalculator,
+  FaShieldAlt,
+  FaSync,
   FaLock,
   FaTint,
   FaWeightHanging,
@@ -39,7 +38,6 @@ const SettingsPage = () => {
   const location = useLocation();
   const isDairy = userType === roles.DAIRY;
   const isDevice = userType === roles.DEVICE;
-  const isAdmin = userType === roles.ADMIN;
   const navigate = useNavigate();
   const deviceid = userInfo?.deviceid;
   const dairyCode = userInfo?.dairyCode;
@@ -56,22 +54,11 @@ const SettingsPage = () => {
   const [settings, setSettings] = useState({});
 
   const idToFetch = isDevice ? deviceid : selectedDeviceId;
-  console.log(deviceid);
-  const { data: allDevices = [] } = useGetAllDevicesQuery(undefined, {
-    skip: !isAdmin,
-  });
-  console.log(allDevices);
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
     skip: !isDairy,
   });
 
-  const deviceList = isAdmin ? allDevices : dairyDevices;
-  const dairyCodeList = Array.from(
-    new Set(allDevices?.map((d) => d.deviceid?.substring(0, 3))) || []
-  );
-  const filteredDevices = allDevices?.filter((dev) =>
-    dev.deviceid?.startsWith(selectedDairyCode)
-  );
+  const deviceList = isDairy ? dairyDevices : [];
 
   const {
     data: deviceData,
@@ -104,14 +91,14 @@ const SettingsPage = () => {
           server.analyzer === "U"
             ? "EKO Ultra"
             : server.analyzer === "P"
-            ? "Ultra Pro"
-            : server.analyzer === "L"
-            ? "Lacto Scan"
-            : server.analyzer === "K"
-            ? "Ksheera"
-            : server.analyzer === "E"
-            ? "Essae"
-            : "Milk Tester",
+              ? "Ultra Pro"
+              : server.analyzer === "L"
+                ? "Lacto Scan"
+                : server.analyzer === "K"
+                  ? "Ksheera"
+                  : server.analyzer === "E"
+                    ? "Essae"
+                    : "Milk Tester",
         useCowSnf: server.useCowSnf === "Y",
         useBufSnf: server.useBufSnf === "Y",
         highFatAccept: server.highFatAccept === "Y",
@@ -178,14 +165,14 @@ const SettingsPage = () => {
           settings.analyzer === "EKO Ultra"
             ? "U"
             : settings.analyzer === "Ultra Pro"
-            ? "P"
-            : settings.analyzer === "Lacto Scan"
-            ? "L"
-            : settings.analyzer === "Ksheera"
-            ? "K"
-            : settings.analyzer === "Essae"
-            ? "E"
-            : "M",
+              ? "P"
+              : settings.analyzer === "Lacto Scan"
+                ? "L"
+                : settings.analyzer === "Ksheera"
+                  ? "K"
+                  : settings.analyzer === "Essae"
+                    ? "E"
+                    : "M",
         useCowSnf: settings.useCowSnf ? "Y" : "N",
         useBufSnf: settings.useBufSnf ? "Y" : "N",
         highFatAccept: settings.highFatAccept ? "Y" : "N",
@@ -245,7 +232,7 @@ const SettingsPage = () => {
     <div className="settings-page">
       <Container fluid className="settings-container">
         {/* Device Selection Card - Only show when no device is selected */}
-        {(isAdmin || isDairy) && !selectedDeviceId && (
+        {isDairy && !selectedDeviceId && (
           <Card className="device-selection-card mb-4">
             <Card.Header className="device-selection-header">
               <FaBuilding className="me-2" />
@@ -253,58 +240,29 @@ const SettingsPage = () => {
             </Card.Header>
             <Card.Body>
               <Row>
-                {isAdmin && (
-                  <>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="form-label-modern">
-                          <FaBuilding className="me-2" />
-                          Select Dairy
-                        </Form.Label>
-                        <Form.Select
-                          value={selectedDairyCode}
-                          onChange={(e) => {
-                            setSelectedDairyCode(e.target.value);
-                            setSelectedDeviceId("");
-                          }}
-                          className="form-select-modern"
-                        >
-                          <option value="">-- Select Dairy --</option>
-                          {dairyCodeList.map((code) => (
-                            <option key={code} value={code}>
-                              {code}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="form-label-modern">
+                      <FaBuilding className="me-2" />
+                      Select Dairy
+                    </Form.Label>
+                    <Form.Select
+                      value={selectedDairyCode}
+                      onChange={(e) => {
+                        setSelectedDairyCode(e.target.value);
+                        setSelectedDeviceId("");
+                      }}
+                      className="form-select-modern"
+                    >
+                      <option value="">-- Select Dairy --</option>
+                      {dairyCode && (
+                        <option value={dairyCode}>{dairyCode}</option>
+                      )}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
 
-                    {selectedDairyCode && (
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label className="form-label-modern">
-                            <FaDesktop className="me-2" />
-                            Select Device
-                          </Form.Label>
-                          <Form.Select
-                            value={selectedDeviceId}
-                            onChange={(e) => setSelectedDeviceId(e.target.value)}
-                            className="form-select-modern"
-                          >
-                            <option value="">-- Select Device --</option>
-                            {filteredDevices?.map((dev) => (
-                              <option key={dev.deviceid} value={dev.deviceid}>
-                                {dev.deviceid}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </Form.Group>
-                      </Col>
-                    )}
-                  </>
-                )}
-
-                {isDairy && (
+                {selectedDairyCode && (
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label className="form-label-modern">
@@ -364,7 +322,7 @@ const SettingsPage = () => {
                       {selectedDeviceId}
                     </Badge>
                   )}
-                  {(isAdmin || isDairy) && selectedDeviceId && (
+                  {selectedDeviceId && (
                     <Button
                       variant="outline-secondary"
                       size="sm"
@@ -421,7 +379,7 @@ const SettingsPage = () => {
                       </Nav.Item>
                     </Nav>
                   </Col>
-                  
+
                   <Col md={9} className="settings-content">
                     <Tab.Content className="settings-tab-content">
                       {/* General Settings Tab */}
@@ -553,18 +511,18 @@ const SettingsPage = () => {
                                 description="Accept milk with low fat content"
                               />
                             </Col>
-                           
+
                           </Row>
                           <Row>
-                          <Col md={6}>
-                            <SwitchControl
-                            label="Mixed Milk"
-                            checked={settings.mixedMilk}
-                            onChange={(e) => handleChange("mixedMilk", e.target.checked)}
-                            icon={FaLayerGroup}
-                            description="Allow processing of mixed milk types"
-                          />
-                          </Col>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Mixed Milk"
+                                checked={settings.mixedMilk}
+                                onChange={(e) => handleChange("mixedMilk", e.target.checked)}
+                                icon={FaLayerGroup}
+                                description="Allow processing of mixed milk types"
+                              />
+                            </Col>
                           </Row>
                         </div>
                       </Tab.Pane>
@@ -638,7 +596,7 @@ const SettingsPage = () => {
                             icon={FaCalculator}
                             description="Enable or disable commission calculations"
                           />
-                          
+
                           <Row>
                             <Col md={6}>
                               <Form.Group className="mb-3">
@@ -693,7 +651,7 @@ const SettingsPage = () => {
                               ))}
                             </Row>
                           </div>
-                          
+
                           {!settings.commissionType && (
                             <div className="commission-disabled-message">
                               <div className="alert alert-info" role="alert">
@@ -740,7 +698,7 @@ const SettingsPage = () => {
                     Save Configuration
                   </h6>
                   <p className="save-settings-description">
-                    {areSettingsEqual(settings, originalSettings) 
+                    {areSettingsEqual(settings, originalSettings)
                       ? "No changes detected. Settings are up to date."
                       : "You have unsaved changes. Click save to apply your configuration."
                     }

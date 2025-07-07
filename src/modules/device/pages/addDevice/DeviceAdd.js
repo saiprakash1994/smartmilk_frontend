@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-    Button, 
-    Form, 
-    Card, 
-    Spinner, 
-    Container, 
-    Row, 
-    Col, 
+import {
+    Button,
+    Form,
+    Card,
+    Spinner,
+    Container,
+    Row,
+    Col,
     Alert,
     Badge
 } from "react-bootstrap";
@@ -18,20 +18,18 @@ import {
     useCreateDeviceMutation,
     useEditDeviceMutation,
     useGetDeviceByIdQuery,
-    useGetAllDevicesQuery
 } from "../../store/deviceEndPoint";
 import { successToast, errorToast } from "../../../../shared/utils/appToaster";
 import { addDevice, updateDevice } from "../../store/deviceSlice";
 import { roles } from "../../../../shared/utils/appRoles";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
-import { useGetAllDairysQuery } from "../../../dairy/store/dairyEndPoint";
-import { 
-    FaDesktop, 
-    FaBuilding, 
-    FaEnvelope, 
-    FaLock, 
-    FaSave, 
-    FaTimes, 
+import {
+    FaDesktop,
+    FaBuilding,
+    FaEnvelope,
+    FaLock,
+    FaSave,
+    FaTimes,
     FaPlus,
     FaEdit,
     FaCircle,
@@ -46,11 +44,6 @@ const DeviceAdd = () => {
     const userType = UserTypeHook();
     const initialDairyCode = userInfo?.dairyCode;
 
-    const {
-        data: allDevices = [],
-        isLoading: isAllLoading,
-        isError: isAllError
-    } = useGetAllDairysQuery(undefined, { skip: userType !== roles.ADMIN });
     const [selectedDairyCode, setSelectedDairyCode] = useState(initialDairyCode || "");
 
     const [form, setForm] = useState({
@@ -143,7 +136,7 @@ const DeviceAdd = () => {
                 dispatch(addDevice(res?.device));
                 successToast("Device created successfully");
             }
-            navigate("/device");
+            navigate("/");
         } catch (err) {
             console.error("RTK Error:", err);
             errorToast(err?.data?.error || `Failed to ${id ? "update" : "create"} device`);
@@ -151,7 +144,6 @@ const DeviceAdd = () => {
     };
 
     const saving = creating || updating;
-    const dairyCodes = Array.from(new Set(allDevices.map(dev => dev.dairyCode)));
 
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -184,11 +176,11 @@ const DeviceAdd = () => {
                                 </h5>
                             </Card.Header>
                             <Card.Body className="p-4">
-                                {isAllError && (
+                                {/* {isAllError && (
                                     <Alert variant="danger" className="mb-4">
                                         Error loading dairy data. Please refresh the page.
                                     </Alert>
-                                )}
+                                )} */}
 
                                 <Form onSubmit={submitForm}>
                                     <Row className="g-4">
@@ -199,27 +191,12 @@ const DeviceAdd = () => {
                                                     <FaBuilding className="me-2" />
                                                     Dairy Code
                                                 </Form.Label>
-                                                {(userType === roles.ADMIN && !id) ? (
-                                                    <Form.Select
-                                                        value={selectedDairyCode}
-                                                        onChange={(e) => setSelectedDairyCode(e.target.value)}
-                                                        disabled={saving || isAllLoading}
-                                                        className="form-control-modern"
-                                                        isInvalid={!!errors.dairyCode}
-                                                    >
-                                                        <option value="">-- Select Dairy Code --</option>
-                                                        {dairyCodes.map((code) => (
-                                                            <option key={code} value={code}>{code}</option>
-                                                        ))}
-                                                    </Form.Select>
-                                                ) : (
-                                                    <Form.Control 
-                                                        type="text" 
-                                                        value={selectedDairyCode} 
-                                                        readOnly 
-                                                        className="form-control-modern"
-                                                    />
-                                                )}
+                                                <Form.Control
+                                                    type="text"
+                                                    value={selectedDairyCode}
+                                                    readOnly
+                                                    className="form-control-modern"
+                                                />
                                                 {errors.dairyCode && (
                                                     <Form.Control.Feedback type="invalid">
                                                         {errors.dairyCode}
@@ -266,9 +243,9 @@ const DeviceAdd = () => {
                                                     <FaCircle className="me-2" />
                                                     Status
                                                 </Form.Label>
-                                                <Form.Select 
-                                                    name="status" 
-                                                    value={form.status} 
+                                                <Form.Select
+                                                    name="status"
+                                                    value={form.status}
                                                     onChange={handleChange}
                                                     className="form-control-modern"
                                                 >
@@ -389,18 +366,18 @@ const DeviceAdd = () => {
                                     {/* Action Buttons */}
                                     <div className="action-buttons mt-5">
                                         <div className="d-flex justify-content-end gap-3">
-                                            <Button 
-                                                variant="outline-secondary" 
-                                                onClick={() => navigate("/device")} 
+                                            <Button
+                                                variant="outline-secondary"
+                                                onClick={() => navigate("/")}
                                                 disabled={saving}
                                                 className="action-btn"
                                             >
                                                 <FaTimes className="me-2" />
                                                 Cancel
                                             </Button>
-                                            <Button 
-                                                type="submit" 
-                                                variant="primary" 
+                                            <Button
+                                                type="submit"
+                                                variant="primary"
                                                 disabled={saving}
                                                 className="action-btn save-btn"
                                             >
