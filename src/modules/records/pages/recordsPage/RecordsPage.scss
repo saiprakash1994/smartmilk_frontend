@@ -16,3 +16,33 @@
 
     }
 }
+
+.records-tabs-section {
+  background: #f8fafc;
+  color: inherit;
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.06);
+}
+
+#records-tabs .nav {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+#records-tabs .nav-link {
+  background-color: transparent;
+  color: var(--appTheam);
+  transition: all 0.3s ease;
+  border-radius: 0;
+  margin-right: 0;
+}
+
+#records-tabs .nav-link.active {
+  background-color: var(--appTheam);
+  color: var(--appTextColor);
+}

@@ -151,7 +151,7 @@ const FileUploadCard = ({
                             onChange={handleFileChange}
                             ref={fileInputRef}
                             className="file-input"
-                            accept=".csv,.xlsx,.xls,.pdf"
+                            accept=".csv"
                         />
                     </div>
                 </div>

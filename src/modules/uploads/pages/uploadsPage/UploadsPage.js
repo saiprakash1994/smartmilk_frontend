@@ -28,28 +28,28 @@ const UploadsPage = () => {
 
     const uploadCategories = [
         {
-            title: "SNF Tables",
-            description: "Upload SNF (Solid Not Fat) rate tables for different milk types",
+            title: "SNF/CLR Tables",
+            description: "Upload SNF/CLR (Solid Not Fat / Corrected Lactometer Reading) rate tables for different milk types",
             icon: FaChartLine,
             color: "primary",
             items: [
                 {
-                    title: "SNF BUF TABLE",
+                    title: "SNF/CLR BUF TABLE",
                     onUpload: uploadSnfBufTable,
-                    toastMsg: "SNF Buf table uploaded successfully",
+                    toastMsg: "SNF/CLR Buf table uploaded successfully",
                     showDate: true,
                     dateFieldName: "snfBufEffectiveDate",
                     icon: FaTint,
-                    description: "Buffalo milk SNF rates"
+                    description: "Buffalo milk SNF/CLR rates"
                 },
                 {
-                    title: "SNF COW TABLE",
+                    title: "SNF/CLR COW TABLE",
                     onUpload: uploadSnfCowTable,
-                    toastMsg: "SNF Cow table uploaded successfully",
+                    toastMsg: "SNF/CLR Cow table uploaded successfully",
                     showDate: true,
                     dateFieldName: "snfCowEffectiveDate",
                     icon: FaServer,
-                    description: "Cow milk SNF rates"
+                    description: "Cow milk SNF/CLR rates"
                 }
             ]
         },

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Spinner from "react-bootstrap/Spinner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "../../store/authenticateEndPoints";
 import { adduserInfo } from "../../store/userInfoSlice";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
@@ -19,6 +19,7 @@ import { faEye, faEyeSlash, faEnvelope, faLock, faSignInAlt } from "@fortawesome
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
     const [login, { isLoading }] = useLoginMutation();
     const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -95,6 +96,13 @@ const Login = () => {
             errorToast("Login failed. Please check your credentials and try again.");
         }
     };
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (userInfo && userInfo.token) {
+            navigate("/", { replace: true });
+        }
+    }, [userInfo, navigate]);
 
     return (
         <div className="modern-login-container">

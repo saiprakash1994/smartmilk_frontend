@@ -7,9 +7,14 @@ import AbsentMemberRecords from "../memberRecords/AbsentMemberRecords";
 import CumilativeRecords from "../memberRecords/CumilativeRecords";
 import DatewiseDetailedRecords from "../memberRecords/DatewiseDetailedRecords";
 import DatewiseSummaryRecords from "../memberRecords/DatewiseSummaryRecords";
+import { FaTable, FaBuilding, FaDesktop } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useGetAllDairysQuery } from "../../../dairy/store/dairyEndPoint";
+import { useGetAllDevicesQuery } from "../../../device/store/deviceEndPoint";
+import { roles } from "../../../../shared/utils/appRoles";
+
 const RecordsPage = () => {
   const [activeTab, setActiveTab] = useState("records");
-
   return (
     <>
       <Tabs

@@ -11,7 +11,9 @@ import {
     Col, 
     Form,
     Spinner,
-    Alert
+    Alert,
+    OverlayTrigger,
+    Tooltip
 } from "react-bootstrap";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
@@ -34,7 +36,10 @@ import {
     FaEye,
     FaCog,
     FaBuilding,
-    FaIndustry
+    FaIndustry,
+    FaRegClock,
+    FaMapMarkerAlt,
+    FaQuestionCircle
 } from "react-icons/fa";
 import './DevicePage.scss';
 
@@ -340,8 +345,8 @@ const DevicePage = () => {
                                     Error loading devices. Please try again.
                                 </Alert>
                             ) : (userType === roles.ADMIN ? adminFilteredDevices.length === 0 : filteredDevices.length === 0) ? (
-                                <div className="no-data-section">
-                                    <FaDesktop className="no-data-icon" />
+                                <div className="no-data-section modern-empty-state">
+                                    <FaQuestionCircle className="no-data-icon" size={48} />
                                     <h5>No Devices Found</h5>
                                     <p>No devices match your current filters.</p>
                                     <Button variant="primary" onClick={() => {
@@ -355,18 +360,18 @@ const DevicePage = () => {
                                 <Row className="g-4">
                                     {(userType === roles.ADMIN ? adminFilteredDevices : filteredDevices).map((device, index) => (
                                         <Col key={device._id} lg={3} md={6} sm={12}>
-                                            <Card className="device-card advanced">
-                                                <div className="device-card-status-bar">
+                                            <Card className={`device-card advanced modern-hover status-${device.status || 'unknown'}`}>
+                                                {/* Enhanced Status Bar */}
+                                                <div className={`device-card-status-bar status-${device.status || 'unknown'}`}>
                                                     <div className="status-indicator">
                                                         {getStatusIcon(device.status)}
                                                     </div>
                                                 </div>
-                                                
                                                 <Card.Body className="p-4">
                                                     <div className="device-card-header">
                                                         <div className="device-icon-container">
-                                                            <div className="device-icon">
-                                                                <FaDesktop />
+                                                            <div className="device-icon device-image">
+                                                                <FaDesktop size={32} />
                                                             </div>
                                                             <div className="device-info">
                                                                 <h6 className="device-name">{device.deviceid}</h6>
@@ -382,7 +387,6 @@ const DevicePage = () => {
                                                             {getStatusBadge(device.status)}
                                                         </div>
                                                     </div>
-                                                    
                                                     <div className="device-card-content">
                                                         <div className="device-details">
                                                             <div className="detail-item">
@@ -392,49 +396,69 @@ const DevicePage = () => {
                                                                     <span className="detail-value">{device.email}</span>
                                                                 </div>
                                                             </div>
+                                                            {/* Example: Last Active and Location (if available) */}
+                                                            {device.lastActive && (
+                                                                <div className="detail-item">
+                                                                    <FaRegClock className="detail-icon" />
+                                                                    <div className="detail-content">
+                                                                        <span className="detail-label">Last Active</span>
+                                                                        <span className="detail-value">{device.lastActive}</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {device.location && (
+                                                                <div className="detail-item">
+                                                                    <FaMapMarkerAlt className="detail-icon" />
+                                                                    <div className="detail-content">
+                                                                        <span className="detail-label">Location</span>
+                                                                        <span className="detail-value">{device.location}</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    
                                                     <div className="device-card-footer">
-                                                        <div className="device-actions">
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-primary"
-                                                                className="action-btn primary"
-                                                                onClick={() => navigate(`edit/${device.deviceid}`)}
-                                                                title="Edit Device"
-                                                            >
-                                                                <FaEdit />
-                                                                <span>Edit</span>
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-info"
-                                                                className="action-btn secondary"
-                                                                onClick={() => {
-                                                                    // Navigate to settings page with device pre-selected
-                                                                    navigate('/settings', { 
-                                                                        state: { 
-                                                                            selectedDeviceId: device.deviceid,
-                                                                            selectedDairyCode: device.dairyCode?.substring(0, 3) || ''
-                                                                        }
-                                                                    });
-                                                                }}
-                                                                title="Device Settings"
-                                                            >
-                                                                <FaCog />
-                                                                <span>Settings</span>
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-danger"
-                                                                className="action-btn danger"
-                                                                onClick={() => handleDelete(device.deviceid)}
-                                                                title="Delete Device"
-                                                            >
-                                                                <FaTrash />
-                                                                <span>Delete</span>
-                                                            </Button>
+                                                        <div className="device-actions btn-group">
+                                                            <OverlayTrigger placement="top" overlay={<Tooltip>Edit Device</Tooltip>}>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline-primary"
+                                                                    className="action-btn primary"
+                                                                    onClick={() => navigate(`edit/${device.deviceid}`)}
+                                                                >
+                                                                    <FaEdit />
+                                                                    <span className="ms-1">Edit</span>
+                                                                </Button>
+                                                            </OverlayTrigger>
+                                                            <OverlayTrigger placement="top" overlay={<Tooltip>Device Settings</Tooltip>}>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline-info"
+                                                                    className="action-btn secondary"
+                                                                    onClick={() => {
+                                                                        navigate('/settings', {
+                                                                            state: {
+                                                                                selectedDeviceId: device.deviceid,
+                                                                                selectedDairyCode: device.dairyCode?.substring(0, 3) || ''
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                >
+                                                                    <FaCog />
+                                                                    <span className="ms-1">Settings</span>
+                                                                </Button>
+                                                            </OverlayTrigger>
+                                                            <OverlayTrigger placement="top" overlay={<Tooltip>Delete Device</Tooltip>}>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline-danger"
+                                                                    className="action-btn danger"
+                                                                    onClick={() => handleDelete(device.deviceid)}
+                                                                >
+                                                                    <FaTrash />
+                                                                    <span className="ms-1">Delete</span>
+                                                                </Button>
+                                                            </OverlayTrigger>
                                                         </div>
                                                     </div>
                                                 </Card.Body>
