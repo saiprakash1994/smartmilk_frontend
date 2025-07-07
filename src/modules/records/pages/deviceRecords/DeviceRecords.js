@@ -30,15 +30,30 @@ const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
 
-// Helper to format date as dd-mm-yyyy
+// Helper to format date as dd/mm/yyyy
 const formatDateDMY = (dateStr) => {
     if (!dateStr) return '';
+    // If already in dd/mm/yyyy, return as is
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+    // mm-dd-yyyy
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        const [month, day, year] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    }
+    // yyyy-mm-dd
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    }
+    // Fallback: try Date parsing
     const d = new Date(dateStr);
-    if (isNaN(d)) return dateStr;
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
+    if (!isNaN(d)) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+    return dateStr;
 };
 
 const DeviceRecords = () => {
@@ -74,7 +89,7 @@ const DeviceRecords = () => {
     const [viewMode, setViewMode] = useState('ALL');
     const [recordsPerPage, setRecordsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const [records, setRecords] = useState([]);
+    const [allRecords, setAllRecords] = useState([]);
     const [totals, setTotals] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [totalCount, setTotalCount] = useState(0);
@@ -85,12 +100,6 @@ const DeviceRecords = () => {
             setDeviceCode(deviceid);
         }
     }, [isDevice, deviceid]);
-
-    useEffect(() => {
-        if (hasSearched) {
-            handleSearch();
-        }
-    }, [currentPage, recordsPerPage]);
 
     const handleSearch = async () => {
         // Copy filter states to applied states
@@ -119,14 +128,15 @@ const DeviceRecords = () => {
                     date: formattedDate,
                     deviceCode: filterDeviceCode,
                     ...(filterShift && { shift: filterShift }),
-                    page: currentPage,
-                    limit: recordsPerPage,
+                    page: 1,
+                    limit: 10000, // Fetch all for client-side pagination
                 },
             }).unwrap();
-            setHasSearched(true);
-            setRecords(result?.records || []);
+            setAllRecords(result?.records || []);
             setTotals(result?.totals || []);
-            setTotalCount(result?.pagination?.totalRecords || 0);
+            setTotalCount(result?.records?.length || 0);
+            setHasSearched(true);
+            setCurrentPage(1); // Reset to first page
             successToast("Data loaded successfully!");
         } catch (err) {
             console.error(err);
@@ -134,29 +144,120 @@ const DeviceRecords = () => {
         }
     };
 
+    const handleShowAll = async () => {
+        const result = await triggerGetRecords({
+            params: {
+                date: date,
+                deviceCode: deviceCode,
+                ...(shift && { shift }),
+                page: 1,
+                limit: 10000,
+            }
+        }).unwrap();
+        setAllRecords(result?.records || []);
+        setTotals(result?.totals || []);
+        setTotalCount(result?.pagination?.totalRecords || 0);
+    };
+
+    // Use allRecords for client-side pagination and sorting
     const filteredRecords = milkTypeFilter === "ALL"
-        ? records
-        : records?.filter(record => record?.MILKTYPE === milkTypeFilter);
+        ? allRecords
+        : allRecords?.filter(record => record?.MILKTYPE === milkTypeFilter);
 
     const filteredTotals = milkTypeFilter === "ALL"
         ? totals?.filter(t => t._id.milkType !== "TOTAL")
         : totals?.filter(t => t._id.milkType === milkTypeFilter);
 
-    const handleExportCSV = () => {
-        if (!totals?.length && !records?.length) {
+    const shiftOrder = { 'MORNING': 1, 'EVENING': 2 };
+    const sortedRecords = [...filteredRecords].sort((a, b) => {
+        // Parse SAMPLEDATE to Date objects, fallback to string compare if invalid
+        const dateA = new Date(a.SAMPLEDATE);
+        const dateB = new Date(b.SAMPLEDATE);
+        if (!isNaN(dateA) && !isNaN(dateB)) {
+            if (dateA < dateB) return -1;
+            if (dateA > dateB) return 1;
+        } else if (a.SAMPLEDATE && b.SAMPLEDATE) {
+            // Fallback to string compare if dates are invalid
+            if (a.SAMPLEDATE < b.SAMPLEDATE) return -1;
+            if (a.SAMPLEDATE > b.SAMPLEDATE) return 1;
+        }
+        // If dates are equal or missing, sort by shift order
+        const shiftA = shiftOrder[a.SHIFT?.toUpperCase()] || 99;
+        const shiftB = shiftOrder[b.SHIFT?.toUpperCase()] || 99;
+        if (shiftA !== shiftB) return shiftA - shiftB;
+        // If still equal, sort by CODE (numeric, fallback to string)
+        const codeA = Number(a.CODE);
+        const codeB = Number(b.CODE);
+        if (!isNaN(codeA) && !isNaN(codeB)) {
+            return codeA - codeB;
+        }
+        return String(a.CODE || '').localeCompare(String(b.CODE || ''));
+    });
+
+    // Client-side pagination
+    const paginatedRecords = sortedRecords.slice(
+        (currentPage - 1) * recordsPerPage,
+        currentPage * recordsPerPage
+    );
+
+    const handleExportCSV = async () => {
+        if (!deviceCode || !date) {
+            alert("Please select device code and date");
+            return;
+        }
+        // Fetch all records for export
+        let allRecords = [];
+        let allTotals = [];
+        try {
+            const formattedDate = date.split("-").reverse().join("/");
+            const result = await triggerGetRecords({
+                params: {
+                    date: formattedDate,
+                    deviceCode,
+                    ...(shift && { shift }),
+                    page: 1,
+                    limit: 10000, // Large number to get all records
+                },
+            }).unwrap();
+            allRecords = result?.records || [];
+            allTotals = result?.totals || [];
+        } catch (err) {
+            alert("Failed to fetch all records for export.");
+            return;
+        }
+        if (!allTotals.length && !allRecords.length) {
             alert("No data available to export.");
             return;
         }
-
+        // Sort allRecords for export
+        const sortedExportRecords = [...allRecords].sort((a, b) => {
+            const dateA = new Date(a.SAMPLEDATE);
+            const dateB = new Date(b.SAMPLEDATE);
+            if (!isNaN(dateA) && !isNaN(dateB)) {
+                if (dateA < dateB) return -1;
+                if (dateA > dateB) return 1;
+            } else if (a.SAMPLEDATE && b.SAMPLEDATE) {
+                if (a.SAMPLEDATE < b.SAMPLEDATE) return -1;
+                if (a.SAMPLEDATE > b.SAMPLEDATE) return 1;
+            }
+            const shiftA = shiftOrder[a.SHIFT?.toUpperCase()] || 99;
+            const shiftB = shiftOrder[b.SHIFT?.toUpperCase()] || 99;
+            if (shiftA !== shiftB) return shiftA - shiftB;
+            const codeA = Number(a.CODE);
+            const codeB = Number(b.CODE);
+            if (!isNaN(codeA) && !isNaN(codeB)) {
+                return codeA - codeB;
+            }
+            return String(a.CODE || '').localeCompare(String(b.CODE || ''));
+        });
         let combinedCSV = "";
-
         // Records Section
-        if (records?.length) {
-            const recordsCSVData = records.map((rec, index) => ({
+        if (sortedExportRecords?.length) {
+            const recordsCSVData = sortedExportRecords.map((rec, index) => ({
                 "S.No": index + 1,
                 "Member Code": String(rec?.CODE).padStart(4, "0"),
                 "Milk Type": rec?.MILKTYPE,
-                "Date": rec?.SAMPLEDATE,
+                "Date": formatDateDMY(rec?.SAMPLEDATE),
                 "Shift": rec?.SHIFT,
                 "FAT": rec?.FAT?.toFixed(1),
                 "SNF": rec?.SNF?.toFixed(1),
@@ -168,18 +269,16 @@ const DeviceRecords = () => {
                 "Total": rec?.TOTAL?.toFixed(2),
                 "Analyzer": rec?.ANALYZERMODE,
                 "Weight Mode": rec?.WEIGHTMODE,
-                "Device ID": rec?.DEVICEID,
-                "Date": rec?.date ? formatDateDMY(rec.date) : ''
+                "Device ID": rec?.DEVICEID
             }));
-
-            combinedCSV += `Milk Records for ${deviceCode} on ${date}\n`;
+            combinedCSV += `Device Code:${deviceCode}\n`;
+            combinedCSV += `Date: ${formatDateDMY(date)}\n`;
             combinedCSV += Papa.unparse(recordsCSVData);
             combinedCSV += "\n\n";
         }
-
-        // Totals Section
-        if (totals?.length) {
-            const totalsCSVData = totals.map(item => ({
+        // Totals Section (no shift sorting needed)
+        if (allTotals?.length) {
+            const totalsCSVData = allTotals.map(item => ({
                 "Milk Type": item._id?.milkType || '',
                 "Total Records": item.totalRecords,
                 "Average FAT": item.averageFat,
@@ -190,16 +289,13 @@ const DeviceRecords = () => {
                 "Total Amount": item.totalAmount?.toFixed(2) || '0.00',
                 "Total Incentive": item.totalIncentive?.toFixed(2) || '0.00',
                 "Grand Total": ((item.totalAmount || 0) + (item.totalIncentive || 0)).toFixed(2),
-                
-               
             }));
-
-            combinedCSV += `Milk Totals for ${deviceCode} on ${date}\n`;
+            combinedCSV += `Milk Totals for ${deviceCode}\n`;
+            combinedCSV += `Date: ${formatDateDMY(date)}\n`;
             combinedCSV += Papa.unparse(totalsCSVData);
         }
-
         const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `Daywise_Report_${deviceCode}_${date}.csv`);
+        saveAs(blob, `Daywise_Report_${deviceCode}_${formatDateDMY(date)}.csv`);
     };
     const handleExportPDF = async () => {
         if (!deviceCode || !date) {
@@ -238,11 +334,11 @@ const DeviceRecords = () => {
 
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
-        doc.text(`Milk Data Report - ${deviceCode}`, 14, currentY);
+        doc.text(`Daywise Report - ${deviceCode}`, 14, currentY);
         currentY += 8;
         doc.setFontSize(11);
         doc.setFont("helvetica", "normal");
-        doc.text(`Date: ${date} | Shift: ${shift || 'ALL'} | Milk Type: ${milkTypeFilter}`, 14, currentY);
+        doc.text(`Date: ${formatDateDMY(date)} | Shift: ${shift || 'ALL'} | Milk Type: ${milkTypeFilter}`, 14, currentY);
         currentY += 8;
 
         // Add total records count
@@ -251,14 +347,36 @@ const DeviceRecords = () => {
         doc.text(`Total Records: ${totalCount}`, 14, currentY);
         currentY += 8;
 
+        // Sort allRecords for export
+        const sortedExportRecords = [...allRecords].sort((a, b) => {
+            const dateA = new Date(a.SAMPLEDATE);
+            const dateB = new Date(b.SAMPLEDATE);
+            if (!isNaN(dateA) && !isNaN(dateB)) {
+                if (dateA < dateB) return -1;
+                if (dateA > dateB) return 1;
+            } else if (a.SAMPLEDATE && b.SAMPLEDATE) {
+                if (a.SAMPLEDATE < b.SAMPLEDATE) return -1;
+                if (a.SAMPLEDATE > b.SAMPLEDATE) return 1;
+            }
+            const shiftA = shiftOrder[a.SHIFT?.toUpperCase()] || 99;
+            const shiftB = shiftOrder[b.SHIFT?.toUpperCase()] || 99;
+            if (shiftA !== shiftB) return shiftA - shiftB;
+            const codeA = Number(a.CODE);
+            const codeB = Number(b.CODE);
+            if (!isNaN(codeA) && !isNaN(codeB)) {
+                return codeA - codeB;
+            }
+            return String(a.CODE || '').localeCompare(String(b.CODE || ''));
+        });
+
         // Records Table
-        if (allRecords?.length) {
-            const recordTable = allRecords.map((rec, i) => [
+        if (sortedExportRecords?.length) {
+            const recordTable = sortedExportRecords.map((rec, i) => [
                 i + 1,
                 String(rec?.CODE).padStart(4, "0"),
                 rec?.MILKTYPE,
-                rec?.SAMPLEDATE,
-                rec?.SHIFT,                
+                formatDateDMY(rec?.SAMPLEDATE),
+                rec?.SHIFT,
                 rec?.FAT?.toFixed(1),
                 rec?.SNF?.toFixed(1),
                 rec?.CLR?.toFixed(1),
@@ -316,7 +434,7 @@ const DeviceRecords = () => {
             });
         }
 
-        doc.save(`Daywise_Report_${deviceCode}_${date}.pdf`);
+        doc.save(`Daywise_Report_${deviceCode}_${formatDateDMY(date)}.pdf`);
     };
 
     const isExporting = false;
@@ -427,8 +545,8 @@ const DeviceRecords = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {filteredRecords?.length > 0 ? (
-                                                filteredRecords?.map((record, index) => (
+                                            {paginatedRecords?.length > 0 ? (
+                                                paginatedRecords?.map((record, index) => (
                                                     <tr key={record._id}>
                                                         <td>{index + 1}</td>
                                                         <td>{String(record?.CODE).padStart(4, "0")}</td>

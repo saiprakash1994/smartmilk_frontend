@@ -30,7 +30,7 @@ import {
   useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
+import { useGetMemberCodewiseReportQuery, useLazyGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
 import { skipToken } from "@reduxjs/toolkit/query";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import '../deviceRecords/DeviceRecords.scss';
@@ -85,6 +85,9 @@ const MemberRecords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useState(null);
+
+  // Add lazy query for export
+  const [triggerGetAllMemberRecords] = useLazyGetMemberCodewiseReportQuery();
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -148,19 +151,36 @@ const MemberRecords = () => {
 
   const filteredTotals = totals.filter(t => t._id?.milkType !== "TOTAL");
 
-  const handleExportCSV = () => {
-    if (!totals?.length && !records?.length) {
-      alert("No data available to export.");
+  const handleExportCSV = async () => {
+    if (!searchParams) {
+      alert("Please search and select filters first.");
       return;
     }
-
+    // Prepare params for full export
+    let allData;
+    try {
+      const result = await triggerGetAllMemberRecords({
+        params: {
+          deviceCode: searchParams.deviceCode,
+          memberCode: searchParams.memberCode,
+          fromDate: searchParams.fromDate,
+          toDate: searchParams.toDate,
+          page: 1,
+          limit: 10000, // Large number to get all data
+        }
+      }).unwrap();
+      allData = result || {};
+    } catch (err) {
+      alert("Failed to fetch all records for export.");
+      return;
+    }
+    const records = allData.records || [];
+    const totals = allData.totals || [];
     let combinedCSV = "";
-
     // Header Info
-    combinedCSV += `Device Code:,${deviceCode}\n`;
-    combinedCSV += `Member Code:,${memberCode}\n`;
-    combinedCSV += `Member Records From,${fromDate},To,${toDate}\n\n`;
-
+    combinedCSV += `Device Code:,${searchParams.deviceCode}\n`;
+    combinedCSV += `Member Code:,${searchParams.memberCode}\n`;
+    combinedCSV += `Member Records From,${searchParams.fromDate},To,${searchParams.toDate}\n\n`;
     // Records
     if (records?.length) {
       const recordsCSVData = records?.map((rec, index) => ({
@@ -181,7 +201,6 @@ const MemberRecords = () => {
       combinedCSV += Papa.unparse(recordsCSVData);
       combinedCSV += "\n\n";
     }
-
     // Totals
     if (totals?.length) {
       const totalsCSVData = totals?.map((total) => ({
@@ -202,36 +221,50 @@ const MemberRecords = () => {
       combinedCSV += "Total Summary:\n";
       combinedCSV += Papa.unparse(totalsCSVData);
     }
-
     const blob = new Blob([combinedCSV], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, `${memberCode}_Memberwise_Report_${getToday()}.csv`);
+    saveAs(blob, `${searchParams.memberCode}_Memberwise_Report_${getToday()}.csv`);
   };
 
-  const handleExportPDF = () => {
-    if (!totals?.length && !records?.length) {
-      alert("No data available to export.");
+  const handleExportPDF = async () => {
+    if (!searchParams) {
+      alert("Please search and select filters first.");
       return;
     }
-
+    // Prepare params for full export
+    let allData;
+    try {
+      const result = await triggerGetAllMemberRecords({
+        params: {
+          deviceCode: searchParams.deviceCode,
+          memberCode: searchParams.memberCode,
+          fromDate: searchParams.fromDate,
+          toDate: searchParams.toDate,
+          page: 1,
+          limit: 10000, // Large number to get all data
+        }
+      }).unwrap();
+      allData = result || {};
+    } catch (err) {
+      alert("Failed to fetch all records for export.");
+      return;
+    }
+    const records = allData.records || [];
+    const totals = allData.totals || [];
     const doc = new jsPDF();
     let currentY = 10;
     const pageWidth = doc.internal.pageSize.getWidth();
-
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     const title = "MEMBERWISE REPORT";
     const titleX = (pageWidth - doc.getTextWidth(title)) / 2;
     doc.text(title, titleX, currentY);
-
     currentY += 10;
     doc.setFontSize(12);
-    doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-    const memberCodeText = `Member Code: ${memberCode}`;
+    doc.text(`Device Code: ${searchParams.deviceCode}`, 14, currentY);
+    const memberCodeText = `Member Code: ${searchParams.memberCode}`;
     doc.text(memberCodeText, pageWidth - 14 - doc.getTextWidth(memberCodeText), currentY);
-
     currentY += 7;
-    doc.text(`Records From: ${fromDate} To: ${toDate}`, 14, currentY);
-
+    doc.text(`Records From: ${formatDateDMY(searchParams.fromDate)} To: ${formatDateDMY(searchParams.toDate)}`, 14, currentY);
     if (records?.length) {
       const recordsTable = records?.map((record, index) => [
         index + 1,
@@ -247,7 +280,6 @@ const MemberRecords = () => {
         record?.INCENTIVEAMOUNT?.toFixed(2) ?? "0.00",
         record?.TOTAL?.toFixed(2) ?? "0.00",
       ]);
-
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
@@ -257,14 +289,11 @@ const MemberRecords = () => {
         theme: "grid",
         styles: { fontSize: 9 },
       });
-
       currentY = doc.lastAutoTable.finalY + 10;
     }
-
     if (totals?.length) {
       doc.setFontSize(12);
       doc.text("Summary:", 14, currentY);
-
       const totalsTable = totals.map((total) => [
         total?._id?.milkType || "",
         total?.totalRecords ?? "",
@@ -280,7 +309,6 @@ const MemberRecords = () => {
           parseFloat(total?.totalIncentive || 0)
         ).toFixed(2),
       ]);
-
       autoTable(doc, {
         startY: currentY + 6,
         head: [[
@@ -292,8 +320,7 @@ const MemberRecords = () => {
         styles: { fontSize: 9 },
       });
     }
-
-    doc.save(`${memberCode}_Memberwise_Report_${getToday()}.pdf`);
+    doc.save(`${searchParams.memberCode}_Memberwise_Report_${getToday()}.pdf`);
   };
 
   return (

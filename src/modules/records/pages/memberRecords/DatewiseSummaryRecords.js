@@ -25,7 +25,7 @@ import {
     useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
+import { useGetDatewiseDetailedReportQuery, useLazyGetDatewiseDetailedReportQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
@@ -156,20 +156,44 @@ const DatewiseSummaryRecords = () => {
     const records = resultData?.data || [];
     const totalCount = resultData?.totalCount;
 
-    const handleExportCSV = () => {
-        if (!records?.length) {
+    const handleExportCSV = async () => {
+        if (!searchParams) {
+            alert("Please search and select filters first.");
+            return;
+        }
+        // Prepare params for full export
+        const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
+        const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
+        let allData;
+        try {
+            const result = await triggerGetAllSummary({
+                params: {
+                    deviceId: searchParams.deviceCode,
+                    fromCode: searchParams.fromCode,
+                    toCode: searchParams.toCode,
+                    fromDate: formattedFromDate,
+                    toDate: formattedToDate,
+                    shift: searchParams.shift,
+                    page: 1,
+                    limit: 10000, // Large number to get all data
+                }
+            }).unwrap();
+            allData = result?.data || [];
+        } catch (err) {
+            alert("Failed to fetch all records for export.");
+            return;
+        }
+        if (!allData.length) {
             alert("No data available to export.");
             return;
         }
-
         let csvData = [];
-
-        records?.forEach((record) => {
+        allData?.forEach((record) => {
             record?.milktypeStats.forEach((stat) => {
                 csvData.push({
                     Date: record?.date,
                     Shift: record?.shift,
-                    "Milk Type": stat?.milktype,
+                    "Milk Type": stat?.milktype === 'ALL' ? '**ALL**' : stat?.milktype,
                     "Samples": stat?.totalSamples,
                     "Avg FAT": stat?.avgFat?.toFixed(1),
                     "Avg SNF": stat?.avgSnf?.toFixed(1),
@@ -181,44 +205,66 @@ const DatewiseSummaryRecords = () => {
                     "Grand Total": stat?.grandTotal?.toFixed(2),
                 });
             });
+            // Add a blank row after each date's group
+            csvData.push({});
         });
-
         const csvContent = Papa.unparse(csvData);
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, `${getToday()}_${deviceCode}_milktype_summary.csv`);
+        saveAs(new Blob([csvContent], { type: "text/csv;charset=utf-8" }), `${getToday()}_${searchParams.deviceCode}_milktype_summary.csv`);
     };
 
+    // Add lazy query for export
+    const [triggerGetAllSummary, { isLoading: isExporting }] = useLazyGetDatewiseDetailedReportQuery();
 
-    const handleExportPDF = () => {
-        if (!records?.length) {
+    const handleExportPDF = async () => {
+        if (!searchParams) {
+            alert("Please search and select filters first.");
+            return;
+        }
+        // Prepare params for full export
+        const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
+        const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
+        let allData;
+        try {
+            const result = await triggerGetAllSummary({
+                params: {
+                    deviceId: searchParams.deviceCode,
+                    fromCode: searchParams.fromCode,
+                    toCode: searchParams.toCode,
+                    fromDate: formattedFromDate,
+                    toDate: formattedToDate,
+                    shift: searchParams.shift,
+                    page: 1,
+                    limit: 10000, // Large number to get all data
+                }
+            }).unwrap();
+            allData = result?.data || [];
+        } catch (err) {
+            alert("Failed to fetch all records for export.");
+            return;
+        }
+        if (!allData.length) {
             alert("No data available to export.");
             return;
         }
-
         const doc = new jsPDF();
         let currentY = 10;
         const pageWidth = doc.internal.pageSize.getWidth();
-
         doc.setFont("helvetica", "bold");
         doc.setFontSize(16);
         const header = "Milk Type Summary Report";
         doc.text(header, (pageWidth - doc.getTextWidth(header)) / 2, currentY);
         currentY += 10;
-
         doc.setFontSize(11);
         doc.setFont("helvetica", "normal");
-        doc.text(`Device Code: ${deviceCode}`, 14, currentY);
+        doc.text(`Device Code: ${searchParams.deviceCode}`, 14, currentY);
         currentY += 6;
-        doc.text(`Date: ${fromDate} to ${toDate}`, 14, currentY);
+        doc.text(`Date: ${searchParams.fromDate} to ${searchParams.toDate}`, 14, currentY);
         currentY += 8;
-
-        records.forEach((record, recordIndex) => {
+        allData.forEach((record, recordIndex) => {
             if (recordIndex > 0) currentY += 6;
-
             doc.setFont("helvetica", "bold");
             doc.text(`Date: ${record.date} | Shift: ${record.shift}`, 14, currentY);
             currentY += 6;
-
             const tableData = record.milktypeStats?.map((stat) => ([
                 stat?.milktype,
                 stat?.totalSamples,
@@ -231,7 +277,6 @@ const DatewiseSummaryRecords = () => {
                 stat?.totalIncentive.toFixed(2),
                 stat?.grandTotal.toFixed(2),
             ]));
-
             autoTable(doc, {
                 head: [[
                     "Milk Type", "Samples", "Avg FAT", "Avg SNF","Avg CLR", "Avg Rate",
@@ -241,16 +286,17 @@ const DatewiseSummaryRecords = () => {
                 startY: currentY,
                 styles: { fontSize: 9 },
                 theme: "grid",
+                didParseCell: function (data) {
+                    // Make the 'ALL' row bold
+                    if (data.section === 'body' && data.row.raw[0] && String(data.row.raw[0]).toUpperCase() === 'ALL') {
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                },
             });
-
             currentY = (doc.lastAutoTable?.finalY || currentY) + 10;
         });
-
-        doc.save(`${getToday()}_${deviceCode}_milktype_summary.pdf`);
+        doc.save(`${getToday()}_${searchParams.deviceCode}_milktype_summary.pdf`);
     };
-
-    // Add isExporting state for compatibility (set to false if not used)
-    const isExporting = false;
 
     return (
         <>
@@ -339,7 +385,7 @@ const DatewiseSummaryRecords = () => {
                                         </tr>
                                       
                                         {record?.milktypeStats?.length > 0 && (
-                                            <tr>
+                                            <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : { }}>
                                                 <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
                                                     <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false}/>
                                                 </td>

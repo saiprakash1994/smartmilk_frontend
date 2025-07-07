@@ -73,8 +73,10 @@ export const {
     useLazyGetAllRecordsQuery,
     useGetMultipleRecordsQuery,
     useGetMemberCodewiseReportQuery,
+    useLazyGetMemberCodewiseReportQuery,
     useGetAbsentMemberReportQuery,
     useGetCumulativeReportQuery,
+    useLazyGetCumulativeReportQuery,
     useGetDatewiseDetailedReportQuery,
     useLazyGetDatewiseDetailedReportQuery,
     useGetDatewiseSummaryReportQuery

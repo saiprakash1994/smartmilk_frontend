@@ -26,7 +26,7 @@ import {
   useGetDeviceByIdQuery,
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
-import { useGetCumulativeReportQuery } from "../../store/recordEndPoint";
+import { useGetCumulativeReportQuery, useLazyGetCumulativeReportQuery } from "../../store/recordEndPoint";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
@@ -74,6 +74,9 @@ const CumilativeRecords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [searchParams, setSearchParams] = useState(null);
+
+  // Add lazy query for export
+  const [triggerGetAllCumulative, { isLoading: isExporting }] = useLazyGetCumulativeReportQuery();
 
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
@@ -135,8 +138,7 @@ const CumilativeRecords = () => {
 
 
 
-const isExporting = false
-  const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
+const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
   const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
   const { data: resultData, isFetching } = useGetCumulativeReportQuery(
@@ -175,20 +177,54 @@ const isExporting = false
     grandTotal = 0,
   } = resultData || {};
 
-  const handleExportCSV = () => {
-    if (totalMembers === 0) {
+  const handleExportCSV = async () => {
+    if (!searchParams) {
+      alert("Please search and select filters first.");
+      return;
+    }
+    // Prepare params for full export
+    const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
+    const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
+    let allData;
+    try {
+      const result = await triggerGetAllCumulative({
+        params: {
+          deviceid: searchParams.deviceCode,
+          fromCode: searchParams.fromCode,
+          toCode: searchParams.toCode,
+          fromDate: formattedFromDate,
+          toDate: formattedToDate,
+          page: 1,
+          limit: 10000, // Large number to get all data
+        }
+      }).unwrap();
+      allData = result || {};
+    } catch (err) {
+      alert("Failed to fetch all records for export.");
+      return;
+    }
+    if (!allData.data?.length) {
       alert("No data available to export.");
       return;
     }
-
+    const records = allData.data || [];
+    const cowMilkTypeTotals = allData.milkTypeTotals?.filter((cow) => cow?.MILKTYPE === "COW") || [];
+    const bufMilkTypeTotals = allData.milkTypeTotals?.filter((buf) => buf?.MILKTYPE === "BUF") || [];
+    const totalMembers = allData.totalMembers || 0;
+    const grandTotalQty = allData.grandTotalQty || 0;
+    const grandAvgFat = allData.grandAvgFat || 0;
+    const grandAvgSnf = allData.grandAvgSnf || 0;
+    const grandAvgClr = allData.grandAvgClr || 0;
+    const grandAvgRate = allData.grandAvgRate || 0;
+    const grandTotalIncentive = allData.grandTotalIncentive || 0;
+    const grandTotalAmount = allData.grandTotalAmount || 0;
+    const grandTotal = allData.grandTotal || 0;
     let csvSections = [];
-
     // Header
-    csvSections.push(`Device Code: ${deviceCode}`);
-    csvSections.push(`Members: ${fromCode} to ${toCode}`);
-    csvSections.push(`Date Range: ${fromDate} to ${toDate}`);
+    csvSections.push(`Device Code: ${searchParams.deviceCode}`);
+    csvSections.push(`Members: ${searchParams.fromCode} to ${searchParams.toCode}`);
+    csvSections.push(`Date Range: ${formatDateDMY(searchParams.fromDate)} to ${formatDateDMY(searchParams.toDate)}`);
     csvSections.push(""); // spacer
-
     // Member Records
     if (records?.length) {
       const recordsCSVData = records?.map((record, index) => ({
@@ -204,12 +240,10 @@ const isExporting = false
         TotalIncentive: record?.totalIncentive,
         GrandTotal: record?.grandTotal,
       }));
-
-      csvSections.push("=== Member-wise Records ===");
+      // csvSections.push("=== Member-wise Records ===");
       csvSections.push(Papa.unparse(recordsCSVData));
       csvSections.push(""); // spacer
     }
-
     // COW Totals
     if (cowMilkTypeTotals?.length) {
       const cowData = cowMilkTypeTotals?.map((cow) => ({
@@ -224,12 +258,10 @@ const isExporting = false
         TotalIncentive: cow?.totalIncentive,
         GrandTotal: cow?.grandTotal,
       }));
-
       csvSections.push("=== COW Totals ===");
       csvSections.push(Papa.unparse(cowData));
       csvSections.push("");
     }
-
     // BUF Totals
     if (bufMilkTypeTotals?.length) {
       const bufData = bufMilkTypeTotals?.map((buf) => ({
@@ -244,12 +276,10 @@ const isExporting = false
         TotalIncentive: buf?.totalIncentive,
         GrandTotal: buf?.grandTotal,
       }));
-
       csvSections.push("=== BUF Totals ===");
       csvSections.push(Papa.unparse(bufData));
       csvSections.push("");
     }
-
     // Grand Total
     csvSections.push("=== Overall Totals ===");
     csvSections.push(
@@ -264,41 +294,72 @@ const isExporting = false
         },
       ])
     );
-
     const blob = new Blob([csvSections.join("\n")], {
       type: "text/csv;charset=utf-8",
     });
-    saveAs(blob, `${deviceCode}_Payment_Register.csv`);
+    saveAs(blob, `${searchParams.deviceCode}_Payment_Register.csv`);
   };
 
-  const handleExportPDF = () => {
-    if (totalMembers === 0) {
+  const handleExportPDF = async () => {
+    if (!searchParams) {
+      alert("Please search and select filters first.");
+      return;
+    }
+    // Prepare params for full export
+    const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
+    const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
+    let allData;
+    try {
+      const result = await triggerGetAllCumulative({
+        params: {
+          deviceid: searchParams.deviceCode,
+          fromCode: searchParams.fromCode,
+          toCode: searchParams.toCode,
+          fromDate: formattedFromDate,
+          toDate: formattedToDate,
+          page: 1,
+          limit: 10000, // Large number to get all data
+        }
+      }).unwrap();
+      allData = result || {};
+    } catch (err) {
+      alert("Failed to fetch all records for export.");
+      return;
+    }
+    if (!allData.data?.length) {
       alert("No data available to export.");
       return;
     }
-
+    const records = allData.data || [];
+    const cowMilkTypeTotals = allData.milkTypeTotals?.filter((cow) => cow?.MILKTYPE === "COW") || [];
+    const bufMilkTypeTotals = allData.milkTypeTotals?.filter((buf) => buf?.MILKTYPE === "BUF") || [];
+    const totalMembers = allData.totalMembers || 0;
+    const grandTotalQty = allData.grandTotalQty || 0;
+    const grandAvgFat = allData.grandAvgFat || 0;
+    const grandAvgSnf = allData.grandAvgSnf || 0;
+    const grandAvgClr = allData.grandAvgClr || 0;
+    const grandAvgRate = allData.grandAvgRate || 0;
+    const grandTotalIncentive = allData.grandTotalIncentive || 0;
+    const grandTotalAmount = allData.grandTotalAmount || 0;
+    const grandTotal = allData.grandTotal || 0;
     const doc = new jsPDF();
     let currentY = 10;
-
     const pageWidth = doc.internal.pageSize.getWidth();
     const centerText = (text, y) => {
       const textWidth = doc.getTextWidth(text);
       const x = (pageWidth - textWidth) / 2;
       doc.text(text, x, y);
     };
-
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     centerText("Payment Register", currentY);
     currentY += 8;
-
     doc.setFontSize(12);
-    doc.text(`Device Code: ${deviceCode}`, 14, currentY);
-    doc.text(`Members: ${fromCode} to ${toCode}`, pageWidth - 90, currentY);
+    doc.text(`Device Code: ${searchParams.deviceCode}`, 14, currentY);
+    doc.text(`Members: ${searchParams.fromCode} to ${searchParams.toCode}`, pageWidth - 90, currentY);
     currentY += 6;
-    doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, currentY);
+    doc.text(`Date Range: ${formatDateDMY(searchParams.fromDate)} to ${formatDateDMY(searchParams.toDate)}`, 14, currentY);
     currentY += 6;
-
     // Member-wise Table
     if (records?.length) {
       const memberTable = records?.map((record, index) => [
@@ -311,7 +372,6 @@ const isExporting = false
         record?.totalIncentive,
         record?.grandTotal,
       ]);
-
       autoTable(doc, {
         head: [
           [
@@ -330,17 +390,13 @@ const isExporting = false
         styles: { fontSize: 8 },
         theme: "striped",
       });
-
       currentY = doc.lastAutoTable.finalY + 8;
     }
-
     const renderSection = (title, data, startY) => {
       if (!data?.length) return startY;
-
       doc.setFontSize(11);
       doc.text(title, 14, startY);
       startY += 4;
-
       const tableData = data?.map((item) => [
         item.memberCount,
         item.MILKTYPE,
@@ -349,7 +405,6 @@ const isExporting = false
         item.totalIncentive,
         item.grandTotal,
       ]);
-
       autoTable(doc, {
         head: [
           [
@@ -366,17 +421,13 @@ const isExporting = false
         styles: { fontSize: 9 },
         theme: "grid",
       });
-
       return doc.lastAutoTable.finalY + 8;
     };
-
     currentY = renderSection("COW Totals", cowMilkTypeTotals, currentY);
     currentY = renderSection("BUF Totals", bufMilkTypeTotals, currentY);
-
     // Grand Total
     doc.text("Overall Totals", 14, currentY);
     currentY += 4;
-
     autoTable(doc, {
       head: [
         [
@@ -400,8 +451,7 @@ const isExporting = false
       styles: { fontSize: 9 },
       theme: "grid",
     });
-
-    doc.save(`${deviceCode}_Payment_Register.pdf`);
+    doc.save(`${searchParams.deviceCode}_Payment_Register.pdf`);
   };
 
   // Helper to format date as dd/mm/yyyy

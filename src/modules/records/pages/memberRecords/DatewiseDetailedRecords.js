@@ -45,6 +45,18 @@ import PaginationSection from "./PaginationSection";
 const getToday = () => {
     return new Date().toISOString().split("T")[0];
 };
+
+// Helper to format date as dd/mm/yyyy
+const formatDateDMY = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
 const DatewiseDetailedRecords = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -187,7 +199,7 @@ const DatewiseDetailedRecords = () => {
         const header = [
             [`Device Code: ${deviceCode}`],
             [`Members: ${fromCode} to ${toCode}`],
-            [`Records from ${fromDate} to ${toDate}`],
+            [`Records from ${formatDateDMY(fromDate)} to ${formatDateDMY(toDate)}`],
             [],
         ];
         combinedCSV += Papa.unparse(header, { quotes: true }) + "\n";
@@ -196,18 +208,20 @@ const DatewiseDetailedRecords = () => {
             combinedCSV += `Date: ${day.date}, Shift: ${day.shift}, Device: ${deviceCode}\n\n`;
 
             if (day?.records?.length) {
-                const dailyMemberRows = day?.records?.map((stat) => ({
-                    Code: stat?.CODE,
-                    MilkType: stat?.MILKTYPE,
-                    FAT: stat?.FAT,
-                    SNF: stat?.SNF,
-                    CLR: stat?.CLR,
-                    Rate: stat?.RATE,
-                    Quantity: stat?.QTY,                    
-                    TotalAmount: stat?.TOTALAMOUNT,
-                    IncentiveAmount: stat?.INCENTIVEAMOUNT,
-                    GrandTotal:(stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
-                }));
+                const dailyMemberRows = [...day.records]
+                    .sort((a, b) => Number(a.CODE) - Number(b.CODE))
+                    .map((stat) => ({
+                        Code: stat?.CODE,
+                        MilkType: stat?.MILKTYPE,
+                        FAT: stat?.FAT,
+                        SNF: stat?.SNF,
+                        CLR: stat?.CLR,
+                        Rate: stat?.RATE,
+                        Quantity: stat?.QTY,                    
+                        TotalAmount: stat?.TOTALAMOUNT,
+                        IncentiveAmount: stat?.INCENTIVEAMOUNT,
+                        GrandTotal:(stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
+                    }));
 
                 combinedCSV += "Member Records:\n";
                 combinedCSV += Papa.unparse(dailyMemberRows) + "\n\n";
@@ -288,28 +302,46 @@ const DatewiseDetailedRecords = () => {
         doc.text(`Device Code: ${searchParams.deviceCode}`, 14, currentY);
         doc.text(`Members: ${searchParams.fromCode} to ${searchParams.toCode}`, pageWidth - 80, currentY);
         currentY += 8;
-        doc.text(`Date Range: ${searchParams.fromDate} to ${searchParams.toDate}`, 14, currentY);
+        const fromDateDMY = formatDateDMY(searchParams.fromDate);
+        const toDateDMY = formatDateDMY(searchParams.toDate);
+        doc.text(`Date Range: ${fromDateDMY} to ${toDateDMY}`, 14, currentY);
         currentY += 10;
 
-        allData.forEach((day) => {
+        // In handleExportPDF, sort allData by date ascending, then by shift ('MORNING' before 'EVENING')
+        const shiftOrder = { 'MORNING': 1, 'EVENING': 2 };
+        const sortedAllData = [...allData].sort((a, b) => {
+            // Sort by date ascending
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            if (dateA < dateB) return -1;
+            if (dateA > dateB) return 1;
+            // If dates are equal, sort by shift order
+            const shiftA = shiftOrder[a.shift?.toUpperCase()] || 99;
+            const shiftB = shiftOrder[b.shift?.toUpperCase()] || 99;
+            return shiftA - shiftB;
+        });
+
+        sortedAllData.forEach((day) => {
             doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
             doc.text(`Date: ${day.date} | Shift: ${day.shift}`, 14, currentY);
             currentY += 6;
 
             if (day.records?.length) {
-                const memberTable = day?.records?.map((stat) => [
-                    stat?.CODE,
-                    stat?.MILKTYPE,
-                    stat?.FAT,
-                    stat?.SNF,
-                    stat?.CLR,
-                    stat?.RATE,
-                    stat?.QTY,
-                    stat?.TOTALAMOUNT,
-                    stat?.INCENTIVEAMOUNT,
-                    (stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
-                ]);
+                const memberTable = [...day.records]
+                    .sort((a, b) => Number(a.CODE) - Number(b.CODE))
+                    .map((stat) => [
+                        stat?.CODE,
+                        stat?.MILKTYPE,
+                        stat?.FAT,
+                        stat?.SNF,
+                        stat?.CLR,
+                        stat?.RATE,
+                        stat?.QTY,
+                        stat?.TOTALAMOUNT,
+                        stat?.INCENTIVEAMOUNT,
+                        (stat?.TOTALAMOUNT + stat?.INCENTIVEAMOUNT)
+                    ]);
 
                 autoTable(doc, {
                     head: [[
@@ -458,20 +490,22 @@ const DatewiseDetailedRecords = () => {
                                             
                                         </tr>
                                         {record?.records?.length > 0 ? (
-                                            record.records.map((stat, statIndex) => (
-                                                <tr key={`${record.date}-${record.shift}-${stat.CODE}-${statIndex}`}>
-                                                    <td>{String(stat.CODE).padStart(4, "0")}</td>
-                                                    <td>{stat?.MILKTYPE}</td>
-                                                    <td>{stat?.FAT?.toFixed(1)}</td>
-                                                    <td>{stat?.SNF?.toFixed(1)}</td>
-                                                    <td>{stat?.CLR?.toFixed(1)}</td>
-                                                    <td>{stat?.QTY.toFixed(2)}</td>
-                                                    <td>₹{stat?.RATE?.toFixed(2)}</td>
-                                                    <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
-                                                    <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
-                                                    <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
-                                                </tr>
-                                            ))
+                                            [...record.records]
+                                                .sort((a, b) => Number(a.CODE) - Number(b.CODE))
+                                                .map((stat, statIndex) => (
+                                                    <tr key={`${record.date}-${record.shift}-${stat.CODE}-${statIndex}`}>
+                                                        <td>{String(stat.CODE).padStart(4, "0")}</td>
+                                                        <td>{stat?.MILKTYPE}</td>
+                                                        <td>{stat?.FAT?.toFixed(1)}</td>
+                                                        <td>{stat?.SNF?.toFixed(1)}</td>
+                                                        <td>{stat?.CLR?.toFixed(1)}</td>
+                                                        <td>{stat?.QTY.toFixed(2)}</td>
+                                                        <td>₹{stat?.RATE?.toFixed(2)}</td>
+                                                        <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
+                                                        <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
+                                                        <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
+                                                    </tr>
+                                                ))
                                         ) : (
                                             <tr>
                                                 <td colSpan="9" className="text-center text-muted">No member records for this group.</td>
