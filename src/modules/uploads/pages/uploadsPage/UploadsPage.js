@@ -18,8 +18,16 @@ import {
     FaTint,
     FaServer
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useGetDeviceByIdQuery } from "../../../device/store/deviceEndPoint";
 
 const UploadsPage = () => {
+    const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
+    const deviceid = userInfo?.deviceid;
+    const { data: deviceData } = useGetDeviceByIdQuery(deviceid, { skip: !deviceid });
+    const clrBasedTable = deviceData?.serverSettings?.clrBasedTable === "Y";
+    const snfOrClr = clrBasedTable ? "CLR" : "SNF";
+
     const [uploadSnfBufTable] = useUploadSnfBufMutation();
     const [uploadSnfCowTable] = useUploadSnfCowMutation();
     const [uploadFatBufTable] = useUploadFatBufMutation();
@@ -28,28 +36,28 @@ const UploadsPage = () => {
 
     const uploadCategories = [
         {
-            title: "SNF/CLR Tables",
-            description: "Upload SNF/CLR (Solid Not Fat / Corrected Lactometer Reading) rate tables for different milk types",
+            title: `${snfOrClr} Tables`,
+            description: `Upload ${snfOrClr} (${clrBasedTable ? "Corrected Lactometer Reading" : "Solid Not Fat"}) rate tables for different milk types`,
             icon: FaChartLine,
             color: "primary",
             items: [
                 {
-                    title: "SNF/CLR BUF TABLE",
+                    title: `${snfOrClr} BUF TABLE`,
                     onUpload: uploadSnfBufTable,
-                    toastMsg: "SNF/CLR Buf table uploaded successfully",
+                    toastMsg: `${snfOrClr} Buf table uploaded successfully`,
                     showDate: true,
                     dateFieldName: "snfBufEffectiveDate",
                     icon: FaTint,
-                    description: "Buffalo milk SNF/CLR rates"
+                    description: `Buffalo milk ${snfOrClr} rates`
                 },
                 {
-                    title: "SNF/CLR COW TABLE",
+                    title: `${snfOrClr} COW TABLE`,
                     onUpload: uploadSnfCowTable,
-                    toastMsg: "SNF/CLR Cow table uploaded successfully",
+                    toastMsg: `${snfOrClr} Cow table uploaded successfully`,
                     showDate: true,
                     dateFieldName: "snfCowEffectiveDate",
                     icon: FaServer,
-                    description: "Cow milk SNF/CLR rates"
+                    description: `Cow milk ${snfOrClr} rates`
                 }
             ]
         },

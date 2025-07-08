@@ -329,6 +329,20 @@ const MemberRecords = () => {
         <div className="records-container">
           <Card className="filters-card">
             <Form className="row g-3 align-items-end">
+              {isDairy && (
+                <Form.Group className="col-md-2">
+                  <Form.Label>Device Code</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <Form.Select value={deviceCode} onChange={e => setDeviceCode(e.target.value)}>
+                      <option value="">Select Device</option>
+                      {deviceList.map((dev) => (
+                        <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                </Form.Group>
+              )}
               {isDevice && (
                 <Form.Group className="col-md-2">
                   <Form.Label>Device Code</Form.Label>

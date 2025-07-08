@@ -469,7 +469,7 @@ const CumilativeRecords = () => {
 
             <Form className="row g-3 align-items-end">
 
-              {(isDairy || isDevice) && (
+              {isDairy && (
                 <Form.Group className="col-md-2">
                   <Form.Label className="form-label-modern">Device Code</Form.Label>
                   <InputGroup>
@@ -480,6 +480,15 @@ const CumilativeRecords = () => {
                         <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
                       ))}
                     </Form.Select>
+                  </InputGroup>
+                </Form.Group>
+              )}
+              {isDevice && (
+                <Form.Group className="col-md-2">
+                  <Form.Label className="form-label-modern">Device Code</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
+                    <Form.Control className="form-control-modern" type="text" value={deviceCode} readOnly />
                   </InputGroup>
                 </Form.Group>
               )}

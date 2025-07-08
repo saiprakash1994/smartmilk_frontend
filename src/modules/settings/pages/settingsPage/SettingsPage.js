@@ -118,7 +118,7 @@ const SettingsPage = () => {
           : Array(9).fill(server.specialCommission || "00.00"),
         clrBasedTable: server.clrBasedTable === "Y",
       };
-
+      console.log("sudha2",server.clrBasedTable)
       setSettings(mapped);
       setOriginalSettings(mapped);
       setAnalyzerMode("AUTO"); // default to AUTO on load
@@ -158,6 +158,7 @@ const SettingsPage = () => {
         "Please enter valid commission values (00.00 to 99.99)"
       );
     }
+    console.log("sudha",settings.clrBasedTable)
 
     const payload = {
       serverSettings: {

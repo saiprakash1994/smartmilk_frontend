@@ -19,7 +19,7 @@ const Header = () => {
     useEffect(() => {
         console.log('userInfo', userInfo)
     }, [userInfo])
-    const displayLabel = userInfo?.dairyName || userInfo?.deviceName || "User";
+    const displayLabel = userInfo?.dairyName || userInfo?.deviceName || (userInfo && Object.keys(userInfo).length === 0 ? "" : "User");
 
     const handleLogout = () => {
         clearLocalStorage();
@@ -45,7 +45,9 @@ const Header = () => {
                     <Dropdown as={ButtonGroup}>
                         <Dropdown.Toggle split variant="success" id="dropdown-split-basic">
 
-                            <span className="profileName px-2 text-capitalize fw-bold">{displayLabel}</span>
+                            {(userInfo?.dairyName || userInfo?.deviceName) && (
+                                <span className="profileName px-2 text-capitalize fw-bold">{displayLabel}</span>
+                            )}
                             {/* <img className="profileImage" src={
                                 'https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"'} /> */}
                         </Dropdown.Toggle>
