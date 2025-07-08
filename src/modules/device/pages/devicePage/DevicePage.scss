@@ -851,15 +851,28 @@
     .device-actions.btn-group {
       display: flex;
       gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
       .action-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 6px 10px;
-        font-size: 1rem;
+        padding: 3px 6px;
+        font-size: 0.92rem;
         border-radius: 8px;
         transition: background 0.2s, color 0.2s;
         span { display: inline !important; }
+        width: 40px;
+        min-width: 40px;
+        margin-bottom: 0;
+        margin-right: 8px;
+        svg {
+          font-size: 1.1em;
+        }
+      }
+      .action-btn:last-child {
+        margin-right: 0;
       }
     }
   }
@@ -911,4 +924,87 @@
 
 .device-card-status-bar.status-deactive {
   background: #222 !important;
+}
+
+@media (max-width: 576px) {
+  .device-card.advanced,
+  .device-card.modern-hover {
+    min-width: 100% !important;
+    margin-bottom: 18px;
+    .p-4 {
+      padding: 0.8rem !important;
+    }
+    .device-card-header {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+      .device-icon-container {
+        gap: 8px;
+        .device-icon.device-image {
+          width: 38px;
+          height: 38px;
+          font-size: 1.3rem;
+          margin-right: 10px;
+        }
+        .device-info {
+          .device-name {
+            font-size: 0.98rem;
+          }
+          .device-meta {
+            font-size: 0.8rem;
+          }
+        }
+      }
+      .device-status-badge {
+        margin-left: 0;
+        margin-top: 0;
+      }
+    }
+    .device-card-content {
+      margin-bottom: 10px;
+      .device-details {
+        .detail-item {
+          padding: 7px 8px;
+          font-size: 0.92rem;
+          .detail-icon {
+            font-size: 0.85rem;
+          }
+          .detail-content {
+            .detail-label {
+              font-size: 0.7rem;
+            }
+            .detail-value {
+              font-size: 0.85rem;
+            }
+          }
+        }
+      }
+    }
+    .device-card-footer {
+      margin-top: 8px;
+      .device-actions.btn-group {
+        flex-direction: row;
+        gap: 8px;
+        width: auto;
+        justify-content: center;
+        align-items: center;
+        .action-btn {
+          width: 40px;
+          min-width: 40px;
+          justify-content: center;
+          text-align: center;
+          font-size: 0.92rem;
+          padding: 3px 0.5rem;
+          margin-bottom: 0;
+          svg {
+            font-size: 1.1em;
+          }
+        }
+        .action-btn:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Form, Row, Col, Container, Button, Spinner, Card, Nav, Tab, Badge } from "react-bootstrap";
+import { Form, Row, Col, Container, Button, Spinner, Card, Nav, Tab, Badge, ButtonGroup, ToggleButton } from "react-bootstrap";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { successToast, errorToast } from "../../../../shared/utils/appToaster";
 import "./SettingsPage.scss";
@@ -44,14 +44,15 @@ const SettingsPage = () => {
 
   // Get pre-selected device from navigation state
   const preSelectedDevice = location.state?.selectedDeviceId;
-  const preSelectedDairy = location.state?.selectedDairyCode;
+  // Remove preSelectedDairy logic, always use dairyCode for Dairy users
 
-  const [selectedDairyCode, setSelectedDairyCode] = useState(preSelectedDairy || "");
+  const [selectedDairyCode, setSelectedDairyCode] = useState(isDairy ? dairyCode : "");
   const [selectedDeviceId, setSelectedDeviceId] = useState(
     preSelectedDevice || (isDevice ? deviceid : "")
   );
   const [originalSettings, setOriginalSettings] = useState({});
   const [settings, setSettings] = useState({});
+  const [analyzerMode, setAnalyzerMode] = useState("AUTO");
 
   const idToFetch = isDevice ? deviceid : selectedDeviceId;
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
@@ -115,20 +116,22 @@ const SettingsPage = () => {
         specialCommission: Array.isArray(server.specialCommission)
           ? [...server.specialCommission, ...Array(9).fill("00.00")].slice(0, 9)
           : Array(9).fill(server.specialCommission || "00.00"),
+        clrBasedTable: server.clrBasedTable === "Y",
       };
 
       setSettings(mapped);
       setOriginalSettings(mapped);
+      setAnalyzerMode("AUTO"); // default to AUTO on load
     }
   }, [deviceData]);
 
   // Handle pre-selected device from devices page
   useEffect(() => {
-    if (preSelectedDevice && preSelectedDairy) {
+    if (preSelectedDevice) {
       // Show success message when coming from devices page
       successToast(`Device ${preSelectedDevice} selected for configuration`);
     }
-  }, [preSelectedDevice, preSelectedDairy]);
+  }, [preSelectedDevice]);
 
   const handleChange = (field, value) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
@@ -189,6 +192,7 @@ const SettingsPage = () => {
         specialCommission: settings.specialCommission
           .filter((val) => val.trim() !== "")
           .map(formatCommission),
+        clrBasedTable: settings.clrBasedTable ? "Y" : "N",
       },
     };
 
@@ -235,55 +239,31 @@ const SettingsPage = () => {
         {isDairy && !selectedDeviceId && (
           <Card className="device-selection-card mb-4">
             <Card.Header className="device-selection-header">
-              <FaBuilding className="me-2" />
+              <FaDesktop className="me-2" />
               <span>Device Selection</span>
             </Card.Header>
             <Card.Body>
               <Row>
-                <Col md={6}>
+                <Col md={12}>
                   <Form.Group className="mb-3">
                     <Form.Label className="form-label-modern">
-                      <FaBuilding className="me-2" />
-                      Select Dairy
+                      <FaDesktop className="me-2" />
+                      Select Device
                     </Form.Label>
                     <Form.Select
-                      value={selectedDairyCode}
-                      onChange={(e) => {
-                        setSelectedDairyCode(e.target.value);
-                        setSelectedDeviceId("");
-                      }}
+                      value={selectedDeviceId}
+                      onChange={(e) => setSelectedDeviceId(e.target.value)}
                       className="form-select-modern"
                     >
-                      <option value="">-- Select Dairy --</option>
-                      {dairyCode && (
-                        <option value={dairyCode}>{dairyCode}</option>
-                      )}
+                      <option value="">-- Select Device --</option>
+                      {deviceList?.map((dev) => (
+                        <option key={dev.deviceid} value={dev.deviceid}>
+                          {dev.deviceid}
+                        </option>
+                      ))}
                     </Form.Select>
                   </Form.Group>
                 </Col>
-
-                {selectedDairyCode && (
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label className="form-label-modern">
-                        <FaDesktop className="me-2" />
-                        Select Device
-                      </Form.Label>
-                      <Form.Select
-                        value={selectedDeviceId}
-                        onChange={(e) => setSelectedDeviceId(e.target.value)}
-                        className="form-select-modern"
-                      >
-                        <option value="">-- Select Device --</option>
-                        {deviceList?.map((dev) => (
-                          <option key={dev.deviceid} value={dev.deviceid}>
-                            {dev.deviceid}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                )}
               </Row>
             </Card.Body>
           </Card>
@@ -420,75 +400,98 @@ const SettingsPage = () => {
                           <p>Configure milk analysis parameters and modes</p>
                         </div>
                         <div className="settings-section">
-                          <Row>
-                            <Col md={6}>
-                              <Form.Group className="mb-3">
-                                <Form.Label className="form-label-modern">
-                                  <FaWeightHanging className="me-2" />
-                                  Weight Mode
-                                </Form.Label>
-                                <Form.Select
-                                  value={settings.weightMode}
-                                  onChange={(e) => handleChange("weightMode", e.target.value)}
-                                  className="form-select-modern"
-                                >
-                                  <option>AUTO</option>
-                                  <option>MANUAL</option>
-                                </Form.Select>
-                              </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                              <Form.Group className="mb-3">
-                                <Form.Label className="form-label-modern">
-                                  <FaTint className="me-2" />
-                                  Fat Mode
-                                </Form.Label>
-                                <Form.Select
-                                  value={settings.fatMode}
-                                  onChange={(e) => handleChange("fatMode", e.target.value)}
-                                  className="form-select-modern"
-                                >
-                                  <option>AUTO</option>
-                                  <option>MANUAL</option>
-                                </Form.Select>
-                              </Form.Group>
-                            </Col>
-                          </Row>
-                          <Form.Group className="mb-3">
-                            <Form.Label className="form-label-modern">
+                          {/* 1. Milk Analyzer - Card UI */}
+                          <Card className="milk-analyzer-card mb-4">
+                            <Card.Header className="d-flex align-items-center">
                               <FaChartLine className="me-2" />
-                              Analyzer Type
-                            </Form.Label>
-                            <Form.Select
-                              value={settings.analyzer}
-                              onChange={(e) => handleChange("analyzer", e.target.value)}
-                              className="form-select-modern"
-                            >
-                              <option>EKO Ultra</option>
-                              <option>Ultra Pro</option>
-                              <option>Lacto Scan</option>
-                              <option>Ksheera</option>
-                              <option>Essae</option>
-                              <option>Milk Tester</option>
-                            </Form.Select>
-                          </Form.Group>
+                              <span>Milk Analyzer</span>
+                            </Card.Header>
+                            <Card.Body>
+                              <ButtonGroup className="w-100">
+                                {[
+                                  { value: "EKO Ultra", label: "EKO Ultra", icon: <FaChartLine /> },
+                                  { value: "Ultra Pro", label: "Ultra Pro", icon: <FaChartLine /> },
+                                  { value: "Lacto Scan", label: "Lacto Scan", icon: <FaChartLine /> },
+                                  { value: "Ksheera", label: "Ksheera", icon: <FaChartLine /> },
+                                  { value: "Essae", label: "Essae", icon: <FaChartLine /> },
+                                  { value: "Milk Tester", label: "Milk Tester", icon: <FaChartLine /> },
+                                ].map((analyzer, idx) => (
+                                  <ToggleButton
+                                    key={analyzer.value}
+                                    id={`milk-analyzer-${idx}`}
+                                    type="radio"
+                                    variant={settings.analyzer === analyzer.value ? "primary" : "outline-primary"}
+                                    name="milk-analyzer"
+                                    value={analyzer.value}
+                                    checked={settings.analyzer === analyzer.value}
+                                    onChange={() => handleChange("analyzer", analyzer.value)}
+                                    className="milk-analyzer-btn"
+                                  >
+                                    {analyzer.icon} {analyzer.label}
+                                  </ToggleButton>
+                                ))}
+                              </ButtonGroup>
+                            </Card.Body>
+                          </Card>
+                          {/* 2. Weight Mode & Analyzer Mode (side by side) */}
                           <Row>
                             <Col md={6}>
                               <SwitchControl
-                                label="Use Cow SNF"
-                                checked={settings.useCowSnf}
-                                onChange={(e) => handleChange("useCowSnf", e.target.checked)}
-                                icon={FaTint}
-                                description="Enable SNF calculation for cow milk"
+                                label={`Weight Mode (${settings.weightMode === "AUTO" ? "AUTO" : "MANUAL"})`}
+                                checked={settings.weightMode === "AUTO"}
+                                onChange={(e) => handleChange("weightMode", e.target.checked ? "AUTO" : "MANUAL")}
+                                icon={FaWeightHanging}
+                                description="Toggle between AUTO and MANUAL weight mode"
                               />
                             </Col>
                             <Col md={6}>
                               <SwitchControl
-                                label="Use Buf SNF"
+                                label={`Analyzer Mode (${analyzerMode === "AUTO" ? "AUTO" : "MANUAL"})`}
+                                checked={analyzerMode === "AUTO"}
+                                onChange={(e) => setAnalyzerMode(e.target.checked ? "AUTO" : "MANUAL")}
+                                icon={FaChartLine}
+                                description="Toggle between AUTO and MANUAL analyzer mode (UI only)"
+                              />
+                            </Col>
+                          </Row>
+                          {/* 3. CLR Based Table & Mixed Milk (side by side) */}
+                          <Row>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="CLR Based Table"
+                                checked={settings.clrBasedTable}
+                                onChange={(e) => handleChange("clrBasedTable", e.target.checked)}
+                                icon={FaTable}
+                                description="Enable CLR based rate table for milk analysis"
+                              />
+                            </Col>
+                            <Col md={6}>
+                              <SwitchControl
+                                label="Mixed Milk"
+                                checked={settings.mixedMilk}
+                                onChange={(e) => handleChange("mixedMilk", e.target.checked)}
+                                icon={FaLayerGroup}
+                                description="Allow processing of mixed milk types"
+                              />
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <SwitchControl
+                                label={settings.clrBasedTable ? "Use Cow CLR" : "Use Cow SNF"}
+                                checked={settings.useCowSnf}
+                                onChange={(e) => handleChange("useCowSnf", e.target.checked)}
+                                icon={FaTint}
+                                description={settings.clrBasedTable ? "Enable CLR calculation for cow milk" : "Enable SNF calculation for cow milk"}
+                              />
+                            </Col>
+                            <Col md={6}>
+                              <SwitchControl
+                                label={settings.clrBasedTable ? "Use Buf CLR" : "Use Buf SNF"}
                                 checked={settings.useBufSnf}
                                 onChange={(e) => handleChange("useBufSnf", e.target.checked)}
                                 icon={FaTint}
-                                description="Enable SNF calculation for buffalo milk"
+                                description={settings.clrBasedTable ? "Enable CLR calculation for buffalo milk" : "Enable SNF calculation for buffalo milk"}
                               />
                             </Col>
                           </Row>
@@ -512,17 +515,6 @@ const SettingsPage = () => {
                               />
                             </Col>
 
-                          </Row>
-                          <Row>
-                            <Col md={6}>
-                              <SwitchControl
-                                label="Mixed Milk"
-                                checked={settings.mixedMilk}
-                                onChange={(e) => handleChange("mixedMilk", e.target.checked)}
-                                icon={FaLayerGroup}
-                                description="Allow processing of mixed milk types"
-                              />
-                            </Col>
                           </Row>
                         </div>
                       </Tab.Pane>

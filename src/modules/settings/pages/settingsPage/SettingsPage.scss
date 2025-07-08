@@ -536,3 +536,24 @@
     }
   }
 }
+
+.milk-analyzer-btn {
+  background-color: #f5f7fa;
+  border: 1px solid #d1d5db;
+  color: #333;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.milk-analyzer-btn.active,
+.milk-analyzer-btn:checked,
+.milk-analyzer-btn[aria-pressed="true"] {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.milk-analyzer-btn:last-child {
+  margin-right: 0;
+}

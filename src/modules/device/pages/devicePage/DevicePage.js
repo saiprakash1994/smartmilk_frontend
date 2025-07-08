@@ -354,7 +354,6 @@ const DevicePage = () => {
                                                                 onClick={() => navigate(`edit/${device.deviceid}`)}
                                                             >
                                                                 <FaEdit />
-                                                                <span className="ms-1">Edit</span>
                                                             </Button>
                                                         </OverlayTrigger>
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Device Settings</Tooltip>}>
@@ -372,7 +371,6 @@ const DevicePage = () => {
                                                                 }}
                                                             >
                                                                 <FaCog />
-                                                                <span className="ms-1">Settings</span>
                                                             </Button>
                                                         </OverlayTrigger>
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Delete Device</Tooltip>}>
@@ -383,7 +381,6 @@ const DevicePage = () => {
                                                                 onClick={() => handleDelete(device.deviceid)}
                                                             >
                                                                 <FaTrash />
-                                                                <span className="ms-1">Delete</span>
                                                             </Button>
                                                         </OverlayTrigger>
                                                     </div>
