@@ -24,6 +24,7 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 import DeviceRecordsFilterSection from "../DeviceRecordsFilterSection";
 import ExportButtonsSection from "../ExportButtonsSection";
 import DeviceRecordsTotalsSection from "../../DeviceRecordsTotalsSection";
+import debounce from 'lodash.debounce';
 
 
 const getToday = () => {
@@ -137,8 +138,12 @@ const DeviceRecords = () => {
             setCurrentPage(1); // Reset to first page
             successToast("Data loaded successfully!");
         } catch (err) {
-            console.error(err);
-            errorToast("Failed to fetch data");
+            if (err?.status === 429) {
+                errorToast("You are making requests too quickly. Please wait and try again.");
+            } else {
+                console.error(err);
+                errorToast("Failed to fetch data");
+            }
         }
     };
 
@@ -220,7 +225,11 @@ const DeviceRecords = () => {
             allRecords = result?.records || [];
             allTotals = result?.totals || [];
         } catch (err) {
-            alert("Failed to fetch all records for export.");
+            if (err?.status === 429) {
+                alert("You are making requests too quickly. Please wait and try again.");
+            } else {
+                alert("Failed to fetch all records for export.");
+            }
             return;
         }
         if (!allTotals.length && !allRecords.length) {
@@ -318,7 +327,11 @@ const DeviceRecords = () => {
             allRecords = result?.records || [];
             allTotals = result?.totals || [];
         } catch (err) {
-            alert("Failed to fetch all records for export.");
+            if (err?.status === 429) {
+                alert("You are making requests too quickly. Please wait and try again.");
+            } else {
+                alert("Failed to fetch all records for export.");
+            }
             return;
         }
 
@@ -437,6 +450,9 @@ const DeviceRecords = () => {
 
     const isExporting = false;
 
+    // Debounce handleSearch to prevent rapid API calls
+    const debouncedHandleSearch = debounce(handleSearch, 600, { leading: true, trailing: false });
+
     return (
         <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
             <div className="container" style={{ maxWidth: 1400 }}>
@@ -460,7 +476,7 @@ const DeviceRecords = () => {
                         setFilterMilkTypeFilter={setFilterMilkTypeFilter}
                         filterViewMode={filterViewMode}
                         setFilterViewMode={setFilterViewMode}
-                        handleSearch={handleSearch}
+                        handleSearch={debouncedHandleSearch}
                         isFetching={isFetching}
                     />
                 </Card>
