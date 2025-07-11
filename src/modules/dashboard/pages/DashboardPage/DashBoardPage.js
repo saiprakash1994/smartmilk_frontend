@@ -54,6 +54,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import { faDesktop } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import debounce from "lodash/debounce";
 
 const shifts = [
   { value: "", label: "All Shifts", icon: FaClock },
@@ -169,8 +170,17 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (deviceCodes && formattedDate) {
-      refetch();
+      // Debounce refetch to avoid too many API calls
+      const debouncedRefetch = debounce(() => {
+        refetch();
+      }, 500); // 500ms debounce
+      debouncedRefetch();
+      return () => {
+        debouncedRefetch.cancel();
+      };
     }
+    // No-op cleanup if fetch is skipped
+    return () => {};
   }, [deviceCodes, formattedDate, selectedShift, refetch]);
 
   const getMilkTypeIcon = (milkType) => {
