@@ -99,6 +99,81 @@
     .card-body {
       padding: 30px;
     }
+
+    // Device Selection Card for Dairy Users
+    .device-selection-card {
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+
+      .device-selection-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+
+        .device-selection-icon {
+          width: 45px;
+          height: 45px;
+          background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.2rem;
+          box-shadow: 0 3px 10px rgba(23, 162, 184, 0.3);
+        }
+
+        .device-selection-info {
+          flex: 1;
+
+          .device-selection-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+          }
+
+          .device-selection-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+          }
+        }
+      }
+
+      .form-group {
+        margin-bottom: 0;
+
+        .form-label {
+          font-weight: 600;
+          color: #2c3e50;
+          margin-bottom: 8px;
+        }
+
+        .device-select {
+          border: 2px solid #e9ecef;
+          border-radius: 10px;
+          padding: 12px 15px;
+          font-size: 0.95rem;
+          background-color: white;
+          transition: all 0.3s ease;
+
+          &:focus {
+            border-color: #17a2b8;
+            box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+            outline: none;
+          }
+
+          &:hover {
+            border-color: #17a2b8;
+          }
+        }
+      }
+    }
   }
 
   // Guidelines Card
@@ -377,6 +452,20 @@
           .category-info {
             .category-title {
               font-size: 1.2rem;
+            }
+          }
+        }
+      }
+
+      .device-selection-card {
+        .device-selection-header {
+          flex-direction: column;
+          text-align: center;
+          gap: 10px;
+
+          .device-selection-info {
+            .device-selection-title {
+              font-size: 1rem;
             }
           }
         }

@@ -37,6 +37,13 @@ export const uploadDocuments = UploadApi.injectEndpoints({
                 body: formData
             }),
         }),
+        uploadDeviceMember: builder.mutation({
+            query: ({ deviceId, formData }) => ({
+                url: 'upload/upload-members',
+                method: 'POST',
+                body: formData
+            }),
+        }),
     })
 })
 
@@ -46,6 +53,7 @@ export const {
     useUploadFatCowMutation,
     useUploadMemberMutation,
     useUploadSnfCowMutation,
+    useUploadDeviceMemberMutation,
 
 
 } =

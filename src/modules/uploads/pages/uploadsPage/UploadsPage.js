@@ -8,7 +8,7 @@ import {
     useUploadSnfCowMutation
 } from "../../store/uploadEndPoint";
 import FileUploadCard from "../../components/FileUploadCard";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import { 
     FaCloudUploadAlt, 
     FaFileAlt, 
@@ -20,6 +20,8 @@ import {
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useGetDeviceByIdQuery } from "../../../device/store/deviceEndPoint";
+import { useState } from "react";
+import { roles } from "../../../../shared/utils/appRoles";
 
 const UploadsPage = () => {
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -28,11 +30,15 @@ const UploadsPage = () => {
     const clrBasedTable = deviceData?.serverSettings?.clrBasedTable === "Y";
     const snfOrClr = clrBasedTable ? "CLR" : "SNF";
 
+    // Check if user is dairy user
+    const isDairyUser = userInfo?.role === roles.DAIRY;
+
     const [uploadSnfBufTable] = useUploadSnfBufMutation();
     const [uploadSnfCowTable] = useUploadSnfCowMutation();
     const [uploadFatBufTable] = useUploadFatBufMutation();
     const [uploadFatCowTable] = useUploadFatCowMutation();
     const [uploadMemberTable] = useUploadMemberMutation();
+
 
     const uploadCategories = [
         {
@@ -87,7 +93,8 @@ const UploadsPage = () => {
                 }
             ]
         },
-        {
+        // Only show Member Management for device users, not dairy users
+        ...(isDairyUser ? [] : [{
             title: "Member Management",
             description: "Upload member information and data",
             icon: FaUsers,
@@ -102,7 +109,7 @@ const UploadsPage = () => {
                     description: "Member information and details"
                 }
             ]
-        }
+        }])
     ];
 
     return (

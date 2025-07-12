@@ -20,7 +20,8 @@ const FileUploadCard = ({
     dateFieldName = "effectiveDate",
     icon: Icon,
     description,
-    categoryColor = "primary"
+    categoryColor = "primary",
+    disabled = false
 }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -92,7 +93,19 @@ const FileUploadCard = ({
             }
         } catch (error) {
             console.error("Upload failed:", error);
-            errorToast("Upload failed");
+            let errorMessage = "Upload failed";
+            
+            if (error?.data?.message) {
+                errorMessage = error.data.message;
+            } else if (error?.error) {
+                errorMessage = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+            } else if (error?.message) {
+                errorMessage = error.message;
+            } else if (error?.status) {
+                errorMessage = `Upload failed with status: ${error.status}`;
+            }
+            
+            errorToast(errorMessage);
         } finally {
             setUploading(false);
         }
@@ -200,7 +213,7 @@ const FileUploadCard = ({
                     <Button
                         variant={categoryColor}
                         onClick={handleUpload}
-                        disabled={uploading || !selectedFile}
+                        disabled={uploading || !selectedFile || disabled}
                         className="upload-button"
                         size="lg"
                     >
@@ -208,6 +221,11 @@ const FileUploadCard = ({
                             <>
                                 <Spinner animation="border" size="sm" className="me-2" />
                                 Uploading...
+                            </>
+                        ) : disabled ? (
+                            <>
+                                <FaCloudUploadAlt className="me-2" />
+                                Select Device First
                             </>
                         ) : (
                             <>
