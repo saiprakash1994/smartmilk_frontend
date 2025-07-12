@@ -447,11 +447,11 @@ const SettingsPage = () => {
                             </Col>
                             <Col md={6}>
                               <SwitchControl
-                                label={`Analyzer Mode (${analyzerMode === "AUTO" ? "AUTO" : "MANUAL"})`}
-                                checked={analyzerMode === "AUTO"}
-                                onChange={(e) => setAnalyzerMode(e.target.checked ? "AUTO" : "MANUAL")}
+                                label={`Analyzer Mode (${settings.fatMode === "AUTO" ? "AUTO" : "MANUAL"})`}
+                                checked={settings.fatMode === "AUTO"}
+                                onChange={(e) => handleChange("fatMode", e.target.checked ? "AUTO" : "MANUAL")}
                                 icon={FaChartLine}
-                                description="Toggle between AUTO and MANUAL analyzer mode (UI only)"
+                                description="Toggle between AUTO and MANUAL analyzer mode"
                               />
                             </Col>
                           </Row>
