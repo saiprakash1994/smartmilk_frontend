@@ -160,7 +160,7 @@ const DairyAdd = () => {
                 }).unwrap();
                 successToast("Dairy created successfully.");
             }
-            navigate("/dairy");
+            navigate("/");
         } catch (err) {
             const message = err?.data?.error || "Failed to save dairy.";
             errorToast(message);
@@ -296,7 +296,7 @@ const DairyAdd = () => {
                                 <Button variant="primary" onClick={onSave} disabled={saving} className="px-4">
                                     {saving ? <Spinner size="sm" animation="border" /> : id ? "Update" : "Create"}
                                 </Button>
-                                <Button variant="outline-secondary" onClick={() => navigate("/dairy")} disabled={saving} className="px-4">
+                                <Button variant="outline-secondary" onClick={() => navigate("/")} disabled={saving} className="px-4">
                                     Cancel
                                 </Button>
                             </div>

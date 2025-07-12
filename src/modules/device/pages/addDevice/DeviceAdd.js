@@ -170,7 +170,7 @@ const DeviceAdd = () => {
                 dispatch(addDevice(res?.device));
                 successToast("Device created successfully");
             }
-            navigate("/device");
+            navigate("/");
         } catch (err) {
             console.error("RTK Error:", err);
             errorToast(err?.data?.error || `Failed to ${id ? "update" : "create"} device`);
@@ -318,7 +318,7 @@ const DeviceAdd = () => {
                                 <Button variant="primary" type="submit" disabled={saving} className="px-4">
                                     {saving ? <Spinner size="sm" animation="border" /> : id ? "Update" : "Create"}
                                 </Button>
-                                <Button variant="outline-secondary" onClick={() => navigate("/device")} disabled={saving} className="px-4">
+                                <Button variant="outline-secondary" onClick={() => navigate("/")} disabled={saving} className="px-4">
                                     Cancel
                                 </Button>
                             </div>
