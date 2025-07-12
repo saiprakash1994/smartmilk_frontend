@@ -499,7 +499,7 @@ const SettingsPage = () => {
                           <Row>
                             <Col md={6}>
                               <SwitchControl
-                                label="High Fat Accept"
+                                label="High FAT Accept"
                                 checked={settings.highFatAccept}
                                 onChange={(e) => handleChange("highFatAccept", e.target.checked)}
                                 icon={FaTint}
@@ -508,7 +508,7 @@ const SettingsPage = () => {
                             </Col>
                             <Col md={6}>
                               <SwitchControl
-                                label="Low Fat Accept"
+                                label="Low FAT Accept"
                                 checked={settings.lowFatAccept}
                                 onChange={(e) => handleChange("lowFatAccept", e.target.checked)}
                                 icon={FaTint}
