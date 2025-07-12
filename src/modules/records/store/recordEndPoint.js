@@ -19,6 +19,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["multidevicerecords"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getMemberCodewiseReport: builder.query({
             query: (body) => {
@@ -28,6 +30,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["membercodereports"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getAbsentMemberReport: builder.query({
             query: (body) => {
@@ -37,6 +41,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["absentmemberreports"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getCumulativeReport: builder.query({
             query: (body) => {
@@ -46,6 +52,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["cumulativereports"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getDatewiseDetailedReport: builder.query({
             query: (body) => {
@@ -55,6 +63,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["datewisedetailedreports"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getDatewiseSummaryReport: builder.query({
             query: (body) => {
@@ -64,6 +74,8 @@ export const recordDetails = RecordApi.injectEndpoints({
                 return `${basePath}?${queryString}`;
             },
             providesTags: ["datewisesummaryreports"],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
     }),
 });

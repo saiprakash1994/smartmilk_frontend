@@ -121,11 +121,12 @@ const DashboardPage = () => {
   const barColors = ["#6366f1", "#22c55e", "#f59e42"];
   const pieColors = ["#6366f1", "#f59e42"];
 
-  useEffect(() => {
-    if (deviceCodes && formattedDate) {
-      refetch();
-    }
-  }, [deviceCodes, formattedDate, selectedShift, refetch]);
+  // Remove unnecessary manual refetch - RTK Query handles this automatically
+  // useEffect(() => {
+  //   if (deviceCodes && formattedDate) {
+  //     refetch();
+  //   }
+  // }, [deviceCodes, formattedDate, selectedShift, refetch]);
 
   return (
     <>

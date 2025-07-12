@@ -207,7 +207,8 @@ const SettingsPage = () => {
       await editDevice({ id: idToFetch, ...payload }).unwrap();
       successToast("Settings saved successfully!");
       navigate("/dashboard");
-      refetch();
+      // Remove unnecessary refetch - RTK Query mutation already invalidates cache
+      // refetch();
     } catch (err) {
       console.error("Error saving settings:", err);
     }

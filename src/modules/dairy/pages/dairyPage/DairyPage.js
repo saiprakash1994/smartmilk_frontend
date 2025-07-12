@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { FaTable, FaPlus, FaSearch, FaEnvelope, FaTabletAlt } from "react-icons/fa";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Tab, Nav, Row, Col, Card, Button, Form } from "react-bootstrap";
@@ -51,14 +51,16 @@ const DairyPage = () => {
     };
 
     // Filtering and pagination
-    const filteredDairies = dairies.filter(dairy => {
+    const filteredDairies = useMemo(() => {
         const q = search.toLowerCase();
-        return (
-            dairy?.dairyCode?.toLowerCase().includes(q) ||
-            dairy?.dairyName?.toLowerCase().includes(q) ||
-            dairy?.email?.toLowerCase().includes(q)
-        );
-    });
+        return dairies.filter(dairy => {
+            return (
+                dairy?.dairyCode?.toLowerCase().includes(q) ||
+                dairy?.dairyName?.toLowerCase().includes(q) ||
+                dairy?.email?.toLowerCase().includes(q)
+            );
+        });
+    }, [dairies, search]);
     const totalPages = Math.ceil(filteredDairies.length / pageSize);
     const paginatedDairies = filteredDairies.slice((page - 1) * pageSize, page * pageSize);
 

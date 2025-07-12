@@ -163,7 +163,8 @@ const DeviceAdd = () => {
                 const res = await editDevice({ id, ...payload }).unwrap();
                 dispatch(updateDevice(res?.device));
                 successToast("Device updated successfully");
-                await refetch();
+                // Remove unnecessary refetch - RTK Query mutation already invalidates cache
+                // await refetch();
             } else {
                 const res = await createDevice(payload).unwrap();
                 dispatch(addDevice(res?.device));

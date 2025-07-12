@@ -15,6 +15,7 @@ export const UploadApi = createApi({
         }
     }),
     tagTypes: ['uploads'],
+    keepUnusedDataFor: 300, // Keep data for 5 minutes to reduce refetches
     endpoints: () => ({
 
     })

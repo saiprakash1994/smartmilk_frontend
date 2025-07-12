@@ -4,11 +4,15 @@ export const dairyDetails = DairyApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllDairys: builder.query({
             query: () => `dairy`,
-            providesTags: ['getAll']
+            providesTags: ['getAll'],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
 
         getDairyById: builder.query({
             query: (id) => `dairy/${id}`,
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
 
         createDairy: builder.mutation({

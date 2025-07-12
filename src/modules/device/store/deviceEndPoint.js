@@ -4,17 +4,21 @@ export const deviceDetails = DeviceApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllDevices: builder.query({
             query: () => `device/getall`,
-            providesTags: ['device']
+            providesTags: ['device'],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getDeviceById: builder.query({
             query: (deviceid) => `device/deviceid/${deviceid}`,
-            providesTags: ['device']
-
+            providesTags: ['device'],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
         getDeviceByCode: builder.query({
             query: (dairyCode) => `device/devicecode/${dairyCode}`,
-            providesTags: ['device']
-
+            providesTags: ['device'],
+            refetchOnMountOrArgChange: false, // Prevent refetch on mount if data exists
+            refetchOnFocus: false, // Prevent refetch when window regains focus
         }),
 
         createDevice: builder.mutation({

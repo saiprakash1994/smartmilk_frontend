@@ -149,7 +149,8 @@ const DairyAdd = () => {
                 }
                 await editDairy({ id, ...payload }).unwrap();
                 successToast("Dairy updated successfully.");
-                await refetch();
+                // Remove unnecessary refetch - RTK Query mutation already invalidates cache
+                // await refetch();
             } else {
                 await createDairy({
                     dairyCode: form.dairyCode,

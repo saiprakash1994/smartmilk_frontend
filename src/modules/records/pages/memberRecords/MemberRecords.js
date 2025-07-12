@@ -24,7 +24,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table, Card, Button, Form, Spinner, Row, Col, Badge, Pagination, ButtonGroup } from "react-bootstrap";
 import { data, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { saveAs } from "file-saver";
 
@@ -142,16 +142,18 @@ const MemberRecords = () => {
   const totalCount = resultData?.totalRecords;
   const totalPages = Math.ceil(totalCount / recordsPerPage);
 
-  const filteredRecords = records.filter(record => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      record.SAMPLEDATE.toLowerCase().includes(searchLower) ||
-      record.SHIFT.toLowerCase().includes(searchLower) ||
-      record.MILKTYPE.toLowerCase().includes(searchLower);
-    const matchesMilkType = milkTypeFilter === 'ALL' || record.MILKTYPE === milkTypeFilter;
-    const matchesShift = shiftFilter === 'ALL' || record.SHIFT === shiftFilter;
-    return matchesSearch && matchesMilkType && matchesShift;
-  });
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        record.SAMPLEDATE.toLowerCase().includes(searchLower) ||
+        record.SHIFT.toLowerCase().includes(searchLower) ||
+        record.MILKTYPE.toLowerCase().includes(searchLower);
+      const matchesMilkType = milkTypeFilter === 'ALL' || record.MILKTYPE === milkTypeFilter;
+      const matchesShift = shiftFilter === 'ALL' || record.SHIFT === shiftFilter;
+      return matchesSearch && matchesMilkType && matchesShift;
+    });
+  }, [records, searchTerm, milkTypeFilter, shiftFilter]);
 
   const handleExportCSV = () => {
     if (!totals?.length && !records?.length) {

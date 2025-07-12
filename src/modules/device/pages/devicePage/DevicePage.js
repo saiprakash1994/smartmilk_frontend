@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { FaTable, FaPlus, FaSearch, FaTabletAlt, FaEnvelope } from "react-icons/fa";
 import { Tab, Nav, Row, Col, Card, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -86,12 +86,14 @@ const DevicePage = () => {
     }, [devicesByCode, isdevicesByCodeLoading, isdevicesByCodeError, userType, dispatch]);
 
     // Filtered devices for card grid (only the selected device)
-    const filteredDevices = devices.filter(device => {
+    const filteredDevices = useMemo(() => {
         const q = search.toLowerCase();
-        const matchesSearch = device?.deviceid?.toLowerCase().includes(q) || device?.email?.toLowerCase().includes(q);
-        const matchesDairy = !selectedDairyCode || device?.dairyCode === selectedDairyCode;
-        return matchesSearch && matchesDairy;
-    });
+        return devices.filter(device => {
+            const matchesSearch = device?.deviceid?.toLowerCase().includes(q) || device?.email?.toLowerCase().includes(q);
+            const matchesDairy = !selectedDairyCode || device?.dairyCode === selectedDairyCode;
+            return matchesSearch && matchesDairy;
+        });
+    }, [devices, search, selectedDairyCode]);
     const totalPages = Math.ceil(filteredDevices.length / pageSize);
     const paginatedDevices = filteredDevices.slice((page - 1) * pageSize, page * pageSize);
 
