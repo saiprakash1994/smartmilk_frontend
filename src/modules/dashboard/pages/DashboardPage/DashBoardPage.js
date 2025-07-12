@@ -83,6 +83,8 @@ const DashboardPage = () => {
 
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
     skip: !isDairy,
+    refetchOnMountOrArgChange: false, // Prevent unnecessary refetches
+    refetchOnFocus: false, // Prevent refetch on window focus
   });
 
   const deviceList = useMemo(() => {
@@ -119,9 +121,17 @@ const DashboardPage = () => {
     }
   }, [skipFetch]);
 
+  const queryParams = useMemo(() => ({
+    params: { deviceCodes, date: formattedDate, shift: selectedShift }
+  }), [deviceCodes, formattedDate, selectedShift]);
+
   const { data, isLoading, isError, error, refetch } = useGetMultipleRecordsQuery(
-    { params: { deviceCodes, date: formattedDate, shift: selectedShift } },
-    { skip: skipFetch }
+    queryParams,
+    { 
+      skip: skipFetch,
+      refetchOnMountOrArgChange: false, // Prevent unnecessary refetches
+      refetchOnFocus: false, // Prevent refetch on window focus
+    }
   );
 
   const totals = data?.totals || [];
@@ -173,7 +183,7 @@ const DashboardPage = () => {
       // Debounce refetch to avoid too many API calls
       const debouncedRefetch = debounce(() => {
         refetch();
-      }, 500); // 500ms debounce
+      }, 1000); // Increased to 1000ms debounce
       debouncedRefetch();
       return () => {
         debouncedRefetch.cancel();
@@ -181,7 +191,7 @@ const DashboardPage = () => {
     }
     // No-op cleanup if fetch is skipped
     return () => {};
-  }, [deviceCodes, formattedDate, selectedShift, refetch]);
+  }, [deviceCodes, formattedDate, selectedShift]); // Removed refetch from dependencies
 
   const getMilkTypeIcon = (milkType) => {
     return milkType === "COW" ? FaServer : FaTint;

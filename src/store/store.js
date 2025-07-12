@@ -17,13 +17,13 @@ const store = configureStore({
         [DeviceApi.reducerPath]: DeviceApi.reducer,
         [RecordApi.reducerPath]: RecordApi.reducer,
         [UploadApi.reducerPath]: UploadApi.reducer,
-
-
-
-
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware, DairyApi.middleware, DeviceApi.middleware, RecordApi.middleware, UploadApi.middleware),
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+            },
+        }).concat(authApi.middleware, DairyApi.middleware, DeviceApi.middleware, RecordApi.middleware, UploadApi.middleware),
 });
 
 console.log('Initial Store State:', store.getState());

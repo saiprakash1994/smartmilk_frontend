@@ -114,9 +114,14 @@ const MemberRecords = () => {
   };
   useEffect(() => {
     if (searchParams) {
-      setSearchParams((prev) => ({ ...prev }));
+      // Only update if the page or limit actually changed
+      setSearchParams((prev) => ({ 
+        ...prev, 
+        page: currentPage, 
+        limit: recordsPerPage 
+      }));
     }
-  }, [currentPage, recordsPerPage]);
+  }, [currentPage, recordsPerPage, searchParams]);
   useEffect(() => {
     if (memberCodes.length > 0) {
       const firstMember = memberCodes[0];
