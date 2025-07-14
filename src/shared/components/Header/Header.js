@@ -36,7 +36,7 @@ const Header = ({ onHamburger }) => {
                     <Link to="/">
                         <img src={smatrchipLogo} width={60} height={38} alt="Logo" />
                     </Link>
-                    <span className="brand m-0 px-2 fw-bold">SUN IMPEX</span>
+                    <span className="brand m-0 px-2 fw-bold">SMARTCHIP TECHNOLOGIES</span>
                 </div>
                 <div className="d-flex align-items-center">
                     <Dropdown as={ButtonGroup} align="end">
