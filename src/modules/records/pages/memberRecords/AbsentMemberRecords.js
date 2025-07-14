@@ -51,7 +51,7 @@ const AbsentMemberRecords = () => {
   });
 
   const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, {
-    skip: !isDairy,
+    skip: !isDairy || !dairyCode,
   });
 
   const deviceList = isAdmin ? allDevices : isDairy ? dairyDevices : [];

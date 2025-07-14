@@ -60,7 +60,7 @@ const SettingsPage = () => {
     skip: !isAdmin,
   });
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
-    skip: !isDairy,
+    skip: !isDairy || !dairyCode,
   });
 
   const deviceList = isAdmin ? allDevices : dairyDevices;
