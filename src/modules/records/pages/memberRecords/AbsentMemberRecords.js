@@ -41,7 +41,7 @@ const AbsentMemberRecords = () => {
   const dairyCode = userInfo?.dairyCode;
 
   const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, {
-    skip: !isDairy,
+    skip: !isDairy || !dairyCode,
   });
 
   const deviceList = isDairy ? dairyDevices : [];

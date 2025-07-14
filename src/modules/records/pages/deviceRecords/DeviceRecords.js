@@ -68,7 +68,7 @@ const DeviceRecords = () => {
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
+    const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy || !dairyCode });
     const [triggerGetRecords, { isLoading: isFetching }] = useLazyGetAllRecordsQuery();
 
     const deviceList = isDairy ? dairyDevices : [];

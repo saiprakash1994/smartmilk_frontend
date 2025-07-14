@@ -82,7 +82,7 @@ const DashboardPage = () => {
 
 
   const { data: dairyDevices = [] } = useGetDeviceByCodeQuery(dairyCode, {
-    skip: !isDairy,
+    skip: !isDairy || !dairyCode,
     refetchOnMountOrArgChange: false, // Prevent unnecessary refetches
     refetchOnFocus: false, // Prevent refetch on window focus
   });
@@ -127,7 +127,7 @@ const DashboardPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useGetMultipleRecordsQuery(
     queryParams,
-    { 
+    {
       skip: skipFetch,
       refetchOnMountOrArgChange: false, // Prevent unnecessary refetches
       refetchOnFocus: false, // Prevent refetch on window focus
@@ -190,7 +190,7 @@ const DashboardPage = () => {
       };
     }
     // No-op cleanup if fetch is skipped
-    return () => {};
+    return () => { };
   }, [deviceCodes, formattedDate, selectedShift]); // Removed refetch from dependencies
 
   const getMilkTypeIcon = (milkType) => {

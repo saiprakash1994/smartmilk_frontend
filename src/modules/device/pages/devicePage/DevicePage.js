@@ -55,7 +55,7 @@ const DevicePage = () => {
         data: devicesByCode = [],
         isLoading: isdevicesByCodeLoading,
         isError: isdevicesByCodeError
-    } = useGetDeviceByCodeQuery(userInfo?.dairyCode || '', { skip: userType !== roles.DAIRY });
+    } = useGetDeviceByCodeQuery(userInfo?.dairyCode || '', { skip: userType !== roles.DAIRY || !userInfo?.dairyCode });
 
     const [deleteDeviceById] = useDeleteDeviceMutation();
 

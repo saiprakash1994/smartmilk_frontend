@@ -54,7 +54,7 @@ const DatewiseSummaryRecords = () => {
 
     // Queries for Dairy
     const { data: dairyDevices = [], isLoading: isDairyLoading } =
-        useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
+        useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy || !dairyCode });
 
     // Query for Device role to fetch its own data
     const { data: deviceData, isLoading: isDeviceLoading } =
@@ -115,13 +115,13 @@ const DatewiseSummaryRecords = () => {
     useEffect(() => {
         if (searchParams) {
             // Only update if the page or limit actually changed
-            setSearchParams((prev) => ({ 
-                ...prev, 
-                page: currentPage, 
-                limit: recordsPerPage 
+            setSearchParams((prev) => ({
+                ...prev,
+                page: currentPage,
+                limit: recordsPerPage
             }));
         }
-    }, [currentPage, recordsPerPage, searchParams]);
+    }, [currentPage, recordsPerPage]);
     useEffect(() => {
         if (memberCodes.length > 0) {
             const firstMember = memberCodes[0];

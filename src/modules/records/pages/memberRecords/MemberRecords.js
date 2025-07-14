@@ -66,7 +66,7 @@ const MemberRecords = () => {
   const dairyCode = userInfo?.dairyCode;
 
   const { data: dairyDevices = [], isLoading: isDairyLoading } =
-    useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy });
+    useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy || !dairyCode });
 
   const { data: deviceData, isLoading: isDeviceLoading } =
     useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
@@ -115,13 +115,13 @@ const MemberRecords = () => {
   useEffect(() => {
     if (searchParams) {
       // Only update if the page or limit actually changed
-      setSearchParams((prev) => ({ 
-        ...prev, 
-        page: currentPage, 
-        limit: recordsPerPage 
+      setSearchParams((prev) => ({
+        ...prev,
+        page: currentPage,
+        limit: recordsPerPage
       }));
     }
-  }, [currentPage, recordsPerPage, searchParams]);
+  }, [currentPage, recordsPerPage]);
   useEffect(() => {
     if (memberCodes.length > 0) {
       const firstMember = memberCodes[0];
