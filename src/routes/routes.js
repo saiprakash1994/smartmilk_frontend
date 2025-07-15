@@ -17,7 +17,8 @@ import {
   UploadsLayout,
   UploadsPage,
   MemberRecords,
-  NotFoundPage
+  NotFoundPage,
+  PriceTableGenerator
 } from './pages';
 
 
@@ -137,6 +138,12 @@ export default function AppRoutes() {
 
 
           </Route>
+          <Route path="pricetable"
+            element={
+              <Suspense>
+                <PriceTableGenerator />
+              </Suspense>
+            } />
           <Route path="*" element={<NotFoundPage />} />
 
         </Route>
