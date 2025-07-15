@@ -15,7 +15,7 @@ import { useGetAllDevicesQuery } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 
 const RecordsPage = () => {
-  const [activeTab, setActiveTab] = useState("memberList");
+  const [activeTab, setActiveTab] = useState("records");
   return (
     <>
       <Tabs
@@ -24,9 +24,7 @@ const RecordsPage = () => {
         onSelect={(k) => setActiveTab(k)}
         className="mb-3"
       >
-        <Tab eventKey="memberList" title="Member List">
-          <MemberList />
-        </Tab>
+        
         <Tab eventKey="records" title="Daily Report">
           <DeviceRecords />
         </Tab>
@@ -44,6 +42,9 @@ const RecordsPage = () => {
         </Tab>
         <Tab eventKey="datewiseSummary" title="Datewise Summary Report">
           <DatewiseSummaryRecords />
+        </Tab>
+        <Tab eventKey="memberList" title="Member List">
+          <MemberList />
         </Tab>
       </Tabs>
     </>

@@ -44,12 +44,18 @@ const SideBar = () => {
                         >
                             <p
                                 className={`module ${isActivePath(title)}`}
-                                onClick={() => navigate(`/${title}`)}
+                                onClick={() => 
+                                   { if (userType === roles.DAIRY && userInfo?.dairyCode && title === "dairy") {
+                                        navigate(`/dairy/edit/${userInfo.dairyCode}`);
+                                    } else if (userType === roles.DEVICE && userInfo?.deviceid && title === "device") {
+                                        navigate(`/device/edit/${userInfo.deviceid}`);
+                                    }else
+                                        navigate(`/${title}`)}}
                             >
                                 <FontAwesomeIcon icon={icon} className="module-appIcon" />
                             </p>
                         </OverlayTrigger>
-                        {/* Insert profile section after uploads icon */}
+                        {/* Insert profile section after uploads icon
                         {title === 'uploads' && (
                             <div
                                 className={`module${(
@@ -67,7 +73,7 @@ const SideBar = () => {
                             >
                                 <FontAwesomeIcon icon={faUser} size="lg" className="module-appIcon" />
                             </div>
-                        )}
+                        )} */}
                     </React.Fragment>
                 ))}
             </div>

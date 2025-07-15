@@ -23,11 +23,8 @@ const Header = () => {
 
     const handleLogout = () => {
         clearLocalStorage();
-        setTimeout(() => {
-            navigate('/login');
-        }, 500);
         dispatch(clearUserInfo());
-
+        navigate('/login');
     };
 
     return (

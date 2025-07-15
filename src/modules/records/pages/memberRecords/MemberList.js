@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Card, Form, InputGroup, Table, Spinner, Button, Modal, ToastContainer, Toast } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDesktop } from "@fortawesome/free-solid-svg-icons";
+import { faDesktop, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useGetDeviceByCodeQuery, useGetDeviceByIdQuery, useAddMemberMutation, useEditMemberMutation, useDeleteMemberMutation } from "../../../device/store/deviceEndPoint";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import { roles } from "../../../../shared/utils/appRoles";
@@ -13,8 +13,6 @@ import ExportButtonsSection from "../ExportButtonsSection";
 import '../deviceRecords/DeviceRecords.scss';
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
-
-const API_BASE = "/api/device";
 
 const initialMemberState = {
   CODE: "",
@@ -39,7 +37,6 @@ const MemberList = () => {
   const deviceList = isDairy ? dairyDevices : deviceData ? [deviceData] : [];
 
   const [deviceCode, setDeviceCode] = useState("");
-  const [members, setMembers] = useState([]);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [memberForm, setMemberForm] = useState(initialMemberState);
@@ -51,14 +48,13 @@ const MemberList = () => {
   const [editMember, { isLoading: isEditing }] = useEditMemberMutation();
   const [deleteMember, { isLoading: isDeleting }] = useDeleteMemberMutation();
 
+  // Always derive members from deviceList and deviceCode
+  const selectedDevice = deviceList.find((dev) => dev.deviceid === deviceCode);
+  const members = selectedDevice?.members || [];
+
   useEffect(() => {
     if (isDevice && deviceid) setDeviceCode(deviceid);
   }, [isDevice, deviceid]);
-
-  useEffect(() => {
-    const selectedDevice = deviceList.find((dev) => dev.deviceid === deviceCode);
-    setMembers(selectedDevice?.members || []);
-  }, [deviceCode, deviceList]);
 
   // Add/Edit Modal Handlers
   const openAddModal = () => {
@@ -108,8 +104,7 @@ const MemberList = () => {
       }
       closeAddEditModal();
       // Refresh members
-      const selectedDevice = deviceList.find((dev) => dev.deviceid === deviceCode);
-      setMembers(selectedDevice?.members || []);
+      // setMembers(selectedDevice?.members || []); // This line is removed
     } catch (err) {
       errorToast(err?.data?.error || err.message || "Error saving member");
     } finally {
@@ -128,8 +123,7 @@ const MemberList = () => {
       successToast("Member deleted");
       setDeleteTarget(null);
       // Refresh members
-      const selectedDevice = deviceList.find((dev) => dev.deviceid === deviceCode);
-      setMembers(selectedDevice?.members || []);
+      // setMembers(selectedDevice?.members || []); // This line is removed
     } catch (err) {
       errorToast(err?.data?.error || err.message || "Error deleting member");
     } finally {
@@ -206,44 +200,38 @@ const MemberList = () => {
   return (
     <div className="device-records-page">
       <div className="records-container">
-        <Card className="filters-card mb-4">
-          <Card.Body>
-            <Form className="row g-3 align-items-end">
-              <Form.Group className="col-md-3">
-                <Form.Label>Device Code</Form.Label>
-                <InputGroup>
-                  <InputGroup.Text>
-                    <FontAwesomeIcon icon={faDesktop} />
-                  </InputGroup.Text>
-                  <Form.Select
-                    value={deviceCode}
-                    onChange={e => setDeviceCode(e.target.value)}
-                    disabled={isDevice}
-                  >
-                    <option value="">Select Device</option>
-                    {deviceList.map((dev) => (
-                      <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
-                    ))}
-                  </Form.Select>
-                </InputGroup>
-              </Form.Group>
-            </Form>
-          </Card.Body>
-        </Card>
-        {/* Export Buttons Section */}
-        <div className="mb-3">
+        {/* Filter Section: Only for Dairy users, no Card wrapper */}
+        {isDairy && (
+          <Form className="row g-3 align-items-end mb-4">
+            <Form.Group className="col-md-3">
+              <Form.Label>Device Code</Form.Label>
+              <InputGroup>
+                <InputGroup.Text>
+                  <FontAwesomeIcon icon={faDesktop} />
+                </InputGroup.Text>
+                <Form.Select
+                  value={deviceCode}
+                  onChange={e => setDeviceCode(e.target.value)}
+                  disabled={isDevice}
+                >
+                  <option value="">Select Device</option>
+                  {deviceList.map((dev) => (
+                    <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                  ))}
+                </Form.Select>
+              </InputGroup>
+            </Form.Group>
+          </Form>
+        )}
+        {/* Export Buttons Section and Add Member Button: inline, right-aligned */}
+        <div className="d-flex justify-content-end align-items-center mb-3" style={{ gap: 12 }}>
           <ExportButtonsSection
             handleExportCSV={handleExportCSV}
             handleExportPDF={handleExportPDF}
             isFetching={false}
             isExporting={false}
           />
-        </div>
-        {/* Add Member Button */}
-        <div className="d-flex justify-content-end mb-3">
-          <Button variant="primary" onClick={openAddModal} disabled={!deviceCode}>
-            <FaPlus className="me-2" /> Add Member
-          </Button>
+          {/* The Add Member button is now moved into the header */}
         </div>
         <Card>
           <Card.Body>
@@ -272,8 +260,10 @@ const MemberList = () => {
                   <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
                     MEMBERS LIST
                   </div>
-                  <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                    {/* Optionally add date or other info here */}
+                  <div className="d-flex align-items-center justify-content-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
+                    <Button variant="primary" onClick={openAddModal} disabled={!deviceCode}>
+                      <FaPlus className="me-2" /> Add Member
+                    </Button>
                   </div>
                 </div>
                 <div className="table-responsive">
@@ -339,70 +329,97 @@ const MemberList = () => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAddEditSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Member Code</Form.Label>
-              <Form.Control
-                name="CODE"
-                type="number"
-                value={memberForm.CODE}
-                onChange={handleFormChange}
-                required
-                disabled={isEdit}
-                min={1}
-                max={9999}
-                maxLength={4}
-                placeholder="1-4 digit code"
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Milk Type</Form.Label>
-              <Form.Select name="MILKTYPE" value={memberForm.MILKTYPE} onChange={handleFormChange} required>
-                <option value="C">Cow</option>
-                <option value="B">Buffalo</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Commission Type</Form.Label>
-              <Form.Select name="COMMISSIONTYPE" value={memberForm.COMMISSIONTYPE} onChange={handleFormChange} required>
-                <option value="N">N</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Member Name</Form.Label>
-              <Form.Control name="MEMBERNAME" value={memberForm.MEMBERNAME} onChange={handleFormChange} required maxLength={20} placeholder="Max 20 characters" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Contact No</Form.Label>
-              <Form.Control
-                type="text"
-                name="CONTACTNO"
-                value={memberForm.CONTACTNO}
-                maxLength={10}
-                inputMode="numeric"
-                pattern="\d*"
-                onChange={e => {
-                  // Only allow digits
-                  const value = e.target.value.replace(/\D/g, '');
-                  setMemberForm(prev => ({ ...prev, CONTACTNO: value }));
-                }}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Select name="STATUS" value={memberForm.STATUS} onChange={handleFormChange} required>
-                <option value="A">Active</option>
-                <option value="D">Deactive</option>
-              </Form.Select>
-            </Form.Group>
-            <div className="d-flex justify-content-end">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <Form.Label>Member Code</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text>
+                    <FontAwesomeIcon icon={faUser} />
+                  </InputGroup.Text>
+                  <Form.Control
+                    name="CODE"
+                    type="number"
+                    value={memberForm.CODE}
+                    onChange={handleFormChange}
+                    required
+                    disabled={isEdit}
+                    min={1}
+                    max={9999}
+                    maxLength={4}
+                    placeholder="1-4 digit code"
+                  />
+                </InputGroup>
+                <Form.Text muted>1-4 digit code</Form.Text>
+              </div>
+              <div className="col-md-6 mb-3">
+                <Form.Label>Milk Type</Form.Label>
+                <Form.Select name="MILKTYPE" value={memberForm.MILKTYPE} onChange={handleFormChange} required>
+                  <option value="C">Cow</option>
+                  <option value="B">Buffalo</option>
+                </Form.Select>
+              </div>
+              <div className="col-md-6 mb-3">
+                <Form.Label>Commission Type</Form.Label>
+                <Form.Select name="COMMISSIONTYPE" value={memberForm.COMMISSIONTYPE} onChange={handleFormChange} required>
+                  <option value="N">N</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                </Form.Select>
+              </div>
+              <div className="col-md-6 mb-3">
+                <Form.Label>Status</Form.Label>
+                <Form.Select name="STATUS" value={memberForm.STATUS} onChange={handleFormChange} required>
+                  <option value="A">Active</option>
+                  <option value="D">Deactive</option>
+                </Form.Select>
+              </div>
+              <div className="col-md-6 mb-3">
+                <Form.Label>Member Name</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text>
+                    <FontAwesomeIcon icon={faUser} />
+                  </InputGroup.Text>
+                  <Form.Control
+                    name="MEMBERNAME"
+                    value={memberForm.MEMBERNAME}
+                    onChange={handleFormChange}
+                    required
+                    maxLength={20}
+                    placeholder="Max 20 characters"
+                  />
+                </InputGroup>
+                <Form.Text muted>Max 20 characters</Form.Text>
+              </div>
+              <div className="col-md-6 mb-3">
+                <Form.Label>Contact No</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text>
+                    <FontAwesomeIcon icon={faUser} />
+                  </InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    name="CONTACTNO"
+                    value={memberForm.CONTACTNO}
+                    maxLength={10}
+                    inputMode="numeric"
+                    pattern="\d*"
+                    onChange={e => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      setMemberForm(prev => ({ ...prev, CONTACTNO: value }));
+                    }}
+                    placeholder="10-digit number"
+                  />
+                </InputGroup>
+                <Form.Text muted>Optional, 10 digits</Form.Text>
+              </div>
+            </div>
+            <div className="d-flex justify-content-end mt-3">
               <Button variant="secondary" onClick={closeAddEditModal} className="me-2">Cancel</Button>
               <Button variant="primary" type="submit" disabled={formLoading || isAdding || isEditing}>
                 {(formLoading || isAdding || isEditing) ? "Saving..." : isEdit ? "Update" : "Add"}
