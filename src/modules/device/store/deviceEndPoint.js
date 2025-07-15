@@ -43,6 +43,30 @@ export const deviceDetails = DeviceApi.injectEndpoints({
             }),
             invalidatesTags: ['device']
         }),
+        addMember: builder.mutation({
+            query: (body) => ({
+                url: 'device/addMember',
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['device']
+        }),
+        editMember: builder.mutation({
+            query: (body) => ({
+                url: 'device/editMember',
+                method: 'PUT',
+                body
+            }),
+            invalidatesTags: ['device']
+        }),
+        deleteMember: builder.mutation({
+            query: (body) => ({
+                url: 'device/deleteMember',
+                method: 'DELETE',
+                body
+            }),
+            invalidatesTags: ['device']
+        }),
     }),
 });
 
@@ -52,6 +76,8 @@ export const {
     useGetDeviceByIdQuery,
     useCreateDeviceMutation,
     useEditDeviceMutation,
-    useDeleteDeviceMutation
-
+    useDeleteDeviceMutation,
+    useAddMemberMutation,
+    useEditMemberMutation,
+    useDeleteMemberMutation
 } = deviceDetails;
