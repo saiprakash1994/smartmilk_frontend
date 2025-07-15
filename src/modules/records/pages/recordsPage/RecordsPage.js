@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tabs, Tab } from "react-bootstrap";
 import DeviceRecords from "../deviceRecords/DeviceRecords";
 import MemberRecords from "../memberRecords/MemberRecords";
+import MemberList from "../memberRecords/MemberList";
 import "./RecordsPage.scss";
 import AbsentMemberRecords from "../memberRecords/AbsentMemberRecords";
 import CumilativeRecords from "../memberRecords/CumilativeRecords";
@@ -14,7 +15,7 @@ import { useGetAllDevicesQuery } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 
 const RecordsPage = () => {
-  const [activeTab, setActiveTab] = useState("records");
+  const [activeTab, setActiveTab] = useState("memberList");
   return (
     <>
       <Tabs
@@ -23,6 +24,9 @@ const RecordsPage = () => {
         onSelect={(k) => setActiveTab(k)}
         className="mb-3"
       >
+        <Tab eventKey="memberList" title="Member List">
+          <MemberList />
+        </Tab>
         <Tab eventKey="records" title="Daily Report">
           <DeviceRecords />
         </Tab>
