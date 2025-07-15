@@ -19,8 +19,8 @@ const DeviceAdd = lazy(() => import('../modules/device/pages/addDevice/DeviceAdd
 const RecordsLayout = lazy(() => import('../modules/records/recordsLayout/RecordLayout'));
 const RecordsPage = lazy(() => import('../modules/records/pages/recordsPage/RecordsPage'));
 const MemberRecords = lazy(() => import('../modules/records/pages/memberRecords/MemberRecords'));
-// Price Table Generator
-const PriceTableGenerator = lazy(() => import('../modules/records/pages/priceTable/PriceTableGenerator'));
+// Rate Table Generator
+const RateTableGenerator = lazy(() => import('../modules/records/pages/priceTable/PriceTableGenerator'));
 
 // settings
 const SettingsLayout = lazy(() => import('../modules/settings/settingsLayout/SettingsLayout'));
@@ -48,5 +48,5 @@ export {
     UploadsLayout,
     UploadsPage,
     NotFoundPage,
-    PriceTableGenerator
+    RateTableGenerator
 }

@@ -18,7 +18,7 @@ import {
   UploadsPage,
   MemberRecords,
   NotFoundPage,
-  PriceTableGenerator
+  RateTableGenerator
 } from './pages';
 
 
@@ -138,12 +138,13 @@ export default function AppRoutes() {
 
 
           </Route>
-          <Route path="pricetable"
+          <Route path="ratetable"
             element={
               <Suspense>
-                <PriceTableGenerator />
+                <RateTableGenerator />
               </Suspense>
-            } />
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
 
         </Route>

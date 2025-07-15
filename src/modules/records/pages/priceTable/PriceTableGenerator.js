@@ -20,6 +20,14 @@ function getIncrement(value, rules) {
 }
 
 function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snfStart, snfEnd, snfStep, snfRules) {
+  // Defensive conversion to numbers
+  basePrice = Number(basePrice);
+  fatStart = Number(fatStart);
+  fatEnd = Number(fatEnd);
+  fatStep = Number(fatStep);
+  snfStart = Number(snfStart);
+  snfEnd = Number(snfEnd);
+  snfStep = Number(snfStep);
   const fatValues = [];
   for (let f = fatStart; f <= fatEnd + 0.0001; f += fatStep) {
     fatValues.push(Number(f.toFixed(1)));
@@ -30,7 +38,7 @@ function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snf
   }
   // Build matrix: first row is header
   const matrix = [];
-  const header = ['FAT', ...snfValues.map(s => s.toFixed(1))];
+  const header = ['f/s', ...snfValues.map(s => s.toFixed(1))];
   matrix.push(header);
   for (let i = 0; i < fatValues.length; ++i) {
     let fat = fatValues[i];
@@ -222,7 +230,19 @@ const PriceTableGenerator = () => {
       setError(snfErr);
       return;
     }
-    setMatrixTable(generateMatrixTable(Number(basePrice), fatStart, fatEnd, fatStep, fatRules, snfStart, snfEnd, snfStep, snfRules));
+    setMatrixTable(
+      generateMatrixTable(
+        Number(basePrice),
+        Number(fatStart),
+        Number(fatEnd),
+        Number(fatStep),
+        fatRules,
+        Number(snfStart),
+        Number(snfEnd),
+        Number(snfStep),
+        snfRules
+      )
+    );
   };
 
   const handleDownloadCSV = () => {
@@ -250,8 +270,8 @@ const PriceTableGenerator = () => {
   const canAddSnfRule = snfRules.length === 0 || Number(Number(snfRules[snfRules.length - 1].to).toFixed(1)) < Number(Number(snfEnd).toFixed(1));
 
   return (
-    <div className="container py-4 border border-dark rounded" style={{background: '#f8f9fa'}}>
-      <Card className="mb-5 shadow p-4">
+    <>
+      <Card >
         <Card.Body>
           <Card.Title className="text-center w-100 fs-2 py-3 text-primary bg-light rounded mb-4" style={{letterSpacing: '1px'}}>Rate Table Generator</Card.Title>
           <Form onSubmit={handleGenerate}>
@@ -659,7 +679,7 @@ const PriceTableGenerator = () => {
           </Card.Body>
         </Card>
       )}
-    </div>
+    </>
   );
 };
 

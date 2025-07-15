@@ -44,13 +44,17 @@ const SideBar = () => {
                         >
                             <p
                                 className={`module ${isActivePath(title)}`}
-                                onClick={() => 
-                                   { if (userType === roles.DAIRY && userInfo?.dairyCode && title === "dairy") {
+                                onClick={() => {
+                                    if (userType === roles.DAIRY && userInfo?.dairyCode && title === "dairy") {
                                         navigate(`/dairy/edit/${userInfo.dairyCode}`);
                                     } else if (userType === roles.DEVICE && userInfo?.deviceid && title === "device") {
                                         navigate(`/device/edit/${userInfo.deviceid}`);
-                                    }else
-                                        navigate(`/${title}`)}}
+                                    } else if (title === "RateTable") {
+                                        navigate('/ratetable');
+                                    } else {
+                                        navigate(`/${title}`);
+                                    }
+                                }}
                             >
                                 <FontAwesomeIcon icon={icon} className="module-appIcon" />
                             </p>

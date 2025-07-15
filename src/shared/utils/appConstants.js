@@ -17,7 +17,7 @@ export const Dairy = [
   { title: "device", icon: faMicrochip, tooltip: "Devices" },
   { title: "settings", icon: faCogs, tooltip: "Settings" },
   { title: "records", icon: faChartLine, tooltip: "Reports" },
-  { title: "pricetable", icon: faTable, tooltip: "Price Table Generator" },
+  { title: "RateTable", icon: faTable, tooltip: "Rate Table Generator" },
   { title: "uploads", icon: faFileUpload, tooltip: "Upload Files" },
   { title: "dairy", icon: faUser, tooltip: "Dairy Profile" },
 
