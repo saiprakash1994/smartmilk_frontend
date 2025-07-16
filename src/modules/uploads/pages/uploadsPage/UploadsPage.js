@@ -1,22 +1,23 @@
 import './UploadsPage.scss';
+import "../../../settings/pages/settingsPage/SettingsPage.scss";
 import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import {
     useUploadFatBufMutation,
     useUploadFatCowMutation,
-    useUploadMemberMutation,
     useUploadSnfBufMutation,
-    useUploadSnfCowMutation
+    useUploadSnfCowMutation,
+    useUploadMemberMutation
 } from "../../store/uploadEndPoint";
 import FileUploadCard from "../../components/FileUploadCard";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import { 
-    FaCloudUploadAlt, 
-    FaFileAlt, 
-    FaDatabase, 
-    FaUsers, 
+import { Container, Row, Col, Card, Button, Nav, Tab } from "react-bootstrap";
+import {
+    FaCloudUploadAlt,
+    FaFileAlt,
+    FaDatabase,
     FaChartLine,
     FaTint,
-    FaServer
+    FaServer,
+    FaUsers
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useGetDeviceByIdQuery } from "../../../device/store/deviceEndPoint";
@@ -25,15 +26,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { roles } from "../../../../shared/utils/appRoles";
 
 const UploadsPage = () => {
+    // All hooks at the top!
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
     const deviceid = userInfo?.deviceid;
     const { data: deviceData } = useGetDeviceByIdQuery(deviceid, { skip: !deviceid });
     const clrBasedTable = deviceData?.serverSettings?.clrBasedTable === "Y";
-    const snfOrClr = clrBasedTable ? "CLR" : "SNF";
-
-    // Check if user is dairy user
     const isDairyUser = userInfo?.role === roles.DAIRY;
+    const snfOrClr = isDairyUser ? "SNF/CLR" : (clrBasedTable ? "CLR" : "SNF");
 
     const [uploadSnfBufTable] = useUploadSnfBufMutation();
     const [uploadSnfCowTable] = useUploadSnfCowMutation();
@@ -42,19 +42,81 @@ const UploadsPage = () => {
     const [uploadMemberTable] = useUploadMemberMutation();
 
     const location = useLocation();
-    const { csv, filename, milkType, stepType } = location.state || {};
+    const { csv, filename } = location.state || {};
 
-    // Refs for FileUploadCard components
     const snfBufRef = useRef();
     const snfCowRef = useRef();
     const fatBufRef = useRef();
     const fatCowRef = useRef();
+    const memberRef = useRef();
+
+    const uploadCategories = [
+      {
+        key: 'fat-buf',
+        title: 'FAT BUF TABLE',
+        icon: FaTint,
+        ref: fatBufRef,
+        onUpload: uploadFatBufTable,
+        toastMsg: 'FAT Buf table uploaded successfully',
+        showDate: true,
+        dateFieldName: 'fatBufEffectiveDate',
+        description: 'Buffalo milk FAT rates',
+        categoryColor: 'success',
+      },
+      {
+        key: 'fat-cow',
+        title: 'FAT COW TABLE',
+        icon: FaTint,
+        ref: fatCowRef,
+        onUpload: uploadFatCowTable,
+        toastMsg: 'FAT Cow table uploaded successfully',
+        showDate: true,
+        dateFieldName: 'fatCowEffectiveDate',
+        description: 'Cow milk FAT rates',
+        categoryColor: 'success',
+      },
+      {
+        key: 'snf-buf',
+        title: `${snfOrClr} BUF TABLE`,
+        icon: FaChartLine,
+        ref: snfBufRef,
+        onUpload: uploadSnfBufTable,
+        toastMsg: `${snfOrClr} Buf table uploaded successfully`,
+        showDate: true,
+        dateFieldName: 'snfBufEffectiveDate',
+        description: `Buffalo milk ${snfOrClr} rates`,
+        categoryColor: 'primary',
+      },
+      {
+        key: 'snf-cow',
+        title: `${snfOrClr} COW TABLE`,
+        icon: FaChartLine,
+        ref: snfCowRef,
+        onUpload: uploadSnfCowTable,
+        toastMsg: `${snfOrClr} Cow table uploaded successfully`,
+        showDate: true,
+        dateFieldName: 'snfCowEffectiveDate',
+        description: `Cow milk ${snfOrClr} rates`,
+        categoryColor: 'primary',
+      },
+      // Add Member Management if device user
+      ...(userInfo?.role === roles.DEVICE ? [{
+        key: 'member',
+        title: 'MEMBER TABLE',
+        icon: FaUsers,
+        ref: memberRef,
+        onUpload: uploadMemberTable,
+        toastMsg: 'Member table uploaded successfully',
+        showDate: false,
+        description: 'Member information and details',
+        categoryColor: 'info',
+      }] : []),
+    ];
+    const [activeKey, setActiveKey] = useState(uploadCategories[0]?.key);
 
     useEffect(() => {
       if (csv && filename) {
-        // Create a File object from the CSV string
         const file = new File([csv], filename, { type: 'text/csv' });
-        // Determine the correct section and set the file
         if (filename.includes('SNF_BUF')) {
           snfBufRef.current?.autoUploadFromParent(file);
         } else if (filename.includes('CLR_BUF')) {
@@ -63,285 +125,173 @@ const UploadsPage = () => {
           snfCowRef.current?.autoUploadFromParent(file);
         } else if (filename.includes('CLR_COW')) {
           snfCowRef.current?.autoUploadFromParent(file);
+        } else if (filename.includes('FAT_BUF')) {
+          fatBufRef.current?.autoUploadFromParent(file);
+        } else if (filename.includes('FAT_COW')) {
+          fatCowRef.current?.autoUploadFromParent(file);
+        } else if (filename.includes('MEMBER')) {
+          memberRef.current?.autoUploadFromParent(file);
         }
       }
     }, [csv, filename]);
 
-
-    const uploadCategories = [
-        {
-            title: `${snfOrClr} Tables`,
-            description: `Upload ${snfOrClr} (${clrBasedTable ? "Corrected Lactometer Reading" : "Solid Not Fat"}) rate tables for different milk types`,
-            icon: FaChartLine,
-            color: "primary",
-            items: [
-                {
-                    title: `${snfOrClr} BUF TABLE`,
-                    onUpload: uploadSnfBufTable,
-                    toastMsg: `${snfOrClr} Buf table uploaded successfully`,
-                    showDate: true,
-                    dateFieldName: "snfBufEffectiveDate",
-                    icon: FaTint,
-                    description: `Buffalo milk ${snfOrClr} rates`
-                },
-                {
-                    title: `${snfOrClr} COW TABLE`,
-                    onUpload: uploadSnfCowTable,
-                    toastMsg: `${snfOrClr} Cow table uploaded successfully`,
-                    showDate: true,
-                    dateFieldName: "snfCowEffectiveDate",
-                    icon: FaServer,
-                    description: `Cow milk ${snfOrClr} rates`
-                }
-            ]
-        },
-        {
-            title: "FAT Tables",
-            description: "Upload FAT rate tables for different milk types",
-            icon: FaTint,
-            color: "success",
-            items: [
-                {
-                    title: "FAT BUF TABLE",
-                    onUpload: uploadFatBufTable,
-                    toastMsg: "FAT Buf table uploaded successfully",
-                    showDate: true,
-                    dateFieldName: "fatBufEffectiveDate",
-                    icon: FaTint,
-                    description: "Buffalo milk FAT rates"
-                },
-                {
-                    title: "FAT COW TABLE",
-                    onUpload: uploadFatCowTable,
-                    toastMsg: "FAT COW table uploaded successfully",
-                    showDate: true,
-                    dateFieldName: "fatCowEffectiveDate",
-                    icon: FaServer,
-                    description: "Cow milk FAT rates"
-                }
-            ]
-        },
-        // Only show Member Management for device users, not dairy users
-        ...(isDairyUser ? [] : [{
-            title: "Member Management",
-            description: "Upload member information and data",
-            icon: FaUsers,
-            color: "info",
-            items: [
-                {
-                    title: "MEMBER TABLE",
-                    onUpload: uploadMemberTable,
-                    toastMsg: "Member table uploaded successfully",
-                    showDate: false,
-                    icon: FaUsers,
-                    description: "Member information and details"
-                }
-            ]
-        }])
-    ];
+    // If auto-uploading, skip sidebar and show only relevant card
+    if (csv && filename) {
+      let cardProps = null;
+      if (filename.includes('FAT_BUF')) {
+        cardProps = uploadCategories[0];
+      } else if (filename.includes('FAT_COW')) {
+        cardProps = uploadCategories[1];
+      } else if (filename.includes('SNF_BUF') || filename.includes('CLR_BUF')) {
+        cardProps = uploadCategories[2];
+      } else if (filename.includes('SNF_COW') || filename.includes('CLR_COW')) {
+        cardProps = uploadCategories[3];
+      } else if (filename.includes('MEMBER')) {
+        cardProps = uploadCategories[uploadCategories.length - 1];
+      }
+      return (
+        <div className="uploads-page">
+          <Container fluid className="uploads-container">
+            <Card className="upload-category-card mb-4">
+              <Card.Header className="category-header">
+                <div className="d-flex justify-content-between align-items-center w-100">
+                  <div className="category-header-content d-flex align-items-center">
+                    <div className="category-icon">
+                      <cardProps.icon />
+                    </div>
+                    <div className="category-info ms-3">
+                      <h4 className="category-title mb-0">Auto Upload</h4>
+                      <p className="category-description mb-0">Auto-uploading file: <b>{filename}</b></p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="danger" 
+                    size="lg" 
+                    className="px-4 fw-bold"
+                    style={{ minWidth: '120px' }}
+                    onClick={() => navigate('/ratetable')}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Card.Header>
+              <Card.Body>
+                <Row className="justify-content-center">
+                  <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
+                    <FileUploadCard
+                      ref={cardProps.ref}
+                      title={cardProps.title}
+                      onUpload={cardProps.onUpload}
+                      toastMsg={cardProps.toastMsg}
+                      showDate={cardProps.showDate}
+                      dateFieldName={cardProps.dateFieldName}
+                      icon={cardProps.icon}
+                      description={cardProps.description}
+                      categoryColor={cardProps.categoryColor}
+                      disableFileInput={true}
+                      suppressNoFileError={true}
+                      autoRedirectAfterUpload={true}
+                      hideFileInputArea={true}
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </Container>
+        </div>
+      );
+    }
 
     return (
-        <div className="uploads-page">
-            <Container fluid className="uploads-container">
-                {/* Header Section */}
-                {!(csv && filename) && (
-                  <Card className="uploads-header-card mb-4">
-                      <Card.Body className="text-center py-5">
-                          <div className="uploads-header-icon">
-                              <FaCloudUploadAlt />
-                          </div>
-                          <h2 className="uploads-title">File Upload Center</h2>
-                          <p className="uploads-subtitle">
-                              Upload and manage your data tables, rate configurations, and member information
-                          </p>
-                      </Card.Body>
-                  </Card>
-                )}
-
-                {/* Show only the relevant upload section if auto-uploading */}
-                {csv && filename ? (
-                  <Card className="upload-category-card mb-4">
-                    <Card.Header className="category-header">
-                      <div className="category-header-content">
-                        <div className="category-icon">
-                          <FaChartLine />
-                        </div>
-                        <div className="category-info">
-                          <h4 className="category-title">Auto Upload</h4>
-                          <p className="category-description">Auto-uploading file: <b>{filename}</b></p>
-                        </div>
-                      </div>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row className="justify-content-center">
-                        {filename.includes('SNF_BUF') && (
-                          <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
-                            <FileUploadCard
-                              ref={snfBufRef}
-                              title={`${snfOrClr} BUF TABLE`}
-                              onUpload={uploadSnfBufTable}
-                              toastMsg={`${snfOrClr} Buf table uploaded successfully`}
-                              showDate={true}
-                              dateFieldName="snfBufEffectiveDate"
-                              icon={FaTint}
-                              description={`Buffalo milk ${snfOrClr} rates`}
-                              categoryColor="primary"
-                              disableFileInput={true}
-                              suppressNoFileError={true}
-                              autoRedirectAfterUpload={true}
-                              hideFileInputArea={true}
-                            />
-                          </Col>
-                        )}
-                        {filename.includes('CLR_BUF') && (
-                          <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
-                            <FileUploadCard
-                              ref={snfBufRef}
-                              title={`CLR BUF TABLE`}
-                              onUpload={uploadSnfBufTable}
-                              toastMsg={`CLR Buf table uploaded successfully`}
-                              showDate={true}
-                              dateFieldName="snfBufEffectiveDate"
-                              icon={FaTint}
-                              description={`Buffalo milk CLR rates`}
-                              categoryColor="primary"
-                              disableFileInput={true}
-                              suppressNoFileError={true}
-                              autoRedirectAfterUpload={true}
-                              hideFileInputArea={true}
-                            />
-                          </Col>
-                        )}
-                        {filename.includes('SNF_COW') && (
-                          <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
-                            <FileUploadCard
-                              ref={snfCowRef}
-                              title={`${snfOrClr} COW TABLE`}
-                              onUpload={uploadSnfCowTable}
-                              toastMsg={`${snfOrClr} Cow table uploaded successfully`}
-                              showDate={true}
-                              dateFieldName="snfCowEffectiveDate"
-                              icon={FaServer}
-                              description={`Cow milk ${snfOrClr} rates`}
-                              categoryColor="primary"
-                              disableFileInput={true}
-                              suppressNoFileError={true}
-                              autoRedirectAfterUpload={true}
-                              hideFileInputArea={true}
-                            />
-                          </Col>
-                        )}
-                        {filename.includes('CLR_COW') && (
-                          <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
-                            <FileUploadCard
-                              ref={snfCowRef}
-                              title={`CLR COW TABLE`}
-                              onUpload={uploadSnfCowTable}
-                              toastMsg={`CLR Cow table uploaded successfully`}
-                              showDate={true}
-                              dateFieldName="snfCowEffectiveDate"
-                              icon={FaServer}
-                              description={`Cow milk CLR rates`}
-                              categoryColor="primary"
-                              disableFileInput={true}
-                              suppressNoFileError={true}
-                              autoRedirectAfterUpload={true}
-                              hideFileInputArea={true}
-                            />
-                          </Col>
-                        )}
-                        <Col xs={12} className="d-flex justify-content-center mt-3">
-                          <Button variant="secondary" onClick={() => navigate('/ratetable')}>Cancel</Button>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
-                ) : (
-                  /* Upload Categories */
-                  uploadCategories.map((category, categoryIndex) => (
-                    <Card key={categoryIndex} className="upload-category-card mb-4">
-                      <Card.Header className="category-header">
-                        <div className="category-header-content">
-                          <div className="category-icon">
-                            <category.icon />
-                          </div>
-                          <div className="category-info">
-                            <h4 className="category-title">{category.title}</h4>
-                            <p className="category-description">{category.description}</p>
-                          </div>
-                        </div>
-                      </Card.Header>
-                      <Card.Body>
-                        <Row>
-                          {category.items.map((item, itemIndex) => (
-                            <Col key={itemIndex} lg={6} className="mb-3">
-                              <FileUploadCard
-                                ref={
-                                  item.title.includes('BUF') && category.title.includes('SNF') ? snfBufRef :
-                                  item.title.includes('BUF') && category.title.includes('FAT') ? fatBufRef :
-                                  item.title.includes('COW') && category.title.includes('SNF') ? snfCowRef :
-                                  item.title.includes('COW') && category.title.includes('FAT') ? fatCowRef :
-                                  null
-                                }
-                                title={item.title}
-                                onUpload={item.onUpload}
-                                toastMsg={item.toastMsg}
-                                showDate={item.showDate}
-                                dateFieldName={item.dateFieldName}
-                                icon={item.icon}
-                                description={item.description}
-                                categoryColor={category.color}
-                              />
-                            </Col>
-                          ))}
-                        </Row>
-                      </Card.Body>
-                    </Card>
-                  ))
-                )}
-
-                {/* Upload Guidelines */}
-                {!(csv && filename) && (
-                  <Card className="upload-guidelines-card">
-                      <Card.Header className="guidelines-header">
-                          <FaFileAlt className="me-2" />
-                          <span>Upload Guidelines</span>
-                      </Card.Header>
-                      <Card.Body>
-                          <Row>
-                              <Col md={4}>
-                                  <div className="guideline-item">
-                                      <div className="guideline-icon">
-                                          <FaFileAlt />
-                                      </div>
-                                      <h6>File Format</h6>
-                                      <p>Ensure your files are in the correct format (CSV,  etc.) as specified for each upload type.</p>
-                                  </div>
-                              </Col>
-                              <Col md={4}>
-                                  <div className="guideline-item">
-                                      <div className="guideline-icon">
-                                          <FaDatabase />
-                                      </div>
-                                      <h6>Data Validation</h6>
-                                      <p>Verify that your data meets the required validation criteria before uploading.</p>
-                                  </div>
-                              </Col>
-                              <Col md={4}>
-                                  <div className="guideline-item">
-                                      <div className="guideline-icon">
-                                          <FaCloudUploadAlt />
-                                      </div>
-                                      <h6>Effective Dates</h6>
-                                      <p>Set appropriate effective dates for rate tables to ensure proper data management.</p>
-                                  </div>
-                              </Col>
-                          </Row>
-                      </Card.Body>
-                  </Card>
-                )}
-            </Container>
-        </div>
+      <div className="uploads-page settings-page">
+        <Container fluid className="uploads-container settings-container">
+          <Card className="settings-main-card">
+            <Card.Header className="settings-header">
+              <FaCloudUploadAlt className="me-2" />
+              <span>Uploads</span>
+            </Card.Header>
+            <Card.Body className="p-0">
+              <Tab.Container id="uploads-tabs" activeKey={activeKey} onSelect={setActiveKey}>
+                <Row className="g-0">
+                  <Col md={3} className="settings-sidebar">
+                    <Nav variant="pills" className="flex-column settings-nav">
+                      {uploadCategories.map((category) => (
+                        <Nav.Item key={category.key}>
+                          <Nav.Link eventKey={category.key} className="settings-nav-link">
+                            <category.icon className="me-2" />
+                            {category.title}
+                          </Nav.Link>
+                        </Nav.Item>
+                      ))}
+                    </Nav>
+                  </Col>
+                  <Col md={9} className="settings-content">
+                    <Tab.Content className="settings-tab-content">
+                      {uploadCategories.map((category) => (
+                        <Tab.Pane key={category.key} eventKey={category.key} className="settings-tab-pane">
+                           <Row className="justify-content-center">
+                             <Col xs={12} md={8} lg={6} className="mb-3 d-flex justify-content-center">
+                               <FileUploadCard
+                                 ref={category.ref}
+                                 title={category.title}
+                                 onUpload={category.onUpload}
+                                 toastMsg={category.toastMsg}
+                                 showDate={category.showDate}
+                                 dateFieldName={category.dateFieldName}
+                                 icon={category.icon}
+                                 description={category.description}
+                                 categoryColor={category.categoryColor}
+                               />
+                             </Col>
+                           </Row>
+                        </Tab.Pane>
+                      ))}
+                    </Tab.Content>
+                  </Col>
+                </Row>
+              </Tab.Container>
+            </Card.Body>
+          </Card>
+          {/* Upload Guidelines at the bottom */}
+          <Card className="upload-guidelines-card mt-4">
+            <Card.Header className="guidelines-header">
+              <FaFileAlt className="me-2" />
+              <span>Upload Guidelines</span>
+            </Card.Header>
+            <Card.Body>
+              <Row>
+                <Col md={4}>
+                  <div className="guideline-item">
+                    <div className="guideline-icon">
+                      <FaFileAlt />
+                    </div>
+                    <h6>File Format</h6>
+                    <p>Ensure your files are in the correct format (CSV,  etc.) as specified for each upload type.</p>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="guideline-item">
+                    <div className="guideline-icon">
+                      <FaDatabase />
+                    </div>
+                    <h6>Data Validation</h6>
+                    <p>Verify that your data meets the required validation criteria before uploading.</p>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="guideline-item">
+                    <div className="guideline-icon">
+                      <FaCloudUploadAlt />
+                    </div>
+                    <h6>Effective Dates</h6>
+                    <p>Set appropriate effective dates for rate tables to ensure proper data management.</p>
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Container>
+      </div>
     );
 };
 
