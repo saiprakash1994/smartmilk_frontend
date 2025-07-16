@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { useNavigate } from 'react-router-dom';
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -12,7 +13,7 @@ import {
     FaTimesCircle
 } from "react-icons/fa";
 
-const FileUploadCard = ({
+const FileUploadCard = forwardRef(({
     title,
     onUpload,
     toastMsg = "Upload successful",
@@ -21,8 +22,13 @@ const FileUploadCard = ({
     icon: Icon,
     description,
     categoryColor = "primary",
-    disabled = false
-}) => {
+    disabled = false,
+    disableFileInput = false,
+    suppressNoFileError = false,
+    autoRedirectAfterUpload = false,
+    hideFileInputArea = false
+}, ref) => {
+    const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
@@ -36,11 +42,26 @@ const FileUploadCard = ({
         }
     }, [showDate]);
 
+    useImperativeHandle(ref, () => ({
+        setSelectedFileFromParent: (file) => {
+            setSelectedFile(file);
+        },
+        autoUploadFromParent: (file) => {
+            setSelectedFile(file);
+            setTimeout(() => {
+                handleUpload();
+            }, 0);
+        }
+    }));
+
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        if (!disableFileInput) {
+            setSelectedFile(event.target.files[0]);
+        }
     };
 
     const handleDrag = (e) => {
+        if (disableFileInput) return;
         e.preventDefault();
         e.stopPropagation();
         if (e.type === "dragenter" || e.type === "dragover") {
@@ -51,6 +72,7 @@ const FileUploadCard = ({
     };
 
     const handleDrop = (e) => {
+        if (disableFileInput) return;
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
@@ -62,7 +84,9 @@ const FileUploadCard = ({
 
     const handleUpload = async () => {
         if (!selectedFile) {
-            errorToast("Please select a file.");
+            if (!suppressNoFileError) {
+                errorToast("Please select a file.");
+            }
             return;
         }
 
@@ -90,6 +114,12 @@ const FileUploadCard = ({
             if (showDate) {
                 const today = new Date().toISOString().slice(0, 10);
                 setSelectedDate(today);
+            }
+
+            if (autoRedirectAfterUpload) {
+                setTimeout(() => {
+                    navigate('/ratetable'); // Change this route if your rate table generator is at a different path
+                }, 1000); // Give a short delay for the toast to show
             }
         } catch (error) {
             console.error("Upload failed:", error);
@@ -146,28 +176,32 @@ const FileUploadCard = ({
                 </div>
 
                 {/* File Upload Area */}
-                <div 
-                    className={`file-upload-area ${dragActive ? 'drag-active' : ''}`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                >
-                    <div className="file-upload-content">
-                        <div className="file-upload-icon">
-                            <FaCloudUploadAlt />
-                        </div>
-                        <h6 className="file-upload-title">Drop your file here</h6>
-                        <p className="file-upload-subtitle">or click to browse</p>
-                        <Form.Control
-                            type="file"
-                            onChange={handleFileChange}
-                            ref={fileInputRef}
-                            className="file-input"
-                            accept=".csv"
-                        />
-                    </div>
-                </div>
+                {!hideFileInputArea && (
+                  <div 
+                      className={`file-upload-area ${dragActive ? 'drag-active' : ''} ${disableFileInput ? 'disabled' : ''}`}
+                      onDragEnter={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDragOver={handleDrag}
+                      onDrop={handleDrop}
+                      style={disableFileInput ? { pointerEvents: 'none', opacity: 0.5 } : {}}
+                  >
+                      <div className="file-upload-content">
+                          <div className="file-upload-icon">
+                              <FaCloudUploadAlt />
+                          </div>
+                          <h6 className="file-upload-title">Drop your file here</h6>
+                          <p className="file-upload-subtitle">or click to browse</p>
+                          <Form.Control
+                              type="file"
+                              onChange={handleFileChange}
+                              ref={fileInputRef}
+                              className="file-input"
+                              accept=".csv"
+                              disabled={disableFileInput}
+                          />
+                      </div>
+                  </div>
+                )}
 
                 {/* Selected File Display */}
                 {selectedFile && (
@@ -238,7 +272,7 @@ const FileUploadCard = ({
             </Card.Body>
         </Card>
     );
-};
+});
 
 export default FileUploadCard;
 

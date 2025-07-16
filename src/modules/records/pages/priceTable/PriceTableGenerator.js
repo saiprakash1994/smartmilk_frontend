@@ -3,6 +3,7 @@ import { Card, Form, Button, Table, InputGroup, Alert } from "react-bootstrap";
 import Papa from "papaparse";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import './PriceTableGenerator.scss';
+import { useNavigate } from 'react-router-dom';
 
 const defaultFatRules = [
 //   { from: 3.0, to: 4.0, increment: 0.10 },
@@ -83,6 +84,7 @@ function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snf
 }
 
 const PriceTableGenerator = () => {
+  const navigate = useNavigate();
   // Milk type state
   const [milkType, setMilkType] = useState('Cow');
   // Step type state
@@ -343,6 +345,23 @@ const PriceTableGenerator = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleUploadCSV = () => {
+    if (!matrixTable.length) return;
+    const csv = Papa.unparse(matrixTable);
+    const milkTypeShort = milkType === 'Cow' ? 'COW' : 'BUF';
+    const stepTypeShort = stepType === 'FAT + CLR' ? 'CLR' : 'SNF';
+    const filename = `${stepTypeShort}_${milkTypeShort}.csv`;
+    // Pass CSV and info to uploads page
+    navigate('/uploads', {
+      state: {
+        csv,
+        filename,
+        milkType: milkTypeShort,
+        stepType: stepTypeShort
+      }
+    });
   };
 
   const handleReset = () => {
@@ -779,7 +798,10 @@ const PriceTableGenerator = () => {
           <Card.Body>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <Card.Title>Generated Rate Table</Card.Title>
+              <div className="d-flex gap-2">
                 <Button variant="success" onClick={handleDownloadCSV}>Download CSV</Button>
+                <Button variant="primary" onClick={handleUploadCSV}>Upload CSV</Button>
+              </div>
             </div>
             <div style={{ maxHeight: 500, overflow: "auto" }}>
               <Table striped bordered hover responsive size="sm">
