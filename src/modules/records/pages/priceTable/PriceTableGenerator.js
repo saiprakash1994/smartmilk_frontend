@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Form, Button, Table, InputGroup, Alert } from "react-bootstrap";
 import Papa from "papaparse";
 import { FaPlus, FaTrash } from "react-icons/fa";
+import './PriceTableGenerator.scss';
 
 const defaultFatRules = [
 //   { from: 3.0, to: 4.0, increment: 0.10 },
@@ -12,6 +13,9 @@ const defaultSnfRules = [
 //   { from: 8.1, to: 9.0, increment: 0.20 },
 ];
 
+let snfOrCLR ;
+
+
 function getIncrement(value, rules) {
   for (const rule of rules) {
     if (value >= rule.from && value <= rule.to) return rule.increment;
@@ -19,7 +23,7 @@ function getIncrement(value, rules) {
   return 0;
 }
 
-function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snfStart, snfEnd, snfStep, snfRules) {
+function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snfStart, snfEnd, snfStep, snfRules, stepType) {
   // Defensive conversion to numbers
   basePrice = Number(basePrice);
   fatStart = Number(fatStart);
@@ -38,45 +42,122 @@ function generateMatrixTable(basePrice, fatStart, fatEnd, fatStep, fatRules, snf
   }
   // Build matrix: first row is header
   const matrix = [];
-  const header = ['f/s', ...snfValues.map(s => s.toFixed(1))];
+  const header = [stepType === 'FAT + CLR' ? 'f/c' : 'f/s', ...snfValues.map(s => s.toFixed(1))];
   matrix.push(header);
+  let prevFatRow = null;
   for (let i = 0; i < fatValues.length; ++i) {
     let fat = fatValues[i];
-    const row = [fat.toFixed(1)];
-    for (let j = 0; j < snfValues.length; ++j) {
+    let fatIncrement = 0;
+    for (const rule of fatRules) {
+      if (fat >= Number(rule.from) && fat <= Number(rule.to)) {
+        fatIncrement = Number(rule.increment);
+        break;
+      }
+    }
+    let row = [fat.toFixed(1)];
+    // For the first FAT row, start from basePrice; otherwise, carry forward from previous FAT row's first SNF value
+    let prevValue;
+    if (i === 0) {
+      prevValue = Number(basePrice);
+    } else {
+      prevValue = Number(prevFatRow[1]) + fatIncrement;
+    }
+    row.push(prevValue.toFixed(2));
+    // SNF/CLR running total logic (across columns)
+    for (let j = 1; j < snfValues.length; ++j) {
       let snf = snfValues[j];
-      // Calculate FAT increment sum (corrected logic)
-      let fatSum = 0;
-      for (let f = fatStart + fatStep; f <= fat + 0.0001; f += fatStep) {
-        fatSum += getIncrement(Number(f.toFixed(1)), fatRules);
+      let increment = 0;
+      for (const rule of snfRules) {
+        if (snf >= Number(rule.from) && snf <= Number(rule.to)) {
+          increment = Number(rule.increment);
+          break;
+        }
       }
-      // Calculate SNF increment sum (corrected logic)
-      let snfSum = 0;
-      for (let s = snfStart + snfStep; s <= snf + 0.0001; s += snfStep) {
-        snfSum += getIncrement(Number(s.toFixed(1)), snfRules);
-      }
-      let price = Number((Number(basePrice) + fatSum + snfSum).toFixed(2));
+      let price = Number(row[j]) + increment;
       row.push(price.toFixed(2));
     }
+    prevFatRow = row;
     matrix.push(row);
   }
   return matrix;
 }
 
 const PriceTableGenerator = () => {
+  // Milk type state
+  const [milkType, setMilkType] = useState('Cow');
+  // Step type state
+  const [stepType, setStepType] = useState('FAT + SNF');
   const [basePrice, setBasePrice] = useState('25.00');
-  const [fatStart, setFatStart] = useState('3.0');
-  const [fatEnd, setFatEnd] = useState('5.0');
+  const [fatStart, setFatStart] = useState('2.5');
+  const [fatEnd, setFatEnd] = useState('4.9');
   const [fatStep, setFatStep] = useState(0.1);
   const [fatRules, setFatRules] = useState([...defaultFatRules]);
   const [snfStart, setSnfStart] = useState('7.5');
-  const [snfEnd, setSnfEnd] = useState('9.0');
+  const [snfEnd, setSnfEnd] = useState('8.6');
   const [snfStep, setSnfStep] = useState(0.1);
   const [snfRules, setSnfRules] = useState([...defaultSnfRules]);
   const [matrixTable, setMatrixTable] = useState([]);
   const [error, setError] = useState("");
   const [fatRuleError, setFatRuleError] = useState("");
   const [snfRuleError, setSnfRuleError] = useState("");
+
+  // Handle milk type change
+  const handleMilkTypeChange = (e) => {
+    const type = e.target.value;
+    setMilkType(type);
+    if (type === 'Cow') {
+      setFatStart('2.5');
+      setFatEnd('4.9');
+      if (stepType === 'FAT + CLR') {
+        setSnfStart('24');
+        setSnfEnd('26');
+      } else {
+        setSnfStart('7.5');
+        setSnfEnd('8.6');
+      }
+    } else if (type === 'Buffalo') {
+      setFatStart('5.0');
+      setFatEnd('10.0');
+      if (stepType === 'FAT + CLR') {
+        setSnfStart('26');
+        setSnfEnd('30');
+      } else {
+        setSnfStart('8.0');
+        setSnfEnd('10.0');
+      }
+    }
+    setFatRules([]);
+    setSnfRules([]);
+    setFatRuleError("");
+    setSnfRuleError("");
+    setError("");
+    setMatrixTable([]);
+  };
+
+  // Update SNF/CLR limits when stepType changes
+  useEffect(() => {
+    if (milkType === 'Cow') {
+      if (stepType === 'FAT + CLR') {
+        setSnfStart('24');
+        setSnfEnd('26');
+      } else {
+        setSnfStart('7.5');
+        setSnfEnd('8.6');
+      }
+    } else if (milkType === 'Buffalo') {
+      if (stepType === 'FAT + CLR') {
+        setSnfStart('26');
+        setSnfEnd('30');
+      } else {
+        setSnfStart('8.0');
+        setSnfEnd('10.0');
+      }
+    }
+    setSnfRules([]);
+    setSnfRuleError("");
+    setError("");
+    setMatrixTable([]);
+  }, [stepType, milkType]);
 
   // Clear FAT rule error when validation passes
   // Remove the useEffect hooks for error clearing
@@ -108,26 +189,29 @@ const PriceTableGenerator = () => {
     return "";
   };
 
+  // For dynamic label (SNF or CLR)
+  const snfOrClrLabel = stepType === 'FAT + CLR' ? 'CLR' : 'SNF';
+
   const validateSnfRulesEditing = (rules = snfRules, start = snfStart, end = snfEnd) => {
     if (rules.length > 0 && Number(Number(rules[0].from).toFixed(1)) !== Number(Number(start).toFixed(1))) {
-      return `First SNF step must start at ${start}`;
+      return `First ${snfOrClrLabel} step must start at ${start}`;
     }
     for (let i = 0; i < rules.length; ++i) {
       const from = Number(Number(rules[i].from).toFixed(1));
       const to = Number(Number(rules[i].to).toFixed(1));
       if (to < from) {
-        return `SNF step #${i + 1} 'To' must not be less than 'From'.`;
+        return `${snfOrClrLabel} step #${i + 1} 'To' must not be less than 'From'.`;
       }
       if (to > end) {
-        return `SNF step #${i + 1} 'To' must not exceed SNF End (${end}).`;
+        return `${snfOrClrLabel} step #${i + 1} 'To' must not exceed ${snfOrClrLabel} End (${end}).`;
       }
       if (i > 0) {
         const prevTo = Number(Number(rules[i - 1].to).toFixed(1));
         if (from < prevTo) {
-          return `SNF step #${i + 1} starts before previous step ends.`;
+          return `${snfOrClrLabel} step #${i + 1} starts before previous step ends.`;
         }
         if (Math.abs(from - (prevTo + 0.1)) > 0.0001) {
-          return `SNF step #${i + 1} must start at ${(prevTo + 0.1).toFixed(1)} (immediately after previous rule's end).`;
+          return `${snfOrClrLabel} step #${i + 1} must start at ${(prevTo + 0.1).toFixed(1)} (immediately after previous rule's end).`;
         }
       }
     }
@@ -148,7 +232,7 @@ const PriceTableGenerator = () => {
     const editErr = validateSnfRulesEditing(rules, start, end);
     if (editErr) return editErr;
     if (rules.length > 0 && Number(Number(rules[rules.length - 1].to).toFixed(1)) !== Number(Number(end).toFixed(1))) {
-      return `Last SNF step must end at ${end}`;
+      return `Last ${snfOrClrLabel} step must end at ${end}`;
     }
     return "";
   };
@@ -240,7 +324,8 @@ const PriceTableGenerator = () => {
         Number(snfStart),
         Number(snfEnd),
         Number(snfStep),
-        snfRules
+        snfRules,
+        stepType
       )
     );
   };
@@ -251,7 +336,10 @@ const PriceTableGenerator = () => {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", "rate_table.csv");
+    const milkTypeShort = milkType === 'Cow' ? 'COW' : 'BUF';
+    const stepTypeShort = stepType === 'FAT + CLR' ? 'CLR' : 'SNF';
+    const filename = `${stepTypeShort}_${milkTypeShort}.csv`;
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -276,35 +364,72 @@ const PriceTableGenerator = () => {
           <Card.Title className="text-center w-100 fs-2 py-3 text-primary bg-light rounded mb-4" style={{letterSpacing: '1px'}}>Rate Table Generator</Card.Title>
           <Form onSubmit={handleGenerate}>
             <div className="row justify-content-center mb-4">
-              <div className="col-auto d-flex align-items-center flex-nowrap">
-                <Form.Label
-                  className="mb-0 me-2 fs-5 fw-bold align-middle text-center"
-                  style={{ whiteSpace: 'nowrap' }}
-                >
-                  Base Rate
-                </Form.Label>
-                <InputGroup>
-                <InputGroup.Text className="fs-5">₹</InputGroup.Text>
-                  <Form.Control
-                    type="text"
-                    inputMode="decimal"
-                    step="0.01"
-                    value={basePrice}
-                    className="form-control-lg text-center"
-                    onChange={e => {
-                      const val = e.target.value;
-                      if (/^\d*(\.\d{0,2})?$/.test(val)) {
-                        setBasePrice(val);
-                      }
-                    }}
-                    onBlur={e => {
-                      if (basePrice !== "") setBasePrice(Number(basePrice).toFixed(2));
-                    }}
-                    required
-                    style={{ width: 100, height: 48 }}
-                  />
-                  
-                </InputGroup>
+              <div className="col-auto">
+                <div className="d-flex align-items-center gap-4">
+                  {/* Milk Type Selection */}
+                  <div className="d-flex align-items-center" style={{ minWidth: 200 }}>
+                    <Form.Label className="mb-0 me-2 fs-5 fw-bold text-nowrap" htmlFor="milkTypeSelect">
+                      Milk Type
+                    </Form.Label>
+                    <Form.Select
+                      id="milkTypeSelect"
+                      value={milkType}
+                      onChange={handleMilkTypeChange}
+                      className="form-control-lg text-center"
+                      style={{ width: 120, height: 48 }}
+                    >
+                      <option value="Cow">Cow</option>
+                      <option value="Buffalo">Buffalo</option>
+                    </Form.Select>
+                  </div>
+                  {/* Step Type Selection */}
+                  <div className="d-flex align-items-center" style={{ minWidth: 200 }}>
+                    <Form.Label className="mb-0 me-2 fs-5 fw-bold text-nowrap" htmlFor="stepTypeSelect">
+                      Step Type
+                    </Form.Label>
+                    <Form.Select
+                      id="stepTypeSelect"
+                      value={stepType}
+                      onChange={e => setStepType(e.target.value)}
+                      className="form-control-lg text-center"
+                      style={{ width: 160, height: 48 }}
+                    >
+                      <option value="FAT + SNF">FAT + SNF</option>
+                      <option value="FAT + CLR">FAT + CLR</option>
+                    </Form.Select>
+                  </div>
+                  {/* Base Rate */}
+                  <div className="d-flex align-items-center" style={{ minWidth: 200 }}>
+                    <Form.Label
+                      className="mb-0 me-2 fs-5 fw-bold text-nowrap"
+                      htmlFor="baseRateInput"
+                    >
+                      Base Rate
+                    </Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text className="fs-5">₹</InputGroup.Text>
+                      <Form.Control
+                        id="baseRateInput"
+                        type="text"
+                        inputMode="decimal"
+                        step="0.01"
+                        value={basePrice}
+                        className="form-control-lg text-center"
+                        onChange={e => {
+                          const val = e.target.value;
+                          if (/^\d*(\.\d{0,2})?$/.test(val)) {
+                            setBasePrice(val);
+                          }
+                        }}
+                        onBlur={e => {
+                          if (basePrice !== "") setBasePrice(Number(basePrice).toFixed(2));
+                        }}
+                        required
+                        style={{ width: 120, height: 48 }}
+                      />
+                    </InputGroup>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="row justify-content-center g-4">
@@ -477,13 +602,13 @@ const PriceTableGenerator = () => {
                 <div className="border rounded p-4 w-100 bg-white" style={{maxWidth: 600}}>
                   <div className="row mb-2">
                     <div className="col-12">
-                      <div className="fw-bold text-primary fs-5 text-center mb-2">SNF Limits</div>
+                      <div className="fw-bold text-primary fs-5 text-center mb-2">{snfOrClrLabel} Limits</div>
                       <hr className="my-2" />
                     </div>
                   </div>
                   <div className="row justify-content-center mb-3">
                     <div className="col-4 mb-3">
-                      <Form.Label className="fw-bold text-center w-100">SNF Start</Form.Label>
+                      <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Start</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type="text"
@@ -508,7 +633,7 @@ const PriceTableGenerator = () => {
                       </InputGroup>
                     </div>
                     <div className="col-4 mb-3">
-                      <Form.Label className="fw-bold text-center w-100">SNF End</Form.Label>
+                      <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} End</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type="text"
@@ -533,7 +658,7 @@ const PriceTableGenerator = () => {
                       </InputGroup>
                     </div>
                   </div>
-                  <div className="fw-bold text-primary fs-6 mb-2 mt-3">SNF Steps</div>
+                  <div className="fw-bold text-primary fs-6 mb-2 mt-3">{snfOrClrLabel} Steps</div>
                   <hr className="my-2" />
                   {snfRuleError && <Alert variant="danger">{snfRuleError}</Alert>}
                   {snfRules.length > 0 && (
@@ -631,7 +756,7 @@ const PriceTableGenerator = () => {
                   )}
                   <div className="d-flex justify-content-center mb-2">
                     <Button variant="primary" onClick={e => { e.preventDefault(); handleAddSnfRule(); }} disabled={!canAddSnfRule} className="d-flex align-items-center gap-2">
-                      <FaPlus /> Add SNF Step
+                      <FaPlus /> Add {snfOrClrLabel} Step
                     </Button>
                   </div>
                 </div>
@@ -654,14 +779,18 @@ const PriceTableGenerator = () => {
           <Card.Body>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <Card.Title>Generated Rate Table</Card.Title>
-              <Button variant="success" onClick={handleDownloadCSV}>Download CSV</Button>
+                <Button variant="success" onClick={handleDownloadCSV}>Download CSV</Button>
             </div>
             <div style={{ maxHeight: 500, overflow: "auto" }}>
               <Table striped bordered hover responsive size="sm">
-                <thead>
+                <thead className="sticky-header">
                   <tr>
+                  
                     {matrixTable[0].map((col, idx) => (
-                      <th key={idx}>{col}</th>
+                      <th key={idx}>{
+                        idx === 0 ? `${snfOrClrLabel === 'CLR' ?'f/c':'f/s'}` :
+                        idx > 0 ? `${snfOrClrLabel === 'CLR' ? parseFloat(col).toFixed(1) : col}` : col
+                      }</th>
                     ))}
                   </tr>
                 </thead>
