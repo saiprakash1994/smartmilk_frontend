@@ -59,25 +59,7 @@ const SideBar = () => {
                                 <FontAwesomeIcon icon={icon} className="module-appIcon" />
                             </p>
                         </OverlayTrigger>
-                        {/* Insert profile section after uploads icon
-                        {title === 'uploads' && (
-                            <div
-                                className={`module${(
-                                    (userType === roles.DAIRY && location.pathname === `/dairy/edit/${userInfo?.dairyCode}`) ||
-                                    (userType === roles.DEVICE && location.pathname === `/device/edit/${userInfo?.deviceid}`)
-                                ) ? ' module-active' : ''}`}
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                onClick={() => {
-                                    if (userType === roles.DAIRY && userInfo?.dairyCode) {
-                                        navigate(`/dairy/edit/${userInfo.dairyCode}`);
-                                    } else if (userType === roles.DEVICE && userInfo?.deviceid) {
-                                        navigate(`/device/edit/${userInfo.deviceid}`);
-                                    }
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faUser} size="lg" className="module-appIcon" />
-                            </div>
-                        )} */}
+                        
                     </React.Fragment>
                 ))}
             </div>
