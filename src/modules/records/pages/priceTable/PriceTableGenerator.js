@@ -4,6 +4,10 @@ import Papa from "papaparse";
 import { FaDownload, FaFileCsv, FaFileUpload, FaPlus, FaRupeeSign, FaSyncAlt, FaTable, FaTrash, FaUpload, FaTint, FaVial, FaExclamationTriangle } from "react-icons/fa";
 import './PriceTableGenerator.scss';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
+import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
+import { roles } from "../../../../shared/utils/appRoles";
+import { useGetDeviceByCodeQuery } from "../../../device/store/deviceEndPoint";
 
 const defaultFatRules = [
 //   { from: 3.0, to: 4.0, increment: 0.10 },
@@ -102,6 +106,15 @@ const PriceTableGenerator = () => {
   const [error, setError] = useState("");
   const [fatRuleError, setFatRuleError] = useState("");
   const [snfRuleError, setSnfRuleError] = useState("");
+  const [showDeviceUpload, setShowDeviceUpload] = useState(false);
+
+  // Add user and device selection state
+  const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
+  const userType = UserTypeHook();
+  const isDairy = userType === roles.DAIRY;
+  const dairyCode = userInfo?.dairyCode;
+  const [selectedDeviceId, setSelectedDeviceId] = useState(""); // Default to All Devices
+  const { data: dairyDevices = [], isLoading: isDairyLoading } = useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy || !dairyCode });
 
   // Handle milk type change
   const handleMilkTypeChange = (e) => {
@@ -354,14 +367,21 @@ const PriceTableGenerator = () => {
     const stepTypeShort = stepType === 'FAT + CLR' ? 'CLR' : 'SNF';
     const filename = `${stepTypeShort}_${milkTypeShort}.csv`;
     // Pass CSV and info to uploads page
-    navigate('/uploads', {
-      state: {
-        csv,
-        filename,
-        milkType: milkTypeShort,
-        stepType: stepTypeShort
-      }
-    });
+    // For dairy user, pass selectedDeviceId; for others, pass dairyCode or deviceid as before
+    let uploadState = {
+      csv,
+      filename,
+      milkType: milkTypeShort,
+      stepType: stepTypeShort
+    };
+    if (isDairy && selectedDeviceId) {
+      uploadState.deviceId = selectedDeviceId;
+    } else if (userInfo?.deviceid) {
+      uploadState.deviceId = userInfo.deviceid;
+    } else if (userInfo?.dairyCode) {
+      uploadState.dairyCode = userInfo.dairyCode;
+    }
+    navigate('/uploads', { state: uploadState });
   };
 
   const handleReset = () => {
@@ -380,311 +400,356 @@ const PriceTableGenerator = () => {
     <>
       
       <Card className="price-table-generator-card mx-auto" style={{ maxWidth: 900, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', borderRadius: 18 }}>
-        <Card.Header className="d-flex flex-column align-items-center bg-primary text-white" style={{ borderRadius: '18px 18px 0 0', padding: '1rem 1rem 1rem 1rem' }}>
-          <div className="d-flex align-items-center">
-            <FaTable size={32} className="me-2" />
-            <h3 style={{ fontWeight: 700, marginBottom: 4 }}>Milk Rate Table Generator</h3>
+        <Card.Header className="bg-primary text-white position-relative" style={{ borderRadius: '18px 18px 0 0', padding: '1rem 1rem 1rem 1rem' }}>
+          <div className="d-flex w-100 align-items-center justify-content-between position-relative">
+            <div className="d-flex align-items-center">
+              <FaTable size={32} className="me-2" />
+              <div>
+                <h3 style={{ fontWeight: 700, marginBottom: 4, textAlign: 'left' }}>Milk Rate Table Generator</h3>
+                <div style={{ fontSize: '1rem', opacity: 0.9, textAlign: 'left' }}>Generate, download and upload milk rate tables with custom steps</div>
+              </div>
+            </div>
+            {/* Device id and change button at the right */}
+            {isDairy && selectedDeviceId && (
+              <div className="d-flex align-items-center gap-3 ms-auto">
+                <button
+                  type="button"
+                  className="btn btn-light btn-sm rounded-pill"
+                  style={{ fontWeight: 600, fontSize: '1rem', minWidth: 80 }}
+                  disabled
+                >
+                  {selectedDeviceId}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-light btn-sm rounded-pill"
+                  style={{ fontWeight: 600, fontSize: '1rem' }}
+                  onClick={() => setSelectedDeviceId("")}
+                >
+                  Change Device
+                </button>
+              </div>
+            )}
           </div>
-          <div style={{ fontSize: '1rem', opacity: 0.9 }}>Generate, download and upload milk rate tables with custom steps</div>
         </Card.Header>
         <Card.Body>
-          <Form onSubmit={handleGenerate}>
-            <Card className="selection-section-card mb-4">
-              <Card.Header className="selection-section-header d-flex align-items-center">
-                <FaTable className="me-2" /> Milk Rate Table Options
-              </Card.Header>
-              <Card.Body>
-                <Row className="gx-4 gy-3 align-items-end justify-content-center">
-                  <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
-                    <div className="fw-bold mb-2">Milk Type</div>
-                    <ButtonGroup className="w-auto mx-auto" size="sm">
-                      {['Cow', 'Buffalo'].map(type => (
-                        <ToggleButton
-                          key={type}
-                          id={`milk-type-${type}`}
-                          type="radio"
-                          size="sm"
-                          variant={milkType === type ? "primary" : "outline-primary"}
-                          name="milk-type"
-                          value={type}
-                          checked={milkType === type}
-                          onChange={handleMilkTypeChange}
-                          className="milk-type-toggle-btn"
-                        >
-                          {type}
-                        </ToggleButton>
-                      ))}
-                    </ButtonGroup>
-                  </Col>
-                  <Col md={4} xs={12} className="text-center">
-                    <div className="fw-bold mb-2">Step Type</div>
-                    <ButtonGroup className="w-auto mx-auto" size="sm">
-                      {['FAT + SNF', 'FAT + CLR'].map(type => (
-                        <ToggleButton
-                          key={type}
-                          id={`step-type-${type}`}
-                          type="radio"
-                          size="sm"
-                          variant={stepType === type ? "primary" : "outline-primary"}
-                          name="step-type"
-                          value={type}
-                          checked={stepType === type}
-                          onChange={e => setStepType(e.target.value)}
-                          className="step-type-toggle-btn"
-                        >
-                          {type}
-                        </ToggleButton>
-                      ))}
-                    </ButtonGroup>
-                  </Col>
-                  <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
-                    <Form.Label className="fw-bold">Base Price</Form.Label>
-                    <div className="d-flex justify-content-center">
-                      <InputGroup className="rupee-group w-auto">
-                        <InputGroup.Text className="fs-6 rupee-toggle-color">₹</InputGroup.Text>
-                        <Form.Control
-                          className="base-price-input base-price-input-sm"
-                          type="text"
-                          inputMode="decimal"
-                          step="0.01"
-                          value={basePrice}
-                          onChange={e => {
-                            const val = e.target.value;
-                            if (/^\d*(\.\d{0,2})?$/.test(val)) {
-                              setBasePrice(val);
-                            }
-                          }}
-                          onBlur={e => {
-                            if (basePrice !== "") setBasePrice(Number(basePrice).toFixed(2));
-                          }}
-                          required
-                        />
-                      </InputGroup>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
+          {/* Device selection for dairy users - only show if not selected */}
+          {isDairy && !selectedDeviceId && (
+            <Form.Group className="mb-4" style={{ maxWidth: 400, margin: '0 auto' }}>
+              <Form.Label className="fw-bold">Device</Form.Label>
+              <Form.Select
+                value={selectedDeviceId}
+                onChange={e => setSelectedDeviceId(e.target.value)}
+                disabled={isDairyLoading}
+              >
+                <option value="">All Devices</option>
+                {dairyDevices?.map((dev) => (
+                  <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
+                ))}
+              </Form.Select>
+              {isDairyLoading && <div className="text-center text-secondary mt-2">Loading devices...</div>}
+            </Form.Group>
+          )}
+          {/* Only show the rest of the UI if not dairy, or if dairy and a device is selected or All Devices is selected */}
+          {(!isDairy || (isDairy && (selectedDeviceId !== undefined))) && (
+            <Form onSubmit={handleGenerate}>
+              <Card className="selection-section-card mb-4">
+                <Card.Header className="selection-section-header d-flex align-items-center">
+                  <FaTable className="me-2" /> Milk Rate Table Options
+                </Card.Header>
+                <Card.Body>
+                  <Row className="gx-4 gy-3 align-items-end justify-content-center">
+                    <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
+                      <div className="fw-bold mb-2">Milk Type</div>
+                      <ButtonGroup className="w-auto mx-auto" size="sm">
+                        {['Cow', 'Buffalo'].map(type => (
+                          <ToggleButton
+                            key={type}
+                            id={`milk-type-${type}`}
+                            type="radio"
+                            size="sm"
+                            variant={milkType === type ? "primary" : "outline-primary"}
+                            name="milk-type"
+                            value={type}
+                            checked={milkType === type}
+                            onChange={handleMilkTypeChange}
+                            className="milk-type-toggle-btn"
+                          >
+                            {type}
+                          </ToggleButton>
+                        ))}
+                      </ButtonGroup>
+                    </Col>
+                    <Col md={4} xs={12} className="text-center">
+                      <div className="fw-bold mb-2">Step Type</div>
+                      <ButtonGroup className="w-auto mx-auto" size="sm">
+                        {['FAT + SNF', 'FAT + CLR'].map(type => (
+                          <ToggleButton
+                            key={type}
+                            id={`step-type-${type}`}
+                            type="radio"
+                            size="sm"
+                            variant={stepType === type ? "primary" : "outline-primary"}
+                            name="step-type"
+                            value={type}
+                            checked={stepType === type}
+                            onChange={e => setStepType(e.target.value)}
+                            className="step-type-toggle-btn"
+                          >
+                            {type}
+                          </ToggleButton>
+                        ))}
+                      </ButtonGroup>
+                    </Col>
+                    <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
+                      <Form.Label className="fw-bold">Base Price</Form.Label>
+                      <div className="d-flex justify-content-center">
+                        <InputGroup className="rupee-group w-auto">
+                          <InputGroup.Text className="fs-6 rupee-toggle-color">₹</InputGroup.Text>
+                          <Form.Control
+                            className="base-price-input base-price-input-sm"
+                            type="text"
+                            inputMode="decimal"
+                            step="0.01"
+                            value={basePrice}
+                            onChange={e => {
+                              const val = e.target.value;
+                              if (/^\d*(\.\d{0,2})?$/.test(val)) {
+                                setBasePrice(val);
+                              }
+                            }}
+                            onBlur={e => {
+                              if (basePrice !== "") setBasePrice(Number(basePrice).toFixed(2));
+                            }}
+                            required
+                          />
+                        </InputGroup>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
 
-            <div className="row justify-content-center g-4">
-              {/* FAT Section */}
-              <div className="col-12 col-md-6 d-flex flex-column align-items-center">
-                <Card className="config-section-card fat-config-card mb-4 w-100">
-                  <Card.Header className="config-section-header fat-section-header d-flex align-items-center">
-                    <FaTint className="me-2" /> FAT Configuration
-                  </Card.Header>
-                  <Card.Body>
-                    {/* Limits Section Label */}
-                    <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
-                    <div className="row g-3 mb-3">
-                      <div className="col-6">
-                        <Form.Label className="fw-bold text-center w-100">FAT Minimum</Form.Label>
-                        <InputGroup>
-                          <Form.Control
-                            type="text"
-                            inputMode="decimal"
-                            step="0.1"
-                            value={fatStart}
-                            className="text-center"
-                            onChange={e => {
-                              const val = e.target.value;
-                              if (/^\d*(\.\d{0,1})?$/.test(val)) {
-                                setFatStart(val);
-                              }
-                            }}
-                            onBlur={e => {
-                              if (fatStart !== "") setFatStart(Number(fatStart).toFixed(1));
-                              const err = validateFatRulesEditing(fatRules, Number(fatStart), Number(fatEnd));
-                              setFatRuleError(err);
-                            }}
-                            required
-                          />
-                          <InputGroup.Text>%</InputGroup.Text>
-                        </InputGroup>
+              <div className="row justify-content-center g-4">
+                {/* FAT Section */}
+                <div className="col-12 col-md-6 d-flex flex-column align-items-center">
+                  <Card className="config-section-card fat-config-card mb-4 w-100">
+                    <Card.Header className="config-section-header fat-section-header d-flex align-items-center">
+                      <FaTint className="me-2" /> FAT Configuration
+                    </Card.Header>
+                    <Card.Body>
+                      {/* Limits Section Label */}
+                      <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
+                      <div className="row g-3 mb-3">
+                        <div className="col-6">
+                          <Form.Label className="fw-bold text-center w-100">FAT Minimum</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              inputMode="decimal"
+                              step="0.1"
+                              value={fatStart}
+                              className="text-center"
+                              onChange={e => {
+                                const val = e.target.value;
+                                if (/^\d*(\.\d{0,1})?$/.test(val)) {
+                                  setFatStart(val);
+                                }
+                              }}
+                              onBlur={e => {
+                                if (fatStart !== "") setFatStart(Number(fatStart).toFixed(1));
+                                const err = validateFatRulesEditing(fatRules, Number(fatStart), Number(fatEnd));
+                                setFatRuleError(err);
+                              }}
+                              required
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                          </InputGroup>
+                        </div>
+                        <div className="col-6">
+                          <Form.Label className="fw-bold text-center w-100">FAT Maximum</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              inputMode="decimal"
+                              step="0.1"
+                              value={fatEnd}
+                              className="text-center"
+                              onChange={e => {
+                                const val = e.target.value;
+                                if (/^\d*(\.\d{0,1})?$/.test(val)) {
+                                  setFatEnd(val);
+                                }
+                              }}
+                              onBlur={e => {
+                                if (fatEnd !== "") setFatEnd(Number(fatEnd).toFixed(1));
+                                const err = validateFatRulesEditing(fatRules, Number(fatStart), Number(fatEnd));
+                                setFatRuleError(err);
+                              }}
+                              required
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                          </InputGroup>
+                        </div>
                       </div>
-                      <div className="col-6">
-                        <Form.Label className="fw-bold text-center w-100">FAT Maximum</Form.Label>
-                        <InputGroup>
-                          <Form.Control
-                            type="text"
-                            inputMode="decimal"
-                            step="0.1"
-                            value={fatEnd}
-                            className="text-center"
-                            onChange={e => {
-                              const val = e.target.value;
-                              if (/^\d*(\.\d{0,1})?$/.test(val)) {
-                                setFatEnd(val);
-                              }
-                            }}
-                            onBlur={e => {
-                              if (fatEnd !== "") setFatEnd(Number(fatEnd).toFixed(1));
-                              const err = validateFatRulesEditing(fatRules, Number(fatStart), Number(fatEnd));
-                              setFatRuleError(err);
-                            }}
-                            required
-                          />
-                          <InputGroup.Text>%</InputGroup.Text>
-                        </InputGroup>
-                      </div>
-                    </div>
-                    {/* Steps Section Label */}
-                    <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
-                    {fatRuleError && (
-                      <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
-                        <FaExclamationTriangle className="me-2" /> {fatRuleError}
-                      </Alert>
-                    )}
-                    {fatRules.length > 0 && (
-                      <div className="table-responsive">
-                        <Table bordered hover size="sm" className="mb-3 step-table">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>From</th>
-                              <th>To</th>
-                              <th>Rate</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {fatRules.map((rule, idx) => (
-                              <tr key={idx}>
-                                <td><span className="step-badge">{idx + 1}</span></td>
-                                <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.from !== undefined ? rule.from.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateFatRuleValue(idx, 'from', val); } }} onBlur={e => { updateFatRuleValue(idx, 'from', Number(rule.from).toFixed(1)); const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, from: Number(Number(e.target.value).toFixed(1)) } : r), Number(fatStart), Number(fatEnd)); setFatRuleError(err); }} placeholder="" /></td>
-                                <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.to !== undefined ? rule.to.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateFatRuleValue(idx, 'to', val); } }} onBlur={e => { updateFatRuleValue(idx, 'to', Number(rule.to).toFixed(1)); const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, to: Number(Number(e.target.value).toFixed(1)) } : r), Number(fatStart), Number(fatEnd)); setFatRuleError(err); }} placeholder="" /></td>
-                                <td><Form.Control type="number" step="0.01" value={rule.increment} className="text-center" onChange={e => updateFatRuleValue(idx, 'increment', e.target.value)} onBlur={e => { const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, increment: parseFloat(e.target.value) } : r), fatStart, fatEnd); setFatRuleError(err); }} placeholder="" /></td>
-                                <td><Button variant="outline-danger" size="sm" onClick={() => handleRemoveFatRule(idx)} title="Remove Step"><FaTrash /></Button></td>
+                      {/* Steps Section Label */}
+                      <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      {fatRuleError && (
+                        <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
+                          <FaExclamationTriangle className="me-2" /> {fatRuleError}
+                        </Alert>
+                      )}
+                      {fatRules.length > 0 && (
+                        <div className="table-responsive">
+                          <Table bordered hover size="sm" className="mb-3 step-table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Rate</th>
+                                <th></th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </Table>
+                            </thead>
+                            <tbody>
+                              {fatRules.map((rule, idx) => (
+                                <tr key={idx}>
+                                  <td><span className="step-badge">{idx + 1}</span></td>
+                                  <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.from !== undefined ? rule.from.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateFatRuleValue(idx, 'from', val); } }} onBlur={e => { updateFatRuleValue(idx, 'from', Number(rule.from).toFixed(1)); const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, from: Number(Number(e.target.value).toFixed(1)) } : r), Number(fatStart), Number(fatEnd)); setFatRuleError(err); }} placeholder="" /></td>
+                                  <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.to !== undefined ? rule.to.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateFatRuleValue(idx, 'to', val); } }} onBlur={e => { updateFatRuleValue(idx, 'to', Number(rule.to).toFixed(1)); const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, to: Number(Number(e.target.value).toFixed(1)) } : r), Number(fatStart), Number(fatEnd)); setFatRuleError(err); }} placeholder="" /></td>
+                                  <td><Form.Control type="number" step="0.01" value={rule.increment} className="text-center" onChange={e => updateFatRuleValue(idx, 'increment', e.target.value)} onBlur={e => { const err = validateFatRulesEditing(fatRules.map((r, i) => i === idx ? { ...r, increment: parseFloat(e.target.value) } : r), fatStart, fatEnd); setFatRuleError(err); }} placeholder="" /></td>
+                                  <td><Button variant="outline-danger" size="sm" onClick={() => handleRemoveFatRule(idx)} title="Remove Step"><FaTrash /></Button></td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                        </div>
+                      )}
+                      <div className="d-flex justify-content-center">
+                        <Button variant="success" onClick={e => { e.preventDefault(); handleAddFatRule(); }} disabled={!canAddFatRule} className="d-flex align-items-center gap-2">
+                          <FaPlus className="me-1" /> Add FAT Step
+                        </Button>
                       </div>
-                    )}
-                    <div className="d-flex justify-content-center">
-                      <Button variant="success" onClick={e => { e.preventDefault(); handleAddFatRule(); }} disabled={!canAddFatRule} className="d-flex align-items-center gap-2">
-                        <FaPlus className="me-1" /> Add FAT Step
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </div>
-              {/* SNF/CLR Section */}
-              <div className="col-12 col-md-6 d-flex flex-column align-items-center">
-                <Card className="config-section-card snf-config-card mb-4 w-100">
-                  <Card.Header className="config-section-header snf-section-header d-flex align-items-center">
-                    <FaVial className="me-2" /> {snfOrClrLabel} Configuration
-                  </Card.Header>
-                  <Card.Body>
-                    {/* Limits Section Label */}
-                    <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
-                    <div className="row g-3 mb-3">
-                      <div className="col-6">
-                        <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Mimimum</Form.Label>
-                        <InputGroup>
-                          <Form.Control
-                            type="text"
-                            inputMode="decimal"
-                            step="0.1"
-                            value={snfStart}
-                            className="text-center"
-                            onChange={e => {
-                              const val = e.target.value;
-                              if (/^\d*(\.\d{0,1})?$/.test(val)) {
-                                setSnfStart(val);
-                              }
-                            }}
-                            onBlur={e => {
-                              if (snfStart !== "") setSnfStart(Number(snfStart).toFixed(1));
-                              const err = validateSnfRulesEditing(snfRules, Number(snfStart), Number(snfEnd));
-                              setSnfRuleError(err);
-                            }}
-                            required
-                          />
-                          <InputGroup.Text>%</InputGroup.Text>
-                        </InputGroup>
+                    </Card.Body>
+                  </Card>
+                </div>
+                {/* SNF/CLR Section */}
+                <div className="col-12 col-md-6 d-flex flex-column align-items-center">
+                  <Card className="config-section-card snf-config-card mb-4 w-100">
+                    <Card.Header className="config-section-header snf-section-header d-flex align-items-center">
+                      <FaVial className="me-2" /> {snfOrClrLabel} Configuration
+                    </Card.Header>
+                    <Card.Body>
+                      {/* Limits Section Label */}
+                      <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
+                      <div className="row g-3 mb-3">
+                        <div className="col-6">
+                          <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Mimimum</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              inputMode="decimal"
+                              step="0.1"
+                              value={snfStart}
+                              className="text-center"
+                              onChange={e => {
+                                const val = e.target.value;
+                                if (/^\d*(\.\d{0,1})?$/.test(val)) {
+                                  setSnfStart(val);
+                                }
+                              }}
+                              onBlur={e => {
+                                if (snfStart !== "") setSnfStart(Number(snfStart).toFixed(1));
+                                const err = validateSnfRulesEditing(snfRules, Number(snfStart), Number(snfEnd));
+                                setSnfRuleError(err);
+                              }}
+                              required
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                          </InputGroup>
+                        </div>
+                        <div className="col-6">
+                          <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Maximum</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              inputMode="decimal"
+                              step="0.1"
+                              value={snfEnd}
+                              className="text-center"
+                              onChange={e => {
+                                const val = e.target.value;
+                                if (/^\d*(\.\d{0,1})?$/.test(val)) {
+                                  setSnfEnd(val);
+                                }
+                              }}
+                              onBlur={e => {
+                                if (snfEnd !== "") setSnfEnd(Number(snfEnd).toFixed(1));
+                                const err = validateSnfRulesEditing(snfRules, Number(snfStart), Number(snfEnd));
+                                setSnfRuleError(err);
+                              }}
+                              required
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                          </InputGroup>
+                        </div>
                       </div>
-                      <div className="col-6">
-                        <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Maximum</Form.Label>
-                        <InputGroup>
-                          <Form.Control
-                            type="text"
-                            inputMode="decimal"
-                            step="0.1"
-                            value={snfEnd}
-                            className="text-center"
-                            onChange={e => {
-                              const val = e.target.value;
-                              if (/^\d*(\.\d{0,1})?$/.test(val)) {
-                                setSnfEnd(val);
-                              }
-                            }}
-                            onBlur={e => {
-                              if (snfEnd !== "") setSnfEnd(Number(snfEnd).toFixed(1));
-                              const err = validateSnfRulesEditing(snfRules, Number(snfStart), Number(snfEnd));
-                              setSnfRuleError(err);
-                            }}
-                            required
-                          />
-                          <InputGroup.Text>%</InputGroup.Text>
-                        </InputGroup>
-                      </div>
-                    </div>
-                    {/* Steps Section Label */}
-                    <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
-                    {snfRuleError && (
-                      <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
-                        <FaExclamationTriangle className="me-2" /> {snfRuleError}
-                      </Alert>
-                    )}
-                    {snfRules.length > 0 && (
-                      <div className="table-responsive">
-                        <Table bordered hover size="sm" className="mb-3 step-table">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>From</th>
-                              <th>To</th>
-                              <th>Rate</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {snfRules.map((rule, idx) => (
-                              <tr key={idx}>
-                                <td><span className="step-badge">{idx + 1}</span></td>
-                                <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.from !== undefined ? rule.from.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateSnfRuleValue(idx, 'from', val); } }} onBlur={e => { updateSnfRuleValue(idx, 'from', Number(rule.from).toFixed(1)); const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, from: Number(Number(e.target.value).toFixed(1)) } : r), Number(snfStart), Number(snfEnd)); setSnfRuleError(err); }} placeholder=" " /></td>
-                                <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.to !== undefined ? rule.to.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateSnfRuleValue(idx, 'to', val); } }} onBlur={e => { updateSnfRuleValue(idx, 'to', Number(rule.to).toFixed(1)); const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, to: Number(Number(e.target.value).toFixed(1)) } : r), Number(snfStart), Number(snfEnd)); setSnfRuleError(err); }} placeholder="" /></td>
-                                <td><Form.Control type="number" step="0.01" value={rule.increment} className="text-center" onChange={e => updateSnfRuleValue(idx, 'increment', e.target.value)} onBlur={e => { const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, increment: parseFloat(e.target.value) } : r), snfStart, snfEnd); setSnfRuleError(err); }} placeholder="" /></td>
-                                <td><Button variant="outline-danger" size="sm" onClick={() => handleRemoveSnfRule(idx)} title="Remove Step"><FaTrash /></Button></td>
+                      {/* Steps Section Label */}
+                      <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      {snfRuleError && (
+                        <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
+                          <FaExclamationTriangle className="me-2" /> {snfRuleError}
+                        </Alert>
+                      )}
+                      {snfRules.length > 0 && (
+                        <div className="table-responsive">
+                          <Table bordered hover size="sm" className="mb-3 step-table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Rate</th>
+                                <th></th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </Table>
+                            </thead>
+                            <tbody>
+                              {snfRules.map((rule, idx) => (
+                                <tr key={idx}>
+                                  <td><span className="step-badge">{idx + 1}</span></td>
+                                  <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.from !== undefined ? rule.from.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateSnfRuleValue(idx, 'from', val); } }} onBlur={e => { updateSnfRuleValue(idx, 'from', Number(rule.from).toFixed(1)); const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, from: Number(Number(e.target.value).toFixed(1)) } : r), Number(snfStart), Number(snfEnd)); setSnfRuleError(err); }} placeholder=" " /></td>
+                                  <td><Form.Control type="text" inputMode="decimal" step="0.1" value={rule.to !== undefined ? rule.to.toString() : ''} className="text-center" onChange={e => { const val = e.target.value; if (/^\d*(\.\d{0,1})?$/.test(val)) { updateSnfRuleValue(idx, 'to', val); } }} onBlur={e => { updateSnfRuleValue(idx, 'to', Number(rule.to).toFixed(1)); const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, to: Number(Number(e.target.value).toFixed(1)) } : r), Number(snfStart), Number(snfEnd)); setSnfRuleError(err); }} placeholder="" /></td>
+                                  <td><Form.Control type="number" step="0.01" value={rule.increment} className="text-center" onChange={e => updateSnfRuleValue(idx, 'increment', e.target.value)} onBlur={e => { const err = validateSnfRulesEditing(snfRules.map((r, i) => i === idx ? { ...r, increment: parseFloat(e.target.value) } : r), snfStart, snfEnd); setSnfRuleError(err); }} placeholder="" /></td>
+                                  <td><Button variant="outline-danger" size="sm" onClick={() => handleRemoveSnfRule(idx)} title="Remove Step"><FaTrash /></Button></td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                        </div>
+                      )}
+                      <div className="d-flex justify-content-center">
+                        <Button variant="success" onClick={e => { e.preventDefault(); handleAddSnfRule(); }} disabled={!canAddSnfRule} className="d-flex align-items-center gap-2">
+                          <FaPlus className="me-1" /> Add {snfOrClrLabel} Step
+                        </Button>
                       </div>
-                    )}
-                    <div className="d-flex justify-content-center">
-                      <Button variant="success" onClick={e => { e.preventDefault(); handleAddSnfRule(); }} disabled={!canAddSnfRule} className="d-flex align-items-center gap-2">
-                        <FaPlus className="me-1" /> Add {snfOrClrLabel} Step
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
+                    </Card.Body>
+                  </Card>
+                </div>
               </div>
-            </div>
-            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-            <div className="row justify-content-center mt-4">
-              <div className="col-auto d-flex gap-4">
-                {/* <Button variant="success" type="submit" className="fs-5 fw-bold px-4 py-2 d-flex align-items-center gap-2">
-                  <FaPlus /> Generate Table
-                </Button> */}
-                <Button className="generate-reset-btn" type="submit"><FaTable className="me-1" />Generate Table</Button>
-                <Button variant="secondary" onClick={handleReset} className="generate-reset-btn"><FaSyncAlt className="me-1" />Reset</Button>
+              {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+              <div className="row justify-content-center mt-4">
+                <div className="col-auto d-flex gap-4">
+                  {/* <Button variant="success" type="submit" className="fs-5 fw-bold px-4 py-2 d-flex align-items-center gap-2">
+                    <FaPlus /> Generate Table
+                  </Button> */}
+                  <Button className="generate-reset-btn" type="submit"><FaTable className="me-1" />Generate Table</Button>
+                  <Button variant="secondary" onClick={handleReset} className="generate-reset-btn"><FaSyncAlt className="me-1" />Reset</Button>
 
-                {/* <Button variant="secondary" type="button" onClick={handleReset} className="fs-5 fw-bold px-4 py-2">Reset</Button> */}
+                  {/* <Button variant="secondary" type="button" onClick={handleReset} className="fs-5 fw-bold px-4 py-2">Reset</Button> */}
+                </div>
               </div>
-            </div>
-          </Form>
+            </Form>
+          )}
         </Card.Body>
       </Card>
       {matrixTable.length > 0 && (

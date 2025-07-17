@@ -26,7 +26,8 @@ const FileUploadCard = forwardRef(({
     disableFileInput = false,
     suppressNoFileError = false,
     autoRedirectAfterUpload = false,
-    hideFileInputArea = false
+    hideFileInputArea = false,
+    deviceId,
 }, ref) => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -99,6 +100,9 @@ const FileUploadCard = forwardRef(({
         formData.append("file", selectedFile);
         if (showDate) {
             formData.append(dateFieldName, selectedDate);
+        }
+        if (deviceId) {
+            formData.append("deviceId", deviceId);
         }
 
         try {

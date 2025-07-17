@@ -29,10 +29,13 @@ const UploadsPage = () => {
     // All hooks at the top!
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
-    const deviceid = userInfo?.deviceid;
+    const location = useLocation();
+    const { csv, filename, deviceId } = location.state || {};
+    const deviceid = deviceId || userInfo?.deviceid;
     const { data: deviceData } = useGetDeviceByIdQuery(deviceid, { skip: !deviceid });
     const clrBasedTable = deviceData?.serverSettings?.clrBasedTable === "Y";
-    const isDairyUser = userInfo?.role === roles.DAIRY;
+    const isDeviceUser = !!deviceId || userInfo?.role === roles.DEVICE;
+    const isDairyUser = !isDeviceUser && userInfo?.role === roles.DAIRY;
     const snfOrClr = isDairyUser ? "SNF/CLR" : (clrBasedTable ? "CLR" : "SNF");
 
     const [uploadSnfBufTable] = useUploadSnfBufMutation();
@@ -41,14 +44,13 @@ const UploadsPage = () => {
     const [uploadFatCowTable] = useUploadFatCowMutation();
     const [uploadMemberTable] = useUploadMemberMutation();
 
-    const location = useLocation();
-    const { csv, filename } = location.state || {};
-
     const snfBufRef = useRef();
     const snfCowRef = useRef();
     const fatBufRef = useRef();
     const fatCowRef = useRef();
     const memberRef = useRef();
+
+    console.log("Generated",clrBasedTable,isDeviceUser,isDairyUser)
 
     const uploadCategories = [
       {
@@ -100,7 +102,7 @@ const UploadsPage = () => {
         categoryColor: 'primary',
       },
       // Add Member Management if device user
-      ...(userInfo?.role === roles.DEVICE ? [{
+      ...(isDeviceUser ? [{
         key: 'member',
         title: 'MEMBER TABLE',
         icon: FaUsers,
@@ -161,7 +163,7 @@ const UploadsPage = () => {
                     </div>
                     <div className="category-info ms-3">
                       <h4 className="category-title mb-0">Auto Upload</h4>
-                      <p className="category-description mb-0">Auto-uploading file: <b>{filename}</b></p>
+                      <p className="category-description mb-0">Auto-uploading file: <b>{filename}</b>{deviceId ? (<span> &nbsp;|&nbsp; <b>Device: {deviceId}</b></span>) : null}</p>
                     </div>
                   </div>
                   <Button 
@@ -192,6 +194,7 @@ const UploadsPage = () => {
                       suppressNoFileError={true}
                       autoRedirectAfterUpload={true}
                       hideFileInputArea={true}
+                      deviceId={deviceId}
                     />
                   </Col>
                 </Row>
@@ -241,6 +244,7 @@ const UploadsPage = () => {
                                  icon={category.icon}
                                  description={category.description}
                                  categoryColor={category.categoryColor}
+                                 deviceId={deviceId}
                                />
                              </Col>
                            </Row>
