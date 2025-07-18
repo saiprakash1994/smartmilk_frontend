@@ -84,6 +84,7 @@ const FileUploadCard = forwardRef(({
     };
 
     const handleUpload = async () => {
+
         if (!selectedFile) {
             if (!suppressNoFileError) {
                 errorToast("Please select a file.");
@@ -97,6 +98,9 @@ const FileUploadCard = forwardRef(({
         }
 
         const formData = new FormData();
+
+        console.log("sudha upload",formData)
+
         formData.append("file", selectedFile);
         if (showDate) {
             formData.append(dateFieldName, selectedDate);

@@ -177,6 +177,17 @@ const PriceTableGenerator = () => {
   // Clear FAT rule error when validation passes
   // Remove the useEffect hooks for error clearing
 
+  // Clear error if at least one step is added after missing steps error
+  useEffect(() => {
+    if (
+      (fatRules.length > 0 || snfRules.length > 0) &&
+      error &&
+      error.startsWith("Please add at least one FAT and one")
+    ) {
+      setError("");
+    }
+  }, [fatRules.length, snfRules.length]);
+
   // Validation for editing (no 'must end at' check)
   const validateFatRulesEditing = (rules = fatRules, start = fatStart, end = fatEnd) => {
     if (rules.length > 0 && Number(Number(rules[0].from).toFixed(1)) !== Number(Number(start).toFixed(1))) {
@@ -319,6 +330,10 @@ const PriceTableGenerator = () => {
   const handleGenerate = e => {
     e.preventDefault();
     setError("");
+    if (fatRules.length === 0 || snfRules.length === 0) {
+      setError("Please add at least one FAT and one " + snfOrClrLabel + " step before generating the table.");
+      return;
+    }
     const fatErr = validateFatRules(fatRules, fatStart, fatEnd);
     if (fatErr) {
       setError(fatErr);
@@ -380,6 +395,10 @@ const PriceTableGenerator = () => {
       uploadState.deviceId = userInfo.deviceid;
     } else if (userInfo?.dairyCode) {
       uploadState.dairyCode = userInfo.dairyCode;
+    }
+    // Add preferredUploadTab for FAT + CLR
+    if (stepType === 'FAT + CLR') {
+      uploadState.preferredUploadTab = milkType === 'Cow' ? 'clr-cow' : 'clr-buf';
     }
     navigate('/uploads', { state: uploadState });
   };
@@ -738,14 +757,15 @@ const PriceTableGenerator = () => {
               </div>
               {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
               <div className="row justify-content-center mt-4">
-                <div className="col-auto d-flex gap-4">
-                  {/* <Button variant="success" type="submit" className="fs-5 fw-bold px-4 py-2 d-flex align-items-center gap-2">
-                    <FaPlus /> Generate Table
-                  </Button> */}
+                <div className="col-auto d-flex gap-4 align-items-center">
                   <Button className="generate-reset-btn" type="submit"><FaTable className="me-1" />Generate Table</Button>
                   <Button variant="secondary" onClick={handleReset} className="generate-reset-btn"><FaSyncAlt className="me-1" />Reset</Button>
-
-                  {/* <Button variant="secondary" type="button" onClick={handleReset} className="fs-5 fw-bold px-4 py-2">Reset</Button> */}
+                  {matrixTable.length > 0 && (
+                    <>
+                      <Button variant="success" className="me-1" onClick={handleDownloadCSV}><FaFileCsv  className="me-1" />Download CSV</Button>
+                      <Button variant="info" className="me-1" onClick={handleUploadCSV}><FaFileUpload className="me-1" />Upload CSV</Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Form>
@@ -757,11 +777,7 @@ const PriceTableGenerator = () => {
           <Card.Body>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <Card.Title>Generated Rate Table</Card.Title>
-              <div className="d-flex gap-2">
-                  <Button variant="success" className="me-1" onClick={handleDownloadCSV}><FaFileCsv  className="me-1" />Download CSV</Button>
-                  <Button variant="info" className="me-1" onClick={handleUploadCSV}><FaFileUpload FaUpload className="me-1" />Upload CSV</Button>
-
-              </div>
+              {/* Removed Download and Upload buttons from here */}
             </div>
             <div style={{ maxHeight: 500, overflow: "auto" }}>
               <Table striped bordered hover responsive size="sm">

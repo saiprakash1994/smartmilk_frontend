@@ -33,10 +33,8 @@ const UploadsPage = () => {
     const { csv, filename, deviceId } = location.state || {};
     const deviceid = deviceId || userInfo?.deviceid;
     const { data: deviceData } = useGetDeviceByIdQuery(deviceid, { skip: !deviceid });
-    const clrBasedTable = deviceData?.serverSettings?.clrBasedTable === "Y";
     const isDeviceUser = !!deviceId || userInfo?.role === roles.DEVICE;
     const isDairyUser = !isDeviceUser && userInfo?.role === roles.DAIRY;
-    const snfOrClr = isDairyUser ? "SNF/CLR" : (clrBasedTable ? "CLR" : "SNF");
 
     const [uploadSnfBufTable] = useUploadSnfBufMutation();
     const [uploadSnfCowTable] = useUploadSnfCowMutation();
@@ -48,9 +46,11 @@ const UploadsPage = () => {
     const snfCowRef = useRef();
     const fatBufRef = useRef();
     const fatCowRef = useRef();
+    const clrBufRef = useRef();
+    const clrCowRef = useRef();
     const memberRef = useRef();
 
-    console.log("Generated",clrBasedTable,isDeviceUser,isDairyUser)
+    // console.log("Generated",deviceData?.serverSettings?.clrBasedTable,isDeviceUser,isDairyUser)
 
     const uploadCategories = [
       {
@@ -79,28 +79,55 @@ const UploadsPage = () => {
       },
       {
         key: 'snf-buf',
-        title: `${snfOrClr} BUF TABLE`,
+        title: 'SNF BUF TABLE',
         icon: FaChartLine,
         ref: snfBufRef,
         onUpload: uploadSnfBufTable,
-        toastMsg: `${snfOrClr} Buf table uploaded successfully`,
+        toastMsg: 'SNF Buf table uploaded successfully',
         showDate: true,
         dateFieldName: 'snfBufEffectiveDate',
-        description: `Buffalo milk ${snfOrClr} rates`,
+        description: 'Buffalo milk SNF rates',
         categoryColor: 'primary',
       },
       {
         key: 'snf-cow',
-        title: `${snfOrClr} COW TABLE`,
+        title: 'SNF COW TABLE',
         icon: FaChartLine,
         ref: snfCowRef,
         onUpload: uploadSnfCowTable,
-        toastMsg: `${snfOrClr} Cow table uploaded successfully`,
+        toastMsg: 'SNF Cow table uploaded successfully',
         showDate: true,
         dateFieldName: 'snfCowEffectiveDate',
-        description: `Cow milk ${snfOrClr} rates`,
+        description: 'Cow milk SNF rates',
         categoryColor: 'primary',
       },
+      // Add CLR tables for dairy user only
+      ...(isDairyUser ? [
+        {
+          key: 'clr-buf',
+          title: 'CLR BUF TABLE',
+          icon: FaChartLine,
+          ref: clrBufRef, // reuse CLR BUF ref for upload
+          onUpload: uploadSnfBufTable, // reuse SNF BUF upload
+          toastMsg: 'CLR Buf table uploaded successfully',
+          showDate: true,
+          dateFieldName: 'snfBufEffectiveDate',
+          description: 'Buffalo milk CLR rates',
+          categoryColor: 'info',
+        },
+        {
+          key: 'clr-cow',
+          title: 'CLR COW TABLE',
+          icon: FaChartLine,
+          ref: clrCowRef, // reuse CLR COW ref for upload
+          onUpload: uploadSnfCowTable, // reuse SNF COW upload
+          toastMsg: 'CLR Cow table uploaded successfully',
+          showDate: true,
+          dateFieldName: 'snfCowEffectiveDate',
+          description: 'Cow milk CLR rates',
+          categoryColor: 'info',
+        },
+      ] : []),
       // Add Member Management if device user
       ...(isDeviceUser ? [{
         key: 'member',
@@ -114,19 +141,20 @@ const UploadsPage = () => {
         categoryColor: 'info',
       }] : []),
     ];
-    const [activeKey, setActiveKey] = useState(uploadCategories[0]?.key);
+    const preferredUploadTab = location.state?.preferredUploadTab;
+    const [activeKey, setActiveKey] = useState(preferredUploadTab && uploadCategories.some(cat => cat.key === preferredUploadTab) ? preferredUploadTab : uploadCategories[0]?.key);
 
     useEffect(() => {
       if (csv && filename) {
         const file = new File([csv], filename, { type: 'text/csv' });
         if (filename.includes('SNF_BUF')) {
           snfBufRef.current?.autoUploadFromParent(file);
+        }  else if (filename.includes('SNF_COW')) {
+          snfCowRef.current?.autoUploadFromParent(file);          
         } else if (filename.includes('CLR_BUF')) {
-          snfBufRef.current?.autoUploadFromParent(file);
-        } else if (filename.includes('SNF_COW')) {
-          snfCowRef.current?.autoUploadFromParent(file);
-        } else if (filename.includes('CLR_COW')) {
-          snfCowRef.current?.autoUploadFromParent(file);
+          clrBufRef.current?.autoUploadFromParent(file);
+        }else if (filename.includes('CLR_COW')) {
+          clrCowRef.current?.autoUploadFromParent(file);
         } else if (filename.includes('FAT_BUF')) {
           fatBufRef.current?.autoUploadFromParent(file);
         } else if (filename.includes('FAT_COW')) {
@@ -144,12 +172,32 @@ const UploadsPage = () => {
         cardProps = uploadCategories[0];
       } else if (filename.includes('FAT_COW')) {
         cardProps = uploadCategories[1];
-      } else if (filename.includes('SNF_BUF') || filename.includes('CLR_BUF')) {
+      } else if (filename.includes('SNF_BUF')) {
         cardProps = uploadCategories[2];
-      } else if (filename.includes('SNF_COW') || filename.includes('CLR_COW')) {
+      } else if (filename.includes('SNF_COW')) {
         cardProps = uploadCategories[3];
+      } else if (filename.includes('CLR_BUF')) {
+        cardProps = uploadCategories.find(cat => cat.key === 'clr-buf');
+      } else if (filename.includes('CLR_COW')) {
+        cardProps = uploadCategories.find(cat => cat.key === 'clr-cow');
       } else if (filename.includes('MEMBER')) {
         cardProps = uploadCategories[uploadCategories.length - 1];
+      }
+      // If cardProps is not found, show error message
+      if (!cardProps) {
+        return (
+          <div className="uploads-page">
+            <Container fluid className="uploads-container">
+              <Card className="upload-category-card mb-4">
+                <Card.Body>
+                  <h4>Invalid upload type</h4>
+                  <p>The selected upload type is not available for your user role.</p>
+                  <Button variant="primary" onClick={() => navigate('/uploads')}>Go to Uploads</Button>
+                </Card.Body>
+              </Card>
+            </Container>
+          </div>
+        );
       }
       return (
         <div className="uploads-page">
@@ -300,3 +348,4 @@ const UploadsPage = () => {
 };
 
 export default UploadsPage;
+
