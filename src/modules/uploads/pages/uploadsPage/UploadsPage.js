@@ -6,7 +6,9 @@ import {
     useUploadFatCowMutation,
     useUploadSnfBufMutation,
     useUploadSnfCowMutation,
-    useUploadMemberMutation
+    useUploadMemberMutation,
+    useUploadClrBufMutation,
+    useUploadClrCowMutation
 } from "../../store/uploadEndPoint";
 import FileUploadCard from "../../components/FileUploadCard";
 import { Container, Row, Col, Card, Button, Nav, Tab } from "react-bootstrap";
@@ -41,6 +43,8 @@ const UploadsPage = () => {
     const [uploadFatBufTable] = useUploadFatBufMutation();
     const [uploadFatCowTable] = useUploadFatCowMutation();
     const [uploadMemberTable] = useUploadMemberMutation();
+    const [uploadClrBufTable] = useUploadClrBufMutation();
+    const [uploadClrCowTable] = useUploadClrCowMutation();
 
     const snfBufRef = useRef();
     const snfCowRef = useRef();
@@ -102,16 +106,16 @@ const UploadsPage = () => {
         categoryColor: 'primary',
       },
       // Add CLR tables for dairy user only
-      ...(isDairyUser ? [
+    
         {
           key: 'clr-buf',
           title: 'CLR BUF TABLE',
           icon: FaChartLine,
           ref: clrBufRef, // reuse CLR BUF ref for upload
-          onUpload: uploadSnfBufTable, // reuse SNF BUF upload
+          onUpload: uploadClrBufTable, // reuse SNF BUF upload
           toastMsg: 'CLR Buf table uploaded successfully',
           showDate: true,
-          dateFieldName: 'snfBufEffectiveDate',
+          dateFieldName: 'clrBufEffectiveDate',
           description: 'Buffalo milk CLR rates',
           categoryColor: 'info',
         },
@@ -120,14 +124,14 @@ const UploadsPage = () => {
           title: 'CLR COW TABLE',
           icon: FaChartLine,
           ref: clrCowRef, // reuse CLR COW ref for upload
-          onUpload: uploadSnfCowTable, // reuse SNF COW upload
+          onUpload: uploadClrCowTable, // reuse SNF COW upload
           toastMsg: 'CLR Cow table uploaded successfully',
           showDate: true,
-          dateFieldName: 'snfCowEffectiveDate',
+          dateFieldName: 'clrCowEffectiveDate',
           description: 'Cow milk CLR rates',
           categoryColor: 'info',
         },
-      ] : []),
+    
       // Add Member Management if device user
       ...(isDeviceUser ? [{
         key: 'member',
@@ -177,9 +181,11 @@ const UploadsPage = () => {
       } else if (filename.includes('SNF_COW')) {
         cardProps = uploadCategories[3];
       } else if (filename.includes('CLR_BUF')) {
-        cardProps = uploadCategories.find(cat => cat.key === 'clr-buf');
+        cardProps = uploadCategories[4];
+        //cardProps = uploadCategories.find(cat => cat.key === 'clr-buf');
       } else if (filename.includes('CLR_COW')) {
-        cardProps = uploadCategories.find(cat => cat.key === 'clr-cow');
+        cardProps = uploadCategories[5];
+        //cardProps = uploadCategories.find(cat => cat.key === 'clr-cow');
       } else if (filename.includes('MEMBER')) {
         cardProps = uploadCategories[uploadCategories.length - 1];
       }

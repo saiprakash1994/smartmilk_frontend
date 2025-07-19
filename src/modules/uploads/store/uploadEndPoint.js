@@ -16,6 +16,20 @@ export const uploadDocuments = UploadApi.injectEndpoints({
                 body: formData
             }),
         }),
+        uploadClrBuf: builder.mutation({
+            query: ({ formData }) => ({
+                url: 'upload/clr-buf-table',
+                method: 'POST',
+                body: formData
+            }),
+        }),
+        uploadClrCow: builder.mutation({
+            query: ({ formData }) => ({
+                url: 'upload/clr-cow-table',
+                method: 'POST',
+                body: formData
+            }),
+        }),
         uploadFatBuf: builder.mutation({
             query: ({ formData }) => ({
                 url: 'upload/fat-buf-table',
@@ -47,12 +61,14 @@ export const uploadDocuments = UploadApi.injectEndpoints({
     })
 })
 
-export const {
-    useUploadSnfBufMutation,
+export const {    
     useUploadFatBufMutation,
     useUploadFatCowMutation,
-    useUploadMemberMutation,
+    useUploadSnfBufMutation,
     useUploadSnfCowMutation,
+    useUploadClrBufMutation,
+    useUploadClrCowMutation,
+    useUploadMemberMutation,
     useUploadDeviceMemberMutation,
 
 
