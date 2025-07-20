@@ -247,13 +247,7 @@ const MemberList = () => {
               <>
                 {/* Modern Gradient Header Section (copied from AbsentMemberRecords) */}
                 <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                  style={{
-                    gap: 16,
-                    borderRadius: 12,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: '#fff',
-                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                  }}>
+                  >
                   <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
                     Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
                   </div>

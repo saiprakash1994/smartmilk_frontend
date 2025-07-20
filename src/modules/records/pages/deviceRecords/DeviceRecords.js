@@ -345,7 +345,7 @@ const DeviceRecords = () => {
 
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
-        doc.text(`Daywise Report - ${deviceCode}`, 14, currentY);
+        doc.text(` - ${deviceCode}`, 14, currentY);
         currentY += 8;
         doc.setFontSize(11);
         doc.setFont("helvetica", "normal");
@@ -454,9 +454,9 @@ const DeviceRecords = () => {
     const debouncedHandleSearch = debounce(handleSearch, 600, { leading: true, trailing: false });
 
     return (
-        <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
+        <div className="device-records-page">
             <div className="container" style={{ maxWidth: 1400 }}>
-                <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
+                <Card className="mb-4 shadow filters-card">
                     <DeviceRecordsFilterSection
                         isAdmin={false}
                         isDairy={isDairy}
@@ -480,19 +480,15 @@ const DeviceRecords = () => {
                         isFetching={isFetching}
                     />
                 </Card>
-
                 {/* Actions Section: Export */}
                 {totalCount > 0 && (
-                    <div className=" mb-3">
-                        {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
+                    <div className="mb-3">
                         <ExportButtonsSection
                             handleExportCSV={handleExportCSV}
                             handleExportPDF={handleExportPDF}
                             isFetching={isFetching}
                             isExporting={isExporting}
                         />
-                        {/* </Card> */}
-
                     </div>
                 )}
                 {!hasSearched ? (
@@ -511,35 +507,24 @@ const DeviceRecords = () => {
                     <>
                         <Card className="h-100">
                             <Card.Body className="cardbodyCss">
-
-
                                 {viewMode !== "TOTALS" && (
-                                    <Card className="records-card mb-4 shadow" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.97)', padding: 12 }}>
-                                        {/* Modern Gradient Header Section */}
-                                        <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                                            style={{
-                                                gap: 16,
-                                                borderRadius: 12,
-                                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                                color: '#fff',
-                                                boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                                            }}>
+                                    <Card className="records-card mb-4 shadow">
+                                        <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4 records-header-section">
                                             <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                                                Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                                                Device Code: <span>{deviceCode}</span>
                                             </div>
-                                            <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                                            <div className="flex-grow-1 text-center table-header" >
                                                 DAYWISE REPORT
                                             </div>
                                             <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                                                Date: <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(date)}</span>
+                                                Date: <span>{formatDateDMY(date)}</span>
                                                 <span className="mx-2">|</span>
-                                                Shift: <span style={{ color: '#fff', fontWeight: 700 }}>{shift || 'ALL'}</span>
+                                                Shift: <span>{shift || 'ALL'}</span>
                                             </div>
                                         </div>
                                         <div className="table-responsive">
                                             <Table className="records-table" hover responsive>
                                                 <thead>
-
                                                     <tr>
                                                         <th>#</th>
                                                         <th>Code</th>
@@ -634,7 +619,6 @@ const DeviceRecords = () => {
                                         )}
                                     </Card>
                                 )}
-
                                 {viewMode !== "RECORDS" && (
                                     <Card className="totals-card mb-4">
                                         <Card.Body>

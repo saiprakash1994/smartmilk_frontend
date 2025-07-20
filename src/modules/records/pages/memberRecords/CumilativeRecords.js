@@ -550,8 +550,8 @@ const CumilativeRecords = () => {
                 </InputGroup>
               </Form.Group>
               <Form.Group className="col-md-2 ms-auto d-flex align-items-end justify-content-end">
-                <Button className="export-btn w-100" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
-                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                <Button className="search-btn export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} style={{color:'#fff'}} />} Search
                 </Button>
               </Form.Group>
             </Form>
@@ -597,7 +597,7 @@ const CumilativeRecords = () => {
                       <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
                         Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
                       </div>
-                      <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                      <div className="flex-grow-1 text-center" >
                         PAYMENT REGISTER
                       </div>
                       <div className="fw-semibold text-end" style={{ minWidth: 320, fontSize: '1.08rem' }}>

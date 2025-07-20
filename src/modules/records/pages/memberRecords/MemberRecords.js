@@ -395,8 +395,8 @@ const MemberRecords = () => {
                 </InputGroup>
               </Form.Group>
               <Form.Group className="col-md-2 d-flex align-items-end">
-                <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
-                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                <Button className="search-btn export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} style={{color:'#fff'}} />} Search
                 </Button>
               </Form.Group>
             </Form>
@@ -429,29 +429,23 @@ const MemberRecords = () => {
               ) : (
                 <>
                   {/* Modern Gradient Header Section */}
-                  <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                    style={{
-                      gap: 16,
-                      borderRadius: 12,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      color: '#fff',
-                      boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                    }}>
-                    <div style={{ minWidth: 120 }}>
-                      <div className="fw-semibold" style={{ color: '#fff', fontSize: '1.08rem' }}>
-                        Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
-                        <span className="mx-2">|</span>
-                        Member Code: <span style={{ color: '#fff', fontWeight: 700 }}>{String(memberCode || '').padStart(4, '0')}</span>
+                  <Card className="records-card mb-4 shadow">
+                    <div className="d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0 records-header-section">
+                      <div style={{ minWidth: 120 }}>
+                        <div className="fw-semibold" >
+                          Device Code: <span >{deviceCode}</span>
+                          <span className="mx-2">|</span>
+                          Member Code: <span >{String(memberCode || '').padStart(4, '0')}</span>
+                        </div>
+                      </div>
+                      <div className="flex-grow-1 text-center " >
+                        MEMBERWISE REPORT
+                      </div>
+                      <div className="fw-semibold text-end" >
+                        From: <span >{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span >{formatDateDMY(toDate)}</span>
                       </div>
                     </div>
-
-                    <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
-                      MEMBERWISE REPORT
-                    </div>
-                    <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                      From: <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(toDate)}</span>
-                    </div>
-                  </div>
+                  </Card>
                   <hr />
                   {viewMode !== "TOTALS" && (
                     <Card className="records-card mb-4">

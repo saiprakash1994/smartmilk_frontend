@@ -275,8 +275,8 @@ const AbsentMemberRecords = () => {
                 </InputGroup>
               </Form.Group>
               <Form.Group className="col-md-2 ms-auto d-flex align-items-end justify-content-end">
-                <Button className="export-btn w-100" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
-                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+                <Button className="search-btn export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                  {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} style={{color:'#fff'}} />} Search
                 </Button>
               </Form.Group>
             </Form>
@@ -310,26 +310,21 @@ const AbsentMemberRecords = () => {
                 {(viewMode === "ABSENT" || viewMode === "ALL") && (
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
-                    <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                      style={{
-                        gap: 16,
-                        borderRadius: 12,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: '#fff',
-                        boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                      }}>
-                      <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                        Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                    <Card className="records-card mb-4">
+                      <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-0 records-header-section">
+                        <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem', color: '#2b50a1' }}>
+                          Device Code: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{deviceCode}</span>
+                        </div>
+                        <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1, color: '#2b50a1' }}>
+                          ABSENT MEMBERS REPORT
+                        </div>
+                        <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem', color: '#2b50a1' }}>
+                          Date: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{formatDateDMY(date)}</span>
+                          <span className="mx-2">|</span>
+                          Shift: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{shift}</span>
+                        </div>
                       </div>
-                      <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
-                        ABSENT MEMBERS REPORT
-                      </div>
-                      <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                        Date: <span style={{ color: '#fff', fontWeight: 700 }}>{formatDateDMY(date)}</span>
-                        <span className="mx-2">|</span>
-                        Shift: <span style={{ color: '#fff', fontWeight: 700 }}>{shift}</span>
-                      </div>
-                    </div>
+                    </Card>
                     <div className="table-responsive">
                       <Table className="records-table" hover responsive>
                         <thead>

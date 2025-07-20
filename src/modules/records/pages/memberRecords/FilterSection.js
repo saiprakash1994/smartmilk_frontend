@@ -106,8 +106,8 @@ const FilterSection = ({
             </InputGroup>
         </Form.Group>
         <Form.Group className="col-md-2 ms-auto d-flex align-items-end justify-content-end">
-            <Button className="w-100 export-btn" variant="primary" onClick={handleSearch} disabled={isFetching} type="button">
-                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} />} Search
+            <Button className="search-btn export-btn w-100" onClick={handleSearch} disabled={isFetching} type="button">
+                {isFetching ? <Spinner size="sm" animation="border" /> : <FontAwesomeIcon icon={faSearch} style={{color:'#fff'}} />} Search
             </Button>
         </Form.Group>
     </Form>
