@@ -124,14 +124,14 @@ const Login = () => {
                     <Form onSubmit={handleLogin} className="login-form">
                         <div className="form-group">
                             <div className="input-wrapper">
-                                <div className="input-icon">
+                                <div className="input-icon email">
                                     <FontAwesomeIcon icon={faEnvelope} />
                                 </div>
                                 <FloatingLabel controlId="email" label="Email Address" className="custom-floating-label">
                                     <Form.Control
                                         type="email"
                                         name="email"
-                                        placeholder="Enter your email"
+                                        placeholder=""
                                         value={loginInfo?.email}
                                         onChange={handleChange}
                                         autoFocus
@@ -144,14 +144,14 @@ const Login = () => {
 
                         <div className="form-group">
                             <div className="input-wrapper">
-                                <div className="input-icon">
+                                <div className="input-icon password">
                                     <FontAwesomeIcon icon={faLock} />
                                 </div>
                                 <FloatingLabel controlId="password" label="Password" className="custom-floating-label">
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        placeholder="Enter your password"
+                                        placeholder=""
                                         value={loginInfo?.password}
                                         onChange={handleChange}
                                         disabled={isLoading}
@@ -165,7 +165,9 @@ const Login = () => {
                                     onClick={() => setShowPassword((prev) => !prev)}
                                     disabled={isLoading}
                                 >
-                                    <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                                    <span className="input-icon eye">
+                                        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -189,12 +191,11 @@ const Login = () => {
                             )}
                         </Button>
                     </Form>
-
-                    <div className="login-footer">
-                        <p className="footer-text">
-                            Secure login powered by Sun Impex
-                        </p>
-                    </div>
+                </div>
+                <div className="login-footer">
+                    <p className="footer-text">
+                        Secure login powered by Sun Impex
+                    </p>
                 </div>
             </div>
         </div>

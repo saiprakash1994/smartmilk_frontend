@@ -211,7 +211,7 @@ const DashboardPage = () => {
               <Col md={3}>
                 <Form.Group controlId="filterDate">
                   <Form.Label className="form-label-modern">
-                    <FaCalendarAlt className="me-2" /> Date
+                    Date
                   </Form.Label>
                   <InputGroup>
                     <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
@@ -228,7 +228,7 @@ const DashboardPage = () => {
               <Col md={3}>
                 <Form.Group controlId="filterShift">
                   <Form.Label className="form-label-modern">
-                    <FaClock className="me-2" /> Shift
+                    Shift
                   </Form.Label>
                   <InputGroup>
                     <InputGroup.Text><FaClock /></InputGroup.Text>
@@ -249,7 +249,7 @@ const DashboardPage = () => {
                   {isDairy && (
                     <Form.Group controlId="filterDevice">
                       <Form.Label className="form-label-modern">
-                        <FaDesktop className="me-2" /> Device
+                        Device
                       </Form.Label>
                       <InputGroup>
                         <InputGroup.Text><FaDesktop /></InputGroup.Text>
@@ -278,7 +278,7 @@ const DashboardPage = () => {
                 </Col>
               )}
               <Col md={3} className="ms-auto d-flex align-items-end justify-content-end">
-                <Button className="w-100 export-btn" variant="primary" onClick={refetch} type="button">
+                <Button className="w-100 export-btn search-btn" variant="primary" onClick={refetch} type="button">
                   <FaSearch /> Search
                 </Button>
               </Col>
@@ -306,16 +306,18 @@ const DashboardPage = () => {
         ) : totals?.length > 0 ? (
           <>
             {/* Summary Cards */}
-            <Row className="g-4 mb-4">
+            <Row className="g-4 mb-4 justify-content-center">
               <Col lg={3} md={6}>
                 <Card className="summary-card total-quantity">
                   <Card.Body className="p-4">
-                    <div className="summary-icon">
-                      <FaTint />
-                    </div>
-                    <div className="summary-content">
-                      <h3 className="summary-value">{totalQuantity.toFixed(2)} L</h3>
-                      <p className="summary-label">Total Quantity</p>
+                    <div className="summary-flex">
+                      <div className="summary-icon">
+                        <FaTint />
+                      </div>
+                      <div className="summary-content">
+                        <h3 className="summary-value" title={totalQuantity.toFixed(2) + ' L'}>{totalQuantity.toFixed(2)} L</h3>
+                        <p className="summary-label">Total Quantity</p>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -324,12 +326,14 @@ const DashboardPage = () => {
               <Col lg={3} md={6}>
                 <Card className="summary-card total-amount">
                   <Card.Body className="p-4">
-                    <div className="summary-icon">
-                      <FaRupeeSign />
-                    </div>
-                    <div className="summary-content">
-                      <h3 className="summary-value">₹{totalAmount.toFixed(2)}</h3>
-                      <p className="summary-label">Total Amount</p>
+                    <div className="summary-flex">
+                      <div className="summary-icon">
+                        <FaRupeeSign />
+                      </div>
+                      <div className="summary-content">
+                        <h3 className="summary-value" title={`₹${totalAmount.toFixed(2)}`}>₹{totalAmount.toFixed(2)}</h3>
+                        <p className="summary-label">Total Amount</p>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -338,12 +342,14 @@ const DashboardPage = () => {
               <Col lg={3} md={6}>
                 <Card className="summary-card total-incentive">
                   <Card.Body className="p-4">
-                    <div className="summary-icon">
-                      <FaArrowUp />
-                    </div>
-                    <div className="summary-content">
-                      <h3 className="summary-value">₹{totalIncentive.toFixed(2)}</h3>
-                      <p className="summary-label">Total Incentive</p>
+                    <div className="summary-flex">
+                      <div className="summary-icon">
+                        <FaArrowUp />
+                      </div>
+                      <div className="summary-content">
+                        <h3 className="summary-value" title={`₹${totalIncentive.toFixed(2)}`}>₹{totalIncentive.toFixed(2)}</h3>
+                        <p className="summary-label">Total Incentive</p>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -352,12 +358,14 @@ const DashboardPage = () => {
               <Col lg={3} md={6}>
                 <Card className="summary-card grand-total">
                   <Card.Body className="p-4">
-                    <div className="summary-icon">
-                      <FaEquals />
-                    </div>
-                    <div className="summary-content">
-                      <h3 className="summary-value">₹{grandTotal.toFixed(2)}</h3>
-                      <p className="summary-label">Grand Total</p>
+                    <div className="summary-flex">
+                      <div className="summary-icon">
+                        <FaEquals />
+                      </div>
+                      <div className="summary-content">
+                        <h3 className="summary-value" title={`₹${grandTotal.toFixed(2)}`}>₹{grandTotal.toFixed(2)}</h3>
+                        <p className="summary-label">Grand Total</p>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -378,30 +386,24 @@ const DashboardPage = () => {
                           <h4 className="milk-type-title">{item?._id.milkType} Milk</h4>
                           <p className="milk-type-subtitle">Summary for {formattedDate}</p>
                         </div>
-                        <Badge
-                          bg={getMilkTypeColor(item?._id.milkType)}
-                          className="milk-type-badge"
-                        >
-                          {item?._id.milkType}
-                        </Badge>
                       </div>
 
                       <Row className="mt-4">
                         <Col md={4}>
                           <div className="metric-item">
-                            <div className="metric-value">{item?.totalQuantity.toFixed(2)} L</div>
+                            <div className="metric-value" title={item?.totalQuantity.toFixed(2) + ' L'}>{item?.totalQuantity.toFixed(2)} L</div>
                             <div className="metric-label">Quantity</div>
                           </div>
                         </Col>
                         <Col md={4}>
                           <div className="metric-item">
-                            <div className="metric-value">₹{item?.totalAmount.toFixed(2)}</div>
+                            <div className="metric-value" title={`₹${item?.totalAmount.toFixed(2)}`}>₹{item?.totalAmount.toFixed(2)}</div>
                             <div className="metric-label">Amount</div>
                           </div>
                         </Col>
                         <Col md={4}>
                           <div className="metric-item">
-                            <div className="metric-value">₹{item?.totalIncentive.toFixed(2)}</div>
+                            <div className="metric-value" title={`₹${item?.totalIncentive.toFixed(2)}`}>₹{item?.totalIncentive.toFixed(2)}</div>
                             <div className="metric-label">Incentive</div>
                           </div>
                         </Col>
@@ -435,6 +437,9 @@ const DashboardPage = () => {
                           </Col>
                         </Row>
                       </div>
+                      <div className="milk-grand-total mt-3">
+                        <strong>Grand Total: ₹{(Number(item?.totalAmount || 0) + Number(item?.totalIncentive || 0)).toFixed(2)}</strong>
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -444,7 +449,7 @@ const DashboardPage = () => {
             {/* Charts Section */}
             <Row className="g-4">
               <Col lg={8}>
-                <Card className="chart-card">
+                <Card className="dairy-summary-card">
                   <Card.Header className="chart-header">
                     <h5 className="chart-title">
                       <FaChartBar className="me-2" />
@@ -453,10 +458,14 @@ const DashboardPage = () => {
                   </Card.Header>
                   <Card.Body className="p-4">
                     <ResponsiveContainer width="100%" height={350}>
-                      <BarChart data={totals}>
+                      <BarChart data={totals.map(item => ({
+                        ...item,
+                        baseAmount: Number(item?.totalAmount || 0) - Number(item?.totalIncentive || 0),
+                        grandTotal: Number(item?.totalAmount || 0)
+                      }))} barCategoryGap={24}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="_id.milkType" stroke="#666" />
-                        <YAxis stroke="#666" />
+                        <XAxis dataKey="_id.milkType" stroke="#2b50a1" tick={{fontWeight: 600, fontSize: 14}} />
+                        <YAxis stroke="#2b50a1" tick={{fontWeight: 500, fontSize: 13}} />
                         <Tooltip
                           contentStyle={{
                             backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -464,11 +473,50 @@ const DashboardPage = () => {
                             borderRadius: '10px',
                             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
                           }}
+                          formatter={(value, name) => ['₹' + value, name]}
                         />
-                        <Legend />
-                        <Bar dataKey="totalQuantity" fill="#667eea" name="Quantity (L)" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="totalAmount" fill="#764ba2" name="Amount (₹)" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="totalIncentive" fill="#f093fb" name="Incentive (₹)" radius={[4, 4, 0, 0]} />
+                        <Legend verticalAlign="bottom" iconType="circle" height={36} wrapperStyle={{fontWeight: 500, color: '#2b50a1'}} />
+                        <Bar dataKey="totalIncentive" name="Incentive (₹)" stackId="a" radius={[4, 4, 0, 0]} maxBarSize={48}
+                          fill="#b3c6f7"
+                          isAnimationActive={false}
+                          >
+                          {totals.map((item, idx) => {
+                            let color = '#b3c6f7';
+                            if (item?._id?.milkType === 'COW') color = '#2b50a1';
+                            if (item?._id?.milkType === 'BUF') color = '#4f8fe8';
+                            if (item?._id?.milkType === 'TOTAL') color = '#b3c6f7';
+                            return <Cell key={idx} fill={color} />;
+                          })}
+                        </Bar>
+                        <Bar dataKey="baseAmount" name="Base Amount (₹)" stackId="a" radius={[4, 4, 0, 0]} maxBarSize={48}
+                          isAnimationActive={false}
+                          >
+                          {totals.map((item, idx) => {
+                            let color = '#b3c6f7';
+                            if (item?._id?.milkType === 'COW') color = '#2b50a1';
+                            if (item?._id?.milkType === 'BUF') color = '#4f8fe8';
+                            if (item?._id?.milkType === 'TOTAL') color = '#b3c6f7';
+                            return <Cell key={idx} fill={color} />;
+                          })}
+                          {/* Grand Total label on top of the bar */}
+                          {totals.map((item, idx) => {
+                            const baseAmount = Number(item?.totalAmount || 0) - Number(item?.totalIncentive || 0);
+                            const grandTotal = Number(item?.totalAmount || 0);
+                            return (
+                              <text
+                                key={idx}
+                                x={60 + idx * 120}
+                                y={60}
+                                textAnchor="middle"
+                                fontWeight="700"
+                                fontSize="15"
+                                fill="#2b50a1"
+                              >
+                                ₹{grandTotal.toFixed(2)}
+                              </text>
+                            );
+                          })}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </Card.Body>
@@ -476,7 +524,7 @@ const DashboardPage = () => {
               </Col>
 
               <Col lg={4}>
-                <Card className="chart-card">
+                <Card className="milk-distribution-card">
                   <Card.Header className="chart-header">
                     <h5 className="chart-title">
                       <FaChartPie className="me-2" />
@@ -484,20 +532,22 @@ const DashboardPage = () => {
                     </h5>
                   </Card.Header>
                   <Card.Body className="p-4">
-                    <ResponsiveContainer width="100%" height={350}>
+                    <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
-                          data={pieData}
+                          data={pieData.map((d, i) => ({...d, color: i === 0 ? '#2b50a1' : '#4f8fe8'}))}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          outerRadius={100}
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={90}
+                          label={({ name, percent }) => (
+                            <tspan style={{ fontWeight: 700, fontSize: 16, fill: '#2b50a1' }}>{name} {(percent * 100).toFixed(0)}%</tspan>
+                          )}
                           labelLine={false}
                         >
                           {pieData?.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell key={`cell-${index}`} fill={index === 0 ? '#2b50a1' : '#4f8fe8'} />
                           ))}
                         </Pie>
                         <Tooltip
@@ -510,6 +560,16 @@ const DashboardPage = () => {
                         />
                       </PieChart>
                     </ResponsiveContainer>
+                    <div className="milk-distribution-legend mt-4 d-flex justify-content-center gap-4">
+                      <div className="legend-item d-flex align-items-center gap-2">
+                        <span className="legend-dot" style={{ background: '#2b50a1' }}></span>
+                        <span className="legend-label">Cow Milk</span>
+                      </div>
+                      <div className="legend-item d-flex align-items-center gap-2">
+                        <span className="legend-dot" style={{ background: '#4f8fe8' }}></span>
+                        <span className="legend-label">Buffalo Milk</span>
+                      </div>
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>

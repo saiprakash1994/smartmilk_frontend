@@ -79,12 +79,20 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     height: 100%;
+    text-align: center;
 
     &:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     }
 
+    .summary-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      width: 100%;
+    }
     .summary-icon {
       width: 60px;
       height: 60px;
@@ -94,15 +102,26 @@
       justify-content: center;
       font-size: 1.5rem;
       color: white;
-      margin-bottom: 15px;
+      margin-bottom: 0;
+      flex-shrink: 0;
     }
-
     .summary-content {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+
       .summary-value {
         color: #2c3e50;
         font-weight: 700;
         margin-bottom: 5px;
-        font-size: 1.8rem;
+        font-size: clamp(1rem, 1.8rem, 1.8vw);
+        max-width: 100%;
+        display: block;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
       }
 
       .summary-label {
@@ -198,8 +217,13 @@
       .metric-value {
         color: #2c3e50;
         font-weight: 700;
-        font-size: 1.2rem;
+        font-size: clamp(0.9rem, 1.2rem, 1.2vw);
         margin-bottom: 5px;
+        max-width: 100%;
+        display: block;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
       }
 
       .metric-label {
@@ -233,6 +257,16 @@
           font-size: 0.9rem;
         }
       }
+    }
+
+    .milk-grand-total {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #2b50a1;
+      text-align: right;
+      border-top: 1px solid #e3e7ed;
+      padding-top: 10px;
+      margin-top: 10px;
     }
   }
 
@@ -419,3 +453,66 @@
         color: var(--appTextColor) !important;
     }
 }
+
+.dairy-summary-card {
+  border: 1.5px solid #2b50a1;
+  border-radius: 15px;
+  background: #f7faff;
+  box-shadow: 0 4px 18px rgba(43, 80, 161, 0.08);
+  .chart-header {
+    background: #eaf1fb;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    .chart-title {
+      color: #2b50a1;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  .card-body {
+    padding: 28px 18px 18px 18px;
+  }
+}
+.search-btn {
+  background: #2b50a1 !important;
+  color: #fff !important;
+  border: 1.5px solid #2b50a1 !important;
+  font-weight: 600;
+  font-size: 1.08rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(43, 80, 161, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.search-btn:hover, .search-btn:focus {
+  background: #1a3570 !important;
+  color: #fff !important;
+  border-color: #1a3570 !important;
+}
+.milk-distribution-legend {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .legend-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 1px 4px rgba(43, 80, 161, 0.12);
+  }
+  .legend-label {
+    font-size: 1rem;
+    color: #2b50a1;
+    font-weight: 500;
+  }
+}
+// Pie chart label styles (recharts uses SVG, so style inline in JSX)

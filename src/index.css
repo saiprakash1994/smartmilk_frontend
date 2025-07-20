@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #202124;
+  background-color: #2b50a1;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,23 +14,23 @@
   --headerHeight: 61px;
   --headerWidth: 100%;
 
-
   --appSiderbarWidth: 75px;
-  --appTheam: #000078;
-  --appTextColor: white;
-  --appPageTitleColor: var(--bs-gray-700);
-  --appTitleColor: var(--bs-gray-700);
-  --appSubTitleColor: var(--bs-gray-500);
+  --appTheam: #2b50a1;
+  --appTextColor: #fff;
+  --appPageTitleColor: #202124;
+  --appTitleColor: #202124;
+  --appSubTitleColor: #5f6368;
   --appPageHeaderHeight: 12%;
   --appPageHeaderSpace: 20px;
   --appOrderPending: #FFC107;
   --appOrderDelivered: #5ead5e;
-
 }
 
 body,
 #root {
   height: 100vh;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
+  background: #2b50a1;
 }
 
 .pageTile {
