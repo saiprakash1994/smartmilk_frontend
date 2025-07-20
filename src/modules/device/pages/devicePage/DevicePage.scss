@@ -1,6 +1,6 @@
 // Modern Device Page Styles
 .device-page {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
   min-height: 100vh;
   padding: 20px 0;
 
@@ -11,7 +11,7 @@
   // Device Header Section
   .device-header {
     .device-title {
-      color: #2c3e50;
+      color: #2b50a1;
       font-weight: 700;
       margin-bottom: 8px;
       font-size: 1.8rem;
@@ -20,7 +20,7 @@
     }
 
     .device-subtitle {
-      color: #6c757d;
+      color: #5f6368;
       margin: 0;
       font-size: 1rem;
       font-weight: 400;
@@ -28,31 +28,40 @@
   }
 
   .add-device-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: #2b50a1;
     border: none;
     border-radius: 12px;
     padding: 12px 24px;
     font-weight: 600;
     font-size: 1rem;
+    color: #fff;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(43, 80, 161, 0.13);
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-      background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+      background: #1a3570;
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(43, 80, 161, 0.18);
     }
   }
 
   // Stats Cards
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
   .stats-card {
-    border: 2px solid transparent;
+    max-width: 320px;
+    margin: 0 auto;
+    width: 100%;
+    border: 2px solid #2b50a1;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px) saturate(180%);
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.10), 0 1.5px 8px rgba(102, 126, 234, 0.08);
+    background: #f7faff;
+    box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
     transition: all 0.3s cubic-bezier(.4,2,.3,1);
-    min-height: 140px;
+    min-height: 120px;
     height: auto;
     margin-bottom: 1.5rem;
     position: relative;
@@ -60,68 +69,62 @@
     z-index: 1;
     
     &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      border-radius: 18px;
-      padding: 2px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
+      display: none;
     }
 
     &:hover {
       transform: scale(1.035) translateY(-6px);
-      box-shadow: 0 16px 48px rgba(102, 126, 234, 0.18), 0 2px 12px rgba(102, 126, 234, 0.12);
+      box-shadow: 0 16px 48px rgba(43, 80, 161, 0.18);
     }
 
+    .stats-flex {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      width: 100%;
+      justify-content: flex-start;
+    }
     .stats-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+      font-size: 2.1rem;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 12px rgba(102, 126, 234, 0.10);
+      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+      color: #fff !important;
     }
-
     .stats-content {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
       .stats-value {
-        color: #2c3e50;
+        font-size: 2rem;
         font-weight: 800;
-        margin-bottom: 4px;
-        font-size: 1.3rem;
-        letter-spacing: 0.2px;
+        color: #2b50a1;
+        margin-bottom: 2px;
       }
-
       .stats-label {
-        color: #667eea;
-        font-size: 0.95rem;
+        font-size: 1.05rem;
+        color: #4f8fe8;
+        font-weight: 500;
         margin: 0;
-        font-weight: 600;
-        letter-spacing: 0.1px;
       }
     }
 
-    &.total-devices .stats-icon {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
-    }
-
-    &.active-devices .stats-icon {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.18);
-    }
-
+    &.total-devices .stats-icon,
+    &.active-devices .stats-icon,
     &.inactive-devices .stats-icon {
-      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.18);
+      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+      box-shadow: 0 4px 16px rgba(43, 80, 161, 0.18);
+    }
+    &:hover {
+      box-shadow: 0 12px 40px rgba(43, 80, 161, 0.18);
+      transform: translateY(-5px) scale(1.01);
     }
   }
 
@@ -132,15 +135,14 @@
 
   // Filters Card
   .filters-card {
-    border: none;
+    border: 1.5px solid #2b50a1;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: #f7faff;
+    box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
 
     .filters-header {
       .filters-title {
-        color: #2c3e50;
+        color: #2b50a1;
         font-weight: 600;
         margin: 0;
         font-size: 1.1rem;
@@ -149,7 +151,7 @@
 
     .filter-label {
       font-weight: 600;
-      color: #2c3e50;
+      color: #2b50a1;
       margin-bottom: 8px;
       display: flex;
       align-items: center;
@@ -162,16 +164,16 @@
       padding: 12px 15px;
       font-size: 0.95rem;
       transition: all 0.3s ease;
-      background: #ffffff;
+      background: #fff;
 
       &:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color: #2b50a1;
+        box-shadow: 0 0 0 0.2rem rgba(43, 80, 161, 0.15);
         outline: none;
       }
 
       &:hover {
-        border-color: #667eea;
+        border-color: #4f8fe8;
       }
     }
 
@@ -180,25 +182,26 @@
       padding: 12px 20px;
       border-radius: 10px;
       font-size: 0.9rem;
+      background: #2b50a1;
+      color: #fff;
     }
   }
 
   // Devices Grid Card
   .devices-grid-card {
-    border: none;
+    border: 1.5px solid #2b50a1;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: #f7faff;
+    box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
     overflow: hidden;
 
     .grid-header {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: #eaf1fb;
       border: none;
       padding: 20px 25px;
 
       .grid-title {
-        color: #2c3e50;
+        color: #2b50a1;
         font-weight: 700;
         margin: 0;
         font-size: 1.2rem;
@@ -212,16 +215,17 @@
           font-size: 0.9rem;
           padding: 8px 16px;
           border-radius: 20px;
-          background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%) !important;
+          background: #2b50a1 !important;
+          color: #fff;
         }
       }
     }
 
     .device-card.advanced {
-      border: none;
+      border: 1.5px solid #2b50a1;
       border-radius: 15px;
-      background: #ffffff;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(43, 80, 161, 0.08);
       transition: all 0.3s ease;
       height: 100%;
       position: relative;
@@ -229,7 +233,7 @@
 
       &:hover {
         transform: translateY(-8px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 40px rgba(43, 80, 161, 0.15);
       }
 
       .device-card-status-bar {
@@ -238,7 +242,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(90deg, #2b50a1 0%, #4f8fe8 100%);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -266,14 +270,14 @@
           .device-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #fff;
             font-size: 1.3rem;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(43, 80, 161, 0.13);
             flex-shrink: 0;
           }
 
@@ -281,7 +285,7 @@
             flex: 1;
 
             .device-name {
-              color: #2c3e50;
+              color: #2b50a1;
               font-weight: 700;
               margin: 0 0 6px 0;
               font-size: 1rem;
@@ -290,7 +294,7 @@
 
             .device-meta {
               .device-dairy {
-                color: #6c757d;
+                color: #5f6368;
                 font-size: 0.8rem;
                 font-weight: 500;
                 display: flex;
@@ -327,7 +331,7 @@
             transition: all 0.3s ease;
 
             &:hover {
-              background: #e9ecef;
+              background: #e3f0fd;
               transform: translateX(4px);
             }
 
@@ -336,7 +340,7 @@
             }
 
             .detail-icon {
-              color: #667eea;
+              color: #2b50a1;
               font-size: 0.9rem;
               min-width: 16px;
             }
@@ -349,7 +353,7 @@
 
               .detail-label {
                 font-size: 0.75rem;
-                color: #6c757d;
+                color: #5f6368;
                 font-weight: 500;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
@@ -396,13 +400,13 @@
             span { display: inline !important; font-size: 0.97em; }
           }
           .action-btn.primary {
-            color: #222;
-            background: #f3f4f6;
-            border-color: #f3f4f6;
+            color: #fff;
+            background: #2b50a1;
+            border-color: #2b50a1;
             &:hover, &:focus {
-              background: #e5e7eb;
-              color: #111;
-              box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+              background: #1a3570;
+              color: #fff;
+              box-shadow: 0 2px 8px rgba(43, 80, 161, 0.08);
             }
           }
           .action-btn.secondary {

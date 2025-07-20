@@ -256,7 +256,7 @@ const MemberRecords = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    const title = "MEMBERWISE REPORT";
+    const title = "";
     const titleX = (pageWidth - doc.getTextWidth(title)) / 2;
     doc.text(title, titleX, currentY);
     currentY += 10;

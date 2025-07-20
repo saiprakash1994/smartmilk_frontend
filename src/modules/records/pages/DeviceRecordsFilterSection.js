@@ -37,7 +37,7 @@ const DeviceRecordsFilterSection = ({
                 <InputGroup>
                     <InputGroup.Text><FontAwesomeIcon icon={faDesktop} /></InputGroup.Text>
                     <Form.Select className="form-select-modern" value={filterDeviceCode} onChange={e => setFilterDeviceCode(e.target.value)}>
-                        <option value="">Select Device Code</option>
+                        <option value="">Select Device</option>
                         {deviceList?.map((dev) => (
                             <option key={dev.deviceid} value={dev.deviceid}>{dev.deviceid}</option>
                         ))}

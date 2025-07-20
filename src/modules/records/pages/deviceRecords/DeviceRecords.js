@@ -110,7 +110,7 @@ const DeviceRecords = () => {
         setRecordsPerPage(recordsPerPage);
 
         if (!filterDeviceCode || !filterDate) {
-            errorToast("Please select device code and date");
+            errorToast("Please select device and date");
             return;
         }
         const today = new Date().toISOString().split("T")[0];
@@ -205,7 +205,7 @@ const DeviceRecords = () => {
 
     const handleExportCSV = async () => {
         if (!deviceCode || !date) {
-            alert("Please select device code and date");
+            alert("Please select device and date");
             return;
         }
         // Fetch all records for export
@@ -306,7 +306,7 @@ const DeviceRecords = () => {
     };
     const handleExportPDF = async () => {
         if (!deviceCode || !date) {
-            alert("Please select device code and date");
+            alert("Please select device  and date");
             return;
         }
 

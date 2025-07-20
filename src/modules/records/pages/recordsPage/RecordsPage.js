@@ -18,35 +18,37 @@ const RecordsPage = () => {
   const [activeTab, setActiveTab] = useState("records");
   return (
     <>
-      <Tabs
-        id="records-tabs"
-        activeKey={activeTab}
-        onSelect={(k) => setActiveTab(k)}
-        className="mb-3"
-      >
-        
-        <Tab eventKey="records" title="Daily Report">
-          <DeviceRecords />
-        </Tab>
-        <Tab eventKey="memberRecords" title="Memberwise Report">
-          <MemberRecords />
-        </Tab>
-        <Tab eventKey="absentRecords" title="Absent Members Report">
-          <AbsentMemberRecords />
-        </Tab>
-        <Tab eventKey="cumilativeRecords" title="Payment Register">
-          <CumilativeRecords />
-        </Tab>
-        <Tab eventKey="datewiseDetailed" title="Datewise Detailed Report">
-          <DatewiseDetailedRecords />
-        </Tab>
-        <Tab eventKey="datewiseSummary" title="Datewise Summary Report">
-          <DatewiseSummaryRecords />
-        </Tab>
-        <Tab eventKey="memberList" title="Member List">
-          <MemberList />
-        </Tab>
-      </Tabs>
+      <div className="records-tabs-scroll">
+        <Tabs
+          id="records-tabs"
+          activeKey={activeTab}
+          onSelect={(k) => setActiveTab(k)}
+          className="mb-3"
+        >
+          
+          <Tab eventKey="records" title="Daywise">
+            <DeviceRecords />
+          </Tab>
+          <Tab eventKey="memberRecords" title="Memberwise">
+            <MemberRecords />
+          </Tab>
+          <Tab eventKey="absentRecords" title="Absent List">
+            <AbsentMemberRecords />
+          </Tab>
+          <Tab eventKey="cumilativeRecords" title="Payment Register">
+            <CumilativeRecords />
+          </Tab>
+          <Tab eventKey="datewiseDetailed" title="Datewise Detailed">
+            <DatewiseDetailedRecords />
+          </Tab>
+          <Tab eventKey="datewiseSummary" title="Datewise Summary">
+            <DatewiseSummaryRecords />
+          </Tab>
+          <Tab eventKey="memberList" title="Members List">
+            <MemberList />
+          </Tab>
+        </Tabs>
+      </div>
     </>
   );
 };

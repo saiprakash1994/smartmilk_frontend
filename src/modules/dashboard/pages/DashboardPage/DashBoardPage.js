@@ -48,7 +48,8 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaEquals,
-  FaSearch
+  FaSearch,
+  FaGift
 } from "react-icons/fa";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
@@ -344,7 +345,7 @@ const DashboardPage = () => {
                   <Card.Body className="p-4">
                     <div className="summary-flex">
                       <div className="summary-icon">
-                        <FaArrowUp />
+                        <FaGift />
                       </div>
                       <div className="summary-content">
                         <h3 className="summary-value" title={`₹${totalIncentive.toFixed(2)}`}>₹{totalIncentive.toFixed(2)}</h3>
@@ -360,7 +361,7 @@ const DashboardPage = () => {
                   <Card.Body className="p-4">
                     <div className="summary-flex">
                       <div className="summary-icon">
-                        <FaEquals />
+                        <FaChartBar />
                       </div>
                       <div className="summary-content">
                         <h3 className="summary-value" title={`₹${grandTotal.toFixed(2)}`}>₹{grandTotal.toFixed(2)}</h3>

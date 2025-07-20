@@ -1,48 +1,71 @@
 #records-tabs {
-
-
-    .nav-link {
-
-        background-color: transparent;
-        color: var(--appTheam);
-
-        transition: all 0.3s ease;
-    }
-
-
-    .nav-link.active {
-        background-color: var(--appTheam);
-        color: var(--appTextColor);
-
-    }
+  .nav-link {
+    background-color: transparent;
+    color: #2b50a1;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    border-radius: 8px 8px 0 0;
+    margin-right: 2px;
+    padding: 12px 24px;
+    font-size: 1.08rem;
+  }
+  .nav-link.active {
+    background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(43, 80, 161, 0.10);
+    border: none;
+  }
 }
 
 .records-tabs-section {
-  background: #f8fafc;
-  color: inherit;
+  background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  color: #2b50a1;
   border-radius: 16px;
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.06);
+  box-shadow: 0 4px 18px rgba(43, 80, 161, 0.08);
+  border: 1.5px solid #2b50a1;
 }
 
+.records-tabs-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+}
 #records-tabs .nav {
+  display: inline-flex;
+  flex-wrap: nowrap !important;
   background: none;
   border-radius: 0;
   padding: 0;
   font-weight: normal;
   font-size: 1rem;
+  white-space: nowrap;
 }
-
 #records-tabs .nav-link {
-  background-color: transparent;
-  color: var(--appTheam);
-  transition: all 0.3s ease;
-  border-radius: 0;
-  margin-right: 0;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  min-width: 140px;
+  padding-left: 12px;
+  padding-right: 12px;
+  flex-shrink: 0;
+}
+#records-tabs .nav::-webkit-scrollbar {
+  height: 6px;
+}
+#records-tabs .nav::-webkit-scrollbar-track {
+  background: #e3f0fd;
+  border-radius: 3px;
+}
+#records-tabs .nav::-webkit-scrollbar-thumb {
+  background: #2b50a1;
+  border-radius: 3px;
 }
 
 #records-tabs .nav-link.active {
-  background-color: var(--appTheam);
-  color: var(--appTextColor);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(43, 80, 161, 0.10);
+  border: none;
 }

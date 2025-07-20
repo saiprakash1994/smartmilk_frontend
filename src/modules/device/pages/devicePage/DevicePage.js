@@ -39,7 +39,10 @@ import {
     FaIndustry,
     FaRegClock,
     FaMapMarkerAlt,
-    FaQuestionCircle
+    FaQuestionCircle,
+    FaServer,
+    FaCheckCircle,
+    FaTimesCircle
 } from "react-icons/fa";
 import './DevicePage.scss';
 
@@ -142,26 +145,25 @@ const DevicePage = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <Row className="g-4 mb-4">
-                    <Col lg={4} md={6}>
-                        <Card className="stats-card total-devices">
-                            <Card.Body className="p-4">
+                <div className="stats-row mb-4">
+                    <Card className="stats-card total-devices">
+                        <Card.Body className="p-4">
+                            <div className="stats-flex">
                                 <div className="stats-icon">
-                                    <FaDesktop />
+                                    <FaServer />
                                 </div>
                                 <div className="stats-content">
                                     <h3 className="stats-value">{statsDevices.length}</h3>
                                     <p className="stats-label">Total Devices</p>
                                 </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6}>
-                        <Card className="stats-card active-devices">
-                            <Card.Body className="p-4">
+                            </div>
+                        </Card.Body>
+                    </Card>
+                    <Card className="stats-card active-devices">
+                        <Card.Body className="p-4">
+                            <div className="stats-flex">
                                 <div className="stats-icon">
-                                    <FaCircle style={{ color: '#28a745' }} />
+                                    <FaCheckCircle style={{ color: '#28a745' }} />
                                 </div>
                                 <div className="stats-content">
                                     <h3 className="stats-value">
@@ -169,15 +171,14 @@ const DevicePage = () => {
                                     </h3>
                                     <p className="stats-label">Active Devices</p>
                                 </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-
-                    <Col lg={4} md={6}>
-                        <Card className="stats-card inactive-devices">
-                            <Card.Body className="p-4">
+                            </div>
+                        </Card.Body>
+                    </Card>
+                    <Card className="stats-card inactive-devices">
+                        <Card.Body className="p-4">
+                            <div className="stats-flex">
                                 <div className="stats-icon">
-                                    <FaCircle style={{ color: '#6c757d' }} />
+                                    <FaTimesCircle style={{ color: '#6c757d' }} />
                                 </div>
                                 <div className="stats-content">
                                     <h3 className="stats-value">
@@ -185,10 +186,10 @@ const DevicePage = () => {
                                     </h3>
                                     <p className="stats-label">Inactive Devices</p>
                                 </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </div>
 
                 {/* Filters Section */}
                 <Card className="filters-card mb-4">
