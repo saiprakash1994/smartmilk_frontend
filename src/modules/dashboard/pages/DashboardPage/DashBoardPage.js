@@ -6,11 +6,9 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import Badge from "react-bootstrap/Badge";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { roles } from "../../../../shared/utils/appRoles";
 import {
-  useGetAllDevicesQuery,
+ 
   useGetDeviceByCodeQuery,
 } from "../../../device/store/deviceEndPoint";
 import {
@@ -25,10 +23,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
+  
 } from "recharts";
 import { useGetMultipleRecordsQuery } from "../../../records/store/recordEndPoint";
 import "./DashBoardPage.scss";
@@ -36,25 +31,19 @@ import SkeletonHome from "../../../../shared/utils/skeleton/SkeletonHome";
 import {
   FaChartBar,
   FaChartPie,
-  FaChartLine,
-  FaCalendarAlt,
+   FaCalendarAlt,
   FaClock,
   FaDesktop,
   FaTint,
   FaServer,
   FaRupeeSign,
-  FaUsers,
   FaIndustry,
-  FaArrowUp,
-  FaArrowDown,
-  FaEquals,
+  
   FaSearch,
   FaGift
 } from "react-icons/fa";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
-import { faDesktop } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import debounce from "lodash/debounce";
 
 const shifts = [
@@ -312,7 +301,7 @@ const DashboardPage = () => {
                 <Card className="summary-card total-quantity">
                   <Card.Body className="p-4">
                     <div className="summary-flex">
-                      <div className="summary-icon">
+                      <div className={`summary-icon${' total-milk-icon'}`}>
                         <FaTint />
                       </div>
                       <div className="summary-content">
@@ -365,7 +354,7 @@ const DashboardPage = () => {
                       </div>
                       <div className="summary-content">
                         <h3 className="summary-value" title={`₹${grandTotal.toFixed(2)}`}>₹{grandTotal.toFixed(2)}</h3>
-                        <p className="summary-label">Grand Total</p>
+                        <p className="summary-label total-milk-label">Grand Total</p>
                       </div>
                     </div>
                   </Card.Body>
@@ -380,11 +369,11 @@ const DashboardPage = () => {
                   <Card className="milk-type-card">
                     <Card.Body className="p-4">
                       <div className="milk-type-header">
-                        <div className="milk-type-icon">
+                        <div className={`milk-type-icon${['COW','BUF','TOTAL'].includes(item?._id.milkType) ? ' milk-main-icon' : ''}`}>
                           {React.createElement(getMilkTypeIcon(item?._id.milkType))}
                         </div>
                         <div className="milk-type-info">
-                          <h4 className="milk-type-title">{item?._id.milkType} Milk</h4>
+                          <h4 className="milk-type-title">{item?._id.milkType} MILK</h4>
                           <p className="milk-type-subtitle">Summary for {formattedDate}</p>
                         </div>
                       </div>

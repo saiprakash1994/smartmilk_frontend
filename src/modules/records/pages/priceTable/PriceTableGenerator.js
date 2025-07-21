@@ -419,14 +419,14 @@ const PriceTableGenerator = () => {
     <>
       
       <Card className="price-table-generator-card mx-auto" style={{ maxWidth: 900, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', borderRadius: 18 }}>
-        <Card.Header className="bg-primary text-white position-relative" style={{ borderRadius: '18px 18px 0 0', padding: '1rem 1rem 1rem 1rem' }}>
+        <Card.Header className="position-relative" style={{ borderRadius: '18px 18px 0 0', padding: '0.75rem', background: '#2b50a1', color: 'whitesmoke' }}>
           <div className="d-flex w-100 align-items-center justify-content-between position-relative">
-            <div className="d-flex align-items-center">
-              <FaTable size={32} className="me-2" />
-              <div>
-                <h3 style={{ fontWeight: 700, marginBottom: 4, textAlign: 'left' }}>Milk Rate Table Generator</h3>
-                <div style={{ fontSize: '1rem', opacity: 0.9, textAlign: 'left' }}>Generate, download and upload milk rate tables with custom steps</div>
-              </div>
+            <div className="d-flex flex-column">
+              <span className="d-flex align-items-center mb-1">
+                <FaTable size={18} className="me-2" />
+                <span style={{ fontSize: '1.1rem',fontWeight: "bold", marginBottom: 0, textAlign: 'left' }}>Milk Rate Table Generator</span>
+              </span>
+              <div style={{ fontSize: '1rem', opacity: 0.9, textAlign: 'left' }}>Generate, download and upload milk rate tables with custom steps</div>
             </div>
             {/* Device id and change button at the right */}
             {isDairy && selectedDeviceId && (
@@ -454,12 +454,13 @@ const PriceTableGenerator = () => {
         <Card.Body>
           {/* Device selection for dairy users - only show if not selected */}
           {isDairy && !selectedDeviceId && (
-            <Form.Group className="mb-4" style={{ maxWidth: 400, margin: '0 auto' }}>
-              <Form.Label className="fw-bold">Device</Form.Label>
+            <div className="d-flex flex-row align-items-center gap-2 mb-4" style={{ maxWidth: 400, margin: '0 auto' }}>
+              <Form.Label className="fw-bold mb-0" style={{ minWidth: 70 }}>Device</Form.Label>
               <Form.Select
                 value={selectedDeviceId}
                 onChange={e => setSelectedDeviceId(e.target.value)}
                 disabled={isDairyLoading}
+                style={{ flex: 1 }}
               >
                 <option value="">All Devices</option>
                 {dairyDevices?.map((dev) => (
@@ -467,13 +468,13 @@ const PriceTableGenerator = () => {
                 ))}
               </Form.Select>
               {isDairyLoading && <div className="text-center text-secondary mt-2">Loading devices...</div>}
-            </Form.Group>
+            </div>
           )}
           {/* Only show the rest of the UI if not dairy, or if dairy and a device is selected or All Devices is selected */}
           {(!isDairy || (isDairy && (selectedDeviceId !== undefined))) && (
             <Form onSubmit={handleGenerate}>
               <Card className="selection-section-card mb-4">
-                <Card.Header className="selection-section-header d-flex align-items-center">
+                <Card.Header className="selection-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                   <FaTable className="me-2" /> Milk Rate Table Options
                 </Card.Header>
                 <Card.Body>
@@ -553,7 +554,7 @@ const PriceTableGenerator = () => {
                 {/* FAT Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
                   <Card className="config-section-card fat-config-card mb-4 w-100">
-                    <Card.Header className="config-section-header fat-section-header d-flex align-items-center">
+                    <Card.Header className="config-section-header fat-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                       <FaTint className="me-2" /> FAT Configuration
                     </Card.Header>
                     <Card.Body>
@@ -612,7 +613,7 @@ const PriceTableGenerator = () => {
                         </div>
                       </div>
                       {/* Steps Section Label */}
-                      <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
                       {fatRuleError && (
                         <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
                           <FaExclamationTriangle className="me-2" /> {fatRuleError}
@@ -622,12 +623,12 @@ const PriceTableGenerator = () => {
                         <div className="table-responsive">
                           <Table bordered hover size="sm" className="mb-3 step-table">
                             <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Rate</th>
-                                <th></th>
+                              <tr style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                              <th >#</th>
+                                <th >From</th>
+                                <th >To</th>
+                                <th >Rate</th>
+                                <th ></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -655,7 +656,7 @@ const PriceTableGenerator = () => {
                 {/* SNF/CLR Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
                   <Card className="config-section-card snf-config-card mb-4 w-100">
-                    <Card.Header className="config-section-header snf-section-header d-flex align-items-center">
+                    <Card.Header className="config-section-header snf-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                       <FaVial className="me-2" /> {snfOrClrLabel} Configuration
                     </Card.Header>
                     <Card.Body>
@@ -714,7 +715,7 @@ const PriceTableGenerator = () => {
                         </div>
                       </div>
                       {/* Steps Section Label */}
-                      <div className="fw-bold text-secondary mb-2 mt-3" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
                       {snfRuleError && (
                         <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
                           <FaExclamationTriangle className="me-2" /> {snfRuleError}
@@ -724,12 +725,12 @@ const PriceTableGenerator = () => {
                         <div className="table-responsive">
                           <Table bordered hover size="sm" className="mb-3 step-table">
                             <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Rate</th>
-                                <th></th>
+                              <tr style={{ background: '#2b50a1', color: ' #2b50a1' }}>
+                                <th >#</th>
+                                <th >From</th>
+                                <th >To</th>
+                                <th >Rate</th>
+                                <th ></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -782,14 +783,13 @@ const PriceTableGenerator = () => {
             <div style={{ maxHeight: 500, overflow: "auto" }}>
               <Table striped bordered hover responsive size="sm">
                 <thead className="sticky-header">
-                  <tr>
-                  
-                    {matrixTable[0].map((col, idx) => (
-                      <th key={idx}>{
-                        idx === 0 ? `${snfOrClrLabel === 'CLR' ?'f/c':'f/s'}` :
-                        idx > 0 ? `${snfOrClrLabel === 'CLR' ? parseFloat(col).toFixed(1) : col}` : col
-                      }</th>
-                    ))}
+                  <tr style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                  {matrixTable[0].map((col, idx) => (
+                    <th key={idx} style={{ color: 'whitesmoke' }}>{
+                      idx === 0 ? `${snfOrClrLabel === 'CLR' ?'f/c':'f/s'}` :
+                      idx > 0 ? `${snfOrClrLabel === 'CLR' ? parseFloat(col).toFixed(1) : col}` : col
+                    }</th>
+                  ))}
                   </tr>
                 </thead>
                 <tbody>

@@ -1,0 +1,53 @@
+body, .datewise-detailed-page, .records-card, .records-header-section, .records-table, .records-table th, .records-table td, .fw-semibold, .flex-grow-1, .form-label, .form-control, .form-select, .search-btn, .export-btn {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+
+.records-header-section {
+  background: #2b50a1 !important;
+  color: whitesmoke !important;
+  border-radius: 16px 16px 0 0;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 20px !important;
+}
+
+.records-header-section .fw-semibold,
+.records-header-section .flex-grow-1 {
+  color: whitesmoke !important;
+}
+
+.fw-semibold{
+    padding-left: 5px;
+    padding-right: 10px;
+    font-size: 1.5 rem;
+}
+
+.records-table thead tr {
+  background: #2b50a1 !important;
+  color: whitesmoke !important;
+}
+
+
+@media (max-width: 768px) {
+  .records-header-section {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 8px;
+    padding: 10px 0 !important;
+  }
+  .records-header-section .fw-semibold,
+  .records-header-section .flex-grow-1 {
+    width: 100%;
+    text-align: center !important;
+    margin-bottom: 0;
+  }
+  .records-header-section .fw-semibold.text-end {
+    display: block;
+    width: 100%;
+    text-align: center !important;
+    margin-top: 4px;
+  }
+  .records-header-section .fw-semibold.text-end > div + div {
+    margin-top: 4px;
+  }
+} 

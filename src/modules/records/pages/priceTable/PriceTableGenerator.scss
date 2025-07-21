@@ -5,10 +5,20 @@
   z-index: 2;
 }
 
+.milk-type-toggle-btn.active,
+.milk-type-toggle-btn:active,
+.milk-type-toggle-btn:focus,
+.milk-type-toggle-btn:checked {
+  background-color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
+  color: white !important;
+}
+
+
 .rupee-toggle-color {
-  background-color: var(--bs-primary) !important;
+  background-color: #2b50a1 !important;
   color: #fff !important;
-  border-color: var(--bs-primary) !important;
+  border-color: #2b50a1 !important;
   font-size: 1.5rem; // Increased font size for rupee symbol
   height: 38px !important; // Match input and toggle button height
   display: flex;
@@ -19,35 +29,52 @@
 }
 
 .rupee-group .form-control {
-  border-color: var(--bs-primary) !important;
+  border-color: #2b50a1 !important;
   box-shadow: none;
-  font-size: 1.25rem; // Increased font size
+  font-size: 1.25rem;
 }
 
 .rupee-group .form-control:focus {
-  border-color: var(--bs-primary) !important;
-  box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+  border-color: #2b50a1 !important;
+  box-shadow: 0 0 0 0.2rem rgba(43, 80, 161, 0.25); /* Match your color */
 }
 
 .generate-reset-btn {
-  font-size: 1.25rem;
+  font-size: 1rem !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
   font-weight: 600;
   padding: 0.5rem 0.75rem;
 }
 
+.generate-reset-btn.btn-secondary {
+  background: #fff !important;
+  color: #2b50a1 !important;
+  border: 2px solid #2b50a1 !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+.generate-reset-btn.btn-secondary:hover, .generate-reset-btn.btn-secondary:focus {
+  background: #e3f0fd !important;
+  color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
+}
+
 .milk-type-toggle-btn.btn-primary,
-.step-type-toggle-btn.btn-primary {
-  background-color: var(--bs-primary) !important;
-  border-color: var(--bs-primary) !important;
+.milk-type-toggle-btn.btn-primary.active,
+.milk-type-toggle-btn.btn-primary:active,
+.milk-type-toggle-btn.btn-primary:focus,
+.milk-type-toggle-btn.btn-primary:checked {
+  background-color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
   color: #fff !important;
 }
 
 .milk-type-toggle-btn.btn-outline-primary,
 .step-type-toggle-btn.btn-outline-primary {
-  background-color: #fff !important;
-  border-color: var(--bs-primary) !important;
-  color: var(--bs-primary) !important;
+  background-color: whitesmoke !important;
+  border-color: #2b50a1 !important;
+  color: #2b50a1 !important;
 }
+
 
 .base-price-input {
   height: 38px !important;
@@ -92,8 +119,9 @@
 }
 
 .price-table-generator-card > .card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);//var(--bs-primary) !important;
-  color: #fff !important;
+  background: linear-gradient(135deg, #2b50a1 0%, #3e6cd1 100%);
+//var(--bs-primary) !important;
+  color: whitesmoke !important;
   border: none !important;
 }
 
@@ -214,13 +242,13 @@
 }
 
 .fat-config-card .config-section-header {
-  background: linear-gradient(90deg, #0d6efd 0%, #6f42c1 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #2b50a1 0%, #3e6cd1,100%);
+  color: whitesmoke;
 }
-
+ 
 .snf-config-card .config-section-header {
-  background: linear-gradient(90deg, #20c997 0%, #28a745 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #2b50a1 0%, #3e6cd1,100%);
+  color: whitesmoke;
 }
 
 .base-price-input-sm {
@@ -294,6 +322,49 @@
   box-shadow: 0 0 0 0.2rem rgba(13,110,253,.15) !important;
 }
 
+.btn-primary, .btn-primary:active, .btn-primary:focus, .btn-primary:checked {
+  background: #2b50a1 !important;
+  color: whitesmoke !important;
+  border-color: #2b50a1 !important;
+}
+
+.btn-success, .btn-success:active, .btn-success:focus, .btn-success:checked {
+  background: #2b50a1 !important;
+  color: #fff !important;
+  border-color: #2b50a1 !important;
+}
+
+.btn-info {
+  background: #fff !important;
+  color: #2b50a1 !important;
+  border: 2px solid #2b50a1 !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+.btn-info:hover, .btn-info:focus {
+  background: #e3f0fd !important;
+  color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
+}
+
+.price-table-generator-card input[type="text"],
+.price-table-generator-card input[type="number"],
+.price-table-generator-card select,
+.price-table-generator-card textarea,
+.price-table-generator-card .form-control,
+.price-table-generator-card .form-select {
+  border: 1.5px solid #2b50a1 !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+.price-table-generator-card input[type="text"]:focus,
+.price-table-generator-card input[type="number"]:focus,
+.price-table-generator-card select:focus,
+.price-table-generator-card textarea:focus,
+.price-table-generator-card .form-control:focus,
+.price-table-generator-card .form-select:focus {
+  border: 2px solid #2b50a1 !important;
+  box-shadow: 0 0 0 0.15rem rgba(43, 80, 161, 0.15) !important;
+}
+
 @media (max-width: 576px) {
   .price-table-generator-card {
     padding: 0.5rem !important;
@@ -350,3 +421,4 @@
     max-width: 100%;
   }
 } 
+

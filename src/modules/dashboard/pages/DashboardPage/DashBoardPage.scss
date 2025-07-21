@@ -482,10 +482,16 @@
   color: #fff !important;
   border: 1.5px solid #2b50a1 !important;
   font-weight: 600;
-  font-size: 1.08rem;
+  font-size: 0.95rem; /* Reduced from 1.08rem */
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(43, 80, 161, 0.08);
   transition: background 0.2s, box-shadow 0.2s;
+  padding: 6px 18px !important; /* Reduced padding for smaller button */
+  min-width: 80px; /* Reduced from 110px */
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .search-btn:hover, .search-btn:focus {
   background: #1a3570 !important;
@@ -516,3 +522,18 @@
   }
 }
 // Pie chart label styles (recharts uses SVG, so style inline in JSX)
+.summary-icon.total-milk-icon {
+  background: #2b50a1 !important;
+}
+
+.milk-type-icon.milk-main-icon {
+  background: #2b50a1 !important;
+}
+
+.total-milk-label {
+  background: #2b50a1 !important;
+  color: #fff !important;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
+}

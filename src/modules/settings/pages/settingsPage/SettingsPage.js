@@ -304,15 +304,14 @@ const SettingsPage = () => {
                     </Badge>
                   )}
                   {selectedDeviceId && (
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
+                    <span
+                      className="device-id-badge change-device-badge"
+                      style={{ cursor: 'pointer' }}
                       onClick={() => setSelectedDeviceId("")}
-                      className="change-device-btn"
                     >
                       <FaDesktop className="me-1" />
                       Change Device
-                    </Button>
+                    </span>
                   )}
                 </div>
               </div>

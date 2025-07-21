@@ -509,17 +509,17 @@ const DeviceRecords = () => {
                             <Card.Body className="cardbodyCss">
                                 {viewMode !== "TOTALS" && (
                                     <Card className="records-card mb-4 shadow">
-                                        <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4 records-header-section">
-                                            <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                                                Device Code: <span>{deviceCode}</span>
-                                            </div>
-                                            <div className="flex-grow-1 text-center table-header" >
-                                                DAYWISE REPORT
-                                            </div>
-                                            <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                                                Date: <span>{formatDateDMY(date)}</span>
-                                                <span className="mx-2">|</span>
-                                                Shift: <span>{shift || 'ALL'}</span>
+                                        <div className="records-header-bar mb-4">
+                                            <div className="header-row d-flex flex-column flex-md-row align-items-center w-100 text-center text-md-start" style={{gap: 0, padding: '10px'}}>
+                                                <div className="d-block w-100 d-md-inline header-device-id" style={{fontSize: '1.08rem'}}>
+                                                    Device ID: {deviceCode}
+                                                </div>
+                                                <div className="d-block w-100 d-md-inline header-center text-center" style={{fontWeight: 700, fontSize: '1.15rem', letterSpacing: 1, margin: '2px 0'}}>
+                                                    DAYWISE REPORT
+                                                </div>
+                                                <div className="d-block w-100 w-md-auto d-md-inline header-date-shift text-md-end" style={{fontSize: '1.08rem'}}>
+                                                    Date: {formatDateDMY(date)} | Shift: {shift || 'ALL'}
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="table-responsive">

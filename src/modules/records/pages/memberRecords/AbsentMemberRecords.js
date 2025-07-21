@@ -5,15 +5,13 @@ import Card from "react-bootstrap/esm/Card";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Spinner from "react-bootstrap/esm/Spinner";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { errorToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
   useGetDeviceByCodeQuery,
-  useGetDeviceByIdQuery,
+  
 } from "../../../device/store/deviceEndPoint";
 import { roles } from "../../../../shared/utils/appRoles";
 import { useGetAbsentMemberReportQuery } from "../../store/recordEndPoint";
@@ -25,6 +23,7 @@ import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 import { skipToken } from "@reduxjs/toolkit/query";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import ExportButtonsSection from "../ExportButtonsSection";
+import './MemberRecords.scss';
 
 const isExporting = false
 
@@ -247,6 +246,13 @@ const AbsentMemberRecords = () => {
                   </InputGroup>
                 </Form.Group>
               )}
+             
+              <Form.Group className="col-md-2">
+                <Form.Label className="form-label-modern">Date</Form.Label>
+                <InputGroup>
+                  <Form.Control className="form-control-modern select-date" type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
+                </InputGroup>
+              </Form.Group>
               <Form.Group className="col-md-2">
                 <Form.Label className="form-label-modern">Shift</Form.Label>
                 <InputGroup>
@@ -255,12 +261,6 @@ const AbsentMemberRecords = () => {
                     <option value="MORNING">MORNING</option>
                     <option value="EVENING">EVENING</option>
                   </Form.Select>
-                </InputGroup>
-              </Form.Group>
-              <Form.Group className="col-md-2">
-                <Form.Label className="form-label-modern">Date</Form.Label>
-                <InputGroup>
-                  <Form.Control className="form-control-modern select-date" type="date" value={date} max={getToday()} onChange={e => setDate(e.target.value)} />
                 </InputGroup>
               </Form.Group>
               <Form.Group className="col-md-2">
@@ -310,18 +310,19 @@ const AbsentMemberRecords = () => {
                 {(viewMode === "ABSENT" || viewMode === "ALL") && (
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
-                    <Card className="records-card mb-4">
-                      <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-0 records-header-section">
-                        <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem', color: '#2b50a1' }}>
-                          Device Code: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{deviceCode}</span>
+                    <Card className=" mb-4">
+                      <div className="records-header-section d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0">
+                        <div className="fw-semibold">
+                          Device Code: <span>{deviceCode}</span>
+                          
                         </div>
-                        <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1, color: '#2b50a1' }}>
+                        <div className="flex-grow-1 text-center">
                           ABSENT MEMBERS REPORT
                         </div>
-                        <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem', color: '#2b50a1' }}>
-                          Date: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{formatDateDMY(date)}</span>
+                        <div className="fw-semibold text-end">
+                          Date: <span>{formatDateDMY(date)}</span>
                           <span className="mx-2">|</span>
-                          Shift: <span style={{ color: '#2b50a1', fontWeight: 700 }}>{shift}</span>
+                          Shift: <span>{shift}</span>
                         </div>
                       </div>
                     </Card>

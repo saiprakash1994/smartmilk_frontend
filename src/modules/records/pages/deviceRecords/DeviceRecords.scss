@@ -71,7 +71,7 @@
 
   .search-btn, .export-btn {
     background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
-    color: #fff !important;
+    color: whitesmoke !important;
     border: none !important;
     font-weight: 600;
     border-radius: 8px;
@@ -80,6 +80,95 @@
   }
   .search-btn:hover, .export-btn:hover {
     background: #1a3570 !important;
-    color: #fff !important;
+    color: whitesmoke !important;
+  }
+}
+
+.records-header-bar {
+  background: #2b50a1;
+  color: whitesmoke;
+  border-radius: 12px;
+  padding: 5px 10px;
+  font-weight: 600;
+  font-size: 1.12rem;
+  width: 100%;
+}
+
+.records-header-bar .header-row {
+  width: 100%;
+}
+
+.header-left,
+.header-right,
+.header-center {
+  color: whitesmoke;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.records-header-bar, .records-header-bar span, .records-header-bar .header-left, .records-header-bar .header-right, .records-header-bar .header-center {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+
+.records-table,
+.records-table th,
+.records-table td {
+  border: none !important;
+}
+
+.totals-card .records-table,
+.totals-card .records-table th,
+.totals-card .records-table td {
+  border: none !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+
+.records-header-section {
+  background: #2b50a1 !important;
+  color: #fff !important;
+  border-radius: 12px 12px 0 0;
+}
+
+.records-header-section .fw-semibold,
+.records-header-section .flex-grow-1 {
+  color: #fff !important;
+}
+
+
+@media (max-width: 768px) {
+  .records-header-bar {
+    padding: 10px 0;
+  }
+  .records-header-bar .header-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .records-header-bar .header-center {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 0;
+  }
+  .records-header-bar .header-left,
+  .records-header-bar .header-right {
+    font-size: 0.75rem;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .records-header-section {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 8px;
+    padding: 10px 0 !important;
+  }
+  .records-header-section .fw-semibold,
+  .records-header-section .flex-grow-1 {
+    width: 100%;
+    text-align: center !important;
+    margin-bottom: 0;
   }
 }

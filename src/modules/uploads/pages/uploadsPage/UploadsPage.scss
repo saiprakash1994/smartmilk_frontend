@@ -3,6 +3,7 @@
   background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
   min-height: 100vh;
   padding: 20px 0;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
 
   .uploads-container {
     max-width: 1400px;
@@ -44,6 +45,16 @@
       max-width: 600px;
       margin: 0 auto;
     }
+  }
+
+  .uploads-header-card {
+    background: #2b50a1 !important;
+    color: #fff !important;
+  }
+
+  .uploads-header-card .uploads-title,
+  .uploads-header-card .uploads-subtitle {
+    color: #fff !important;
   }
 
   // Category Cards
@@ -175,6 +186,10 @@
     }
   }
 
+  .upload-category-card {
+    background: #ffffff !important;
+  }
+
   // Guidelines Card
   .upload-guidelines-card {
     border: none;
@@ -228,9 +243,14 @@
     }
   }
 
+  .upload-guidelines-card .guidelines-header {
+    background: #2b50a1 !important;
+    color: #fff !important;
+  }
+
   // File Upload Card Styles
   .file-upload-card {
-    border: none;
+    border: 2px solid #2b50a1 !important;
     border-radius: 15px;
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -552,4 +572,25 @@
 .uploads-page .settings-content .file-upload-card {
   margin-left: auto;
   margin-right: auto;
+}
+
+.uploads-page .category-icon,
+.uploads-page .uploads-header-icon,
+.uploads-page .guideline-icon,
+.uploads-page .upload-card-icon,
+.uploads-page .file-icon {
+  background: #2b50a1 !important;
+  color: #fff !important;
+}
+
+.upload-guidelines-card {
+  border: 2px solid #2b50a1 !important;
+}
+
+.upload-category-card {
+  border: 2px solid #2b50a1 !important;
+}
+
+.settings-sidebar {
+  border-right: 2px solid #2b50a1 !important;
 }

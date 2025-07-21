@@ -198,7 +198,7 @@ const MemberList = () => {
   const totalCount = members.length;
 
   return (
-    <div className="device-records-page">
+    <div className="device-records-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
       <div className="records-container">
         {/* Filter Section: Only for Dairy users, no Card wrapper */}
         {isDairy && (
@@ -246,32 +246,46 @@ const MemberList = () => {
             ) : (
               <>
                 {/* Modern Gradient Header Section (copied from AbsentMemberRecords) */}
-                <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4"
+                  style={{ background: '#2b50a1', color: 'whitesmoke', borderRadius: 12, padding: '12px' }}
                   >
-                  <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
+                  <div className="fw-semibold mb-2 mb-md-0" style={{ minWidth: 120, fontSize: '1.08rem' }}>
                     Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
                   </div>
-                  <div className="flex-grow-1 text-center" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                  <div className="flex-grow-1 text-center mb-2 mb-md-0" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
                     MEMBERS LIST
                   </div>
-                  <div className="d-flex align-items-center justify-content-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
-                    <Button variant="primary" onClick={openAddModal} disabled={!deviceCode}>
-                      <FaPlus className="me-2" /> Add Member
+                  <div className="d-flex align-items-center justify-content-end ms-auto text-end" style={{ minWidth: 220, fontSize: '1rem' }}>
+                    <Button 
+                      style={{
+                        borderRadius: '25px',
+                        background: 'whitesmoke',
+                        color: '#2b50a1',
+                        border: 'none',
+                        fontWeight: 600,
+                        padding: '8px 18px',
+                        fontSize: '1rem',
+                        boxShadow: '0 2px 8px rgba(43, 80, 161, 0.08)'
+                      }}
+                      onClick={openAddModal} 
+                      disabled={!deviceCode}
+                    >
+                      <FaPlus className="me-2" /> Add
                     </Button>
                   </div>
                 </div>
                 <div className="table-responsive">
                   <Table className="records-table" hover responsive>
                     <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>CODE</th>
-                        <th>MILKTYPE</th>
-                        <th>MEMBERNAME</th>
-                        <th>COMMISSIONTYPE</th>
-                        <th>CONTACTNO</th>
-                        <th>STATUS</th>
-                        <th>Actions</th>
+                      <tr style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                        <th style={{ color: 'whitesmoke' }}>#</th>
+                        <th style={{ color: 'whitesmoke' }}>CODE</th>
+                        <th style={{ color: 'whitesmoke' }}>MILKTYPE</th>
+                        <th style={{ color: 'whitesmoke' }}>MEMBERNAME</th>
+                        <th style={{ color: 'whitesmoke' }}>COMMISSIONTYPE</th>
+                        <th style={{ color: 'whitesmoke' }}>CONTACTNO</th>
+                        <th style={{ color: 'whitesmoke' }}>STATUS</th>
+                        <th style={{ color: 'whitesmoke' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>

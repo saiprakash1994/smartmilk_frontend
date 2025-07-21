@@ -33,6 +33,7 @@ import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import ExportButtonsSection from "../ExportButtonsSection";
+import './MemberRecords.scss';
 
 
 const getToday = () => {
@@ -586,29 +587,24 @@ const CumilativeRecords = () => {
                 {(viewMode == "DATA" || viewMode == "ALL") && (
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
-                    <div className="d-flex justify-content-between align-items-center px-3 py-3 mb-4"
-                      style={{
-                        gap: 16,
-                        borderRadius: 12,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: '#fff',
-                        boxShadow: '0 4px 16px rgba(102, 126, 234, 0.10)'
-                      }}>
+                    <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
                       <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                        Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                        Device Code: <span>{deviceCode}</span>
                       </div>
-                      <div className="flex-grow-1 text-center" >
+                      <div className="flex-grow-1 text-center">
                         PAYMENT REGISTER
                       </div>
                       <div className="fw-semibold text-end" style={{ minWidth: 320, fontSize: '1.08rem' }}>
-                        From: <span style={{ color: '#fff', fontWeight: 700 }}>{String(fromCode || '').padStart(4, '0')}</span>
-                        <span className="mx-1">to</span>
-                        <span style={{ color: '#fff', fontWeight: 700 }}>{String(toCode || '').padStart(4, '0')}</span>
-                        <span className="mx-2">|</span>
-                        <span>Dates:</span>
-                        <span style={{ color: '#fff', fontWeight: 700 }} className="ms-1">{fromDate ? formatDateDMY(fromDate) : ''}</span>
-                        <span className="mx-1">to</span>
-                        <span style={{ color: '#fff', fontWeight: 700 }}>{toDate ? formatDateDMY(toDate) : ''}</span>
+                        <div>
+                          Members From: <span>{String(fromCode || '').padStart(4, '0')}</span>
+                          <span className="mx-1">to</span>
+                          <span>{String(toCode || '').padStart(4, '0')}</span>
+                        </div>
+                        <div>
+                          Dates: <span className="ms-1">{fromDate ? formatDateDMY(fromDate) : ''}</span>
+                          <span className="mx-1">to</span>
+                          <span>{toDate ? formatDateDMY(toDate) : ''}</span>
+                        </div>
                       </div>
                     </div>
                     <div className="table-responsive">

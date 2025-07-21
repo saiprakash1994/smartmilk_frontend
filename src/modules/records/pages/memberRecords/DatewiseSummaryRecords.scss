@@ -87,4 +87,36 @@
 .row-all {
   font-weight: bold !important;
   background: #fff3cd !important; /* light yellow highlight */
+}
+
+.table-group-header td[colspan] {
+  background: #2b50a1 !important;
+  color: #fff !important;
+}
+
+.records-header-section .flex-grow-1.text-center {
+  font-size: 1.3rem !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+body, .datewise-detailed-page, .records-card, .records-header-section, .records-table, .records-table th, .records-table td, .fw-semibold, .flex-grow-1, .form-label, .form-control, .form-select, .search-btn, .export-btn {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+} 
+
+ .records-table td {
+  color: #212529 !important;
+  font-size: 1.00rem;
+  // font-weight: bold !important;
+} 
+
+.records-table th {
+  color: whitesmoke !important;
+  font-size: 1.00rem;
+} 
+
+.records-table.summary-totals-table {
+  border: 2px solid #2b50a1 !important;
+  border-radius: 12px;
+  overflow: hidden;
 } 

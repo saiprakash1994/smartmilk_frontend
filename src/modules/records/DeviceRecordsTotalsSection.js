@@ -8,17 +8,18 @@ const DeviceRecordsTotalsSection = ({ filteredTotals }) => {
     const totalAmountSum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalAmount) || 0), 0);
     const grandTotalSum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalAmount || 0) + Number(t.totalIncentive || 0)), 0);
     const totalQtySum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalQuantity) || 0), 0);
+    const totalIncentiveSum = filteredTotals.reduce((sum, t) => sum + (Number(t.totalIncentive) || 0), 0);
     return (
         <>
-            <div className="mb-2 fw-semibold text-end">
-                Total Qty: <span className="text-info">{totalQtySum.toFixed(2)} L</span> &nbsp;|&nbsp; Total Amount: <span className="text-primary">₹{totalAmountSum.toFixed(2)}</span> &nbsp;|&nbsp; Grand Total: <span className="text-success">₹{grandTotalSum.toFixed(2)}</span>
+            <div className="mb-2 fw-semibold text-end" style={{ color: '#2b50a1' }}>
+                <span style={{ color: '#2b50a1' }}>Total Qty:</span> <span style={{ color: '#2b50a1' }}>{totalQtySum.toFixed(2)} L</span> &nbsp;|&nbsp; <span style={{ color: '#2b50a1' }}>Total Amount:</span> <span style={{ color: '#2b50a1' }}>₹{totalAmountSum.toFixed(2)}</span> &nbsp;|&nbsp; <span style={{ color: '#2b50a1' }}>Total Incentive:</span> <span style={{ color: '#2b50a1' }}>₹{totalIncentiveSum.toFixed(2)}</span> &nbsp;|&nbsp; <span style={{ color: '#2b50a1' }}>Grand Total:</span> <span style={{ color: '#2b50a1' }}>₹{grandTotalSum.toFixed(2)}</span>
             </div>
             <div className="table-responsive">
-                <Table className="records-table" bordered responsive>
+                <Table className="records-table" responsive>
                     <thead>
                         <tr>
                             <th>Milk Type</th>
-                            <th>Total Records</th>
+                            <th>Total Samples</th>
                             <th>Avg Fat</th>
                             <th>Avg SNF</th>
                             <th>Avg CLR</th>

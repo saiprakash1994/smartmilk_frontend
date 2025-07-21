@@ -1,11 +1,13 @@
 .appSidebar {
-    // background: var(--appTheam);
-    // border-top: 2px solid #ffa70573;
-    padding: 16px 8px;
+    background: #2b50a1 !important;
+    font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+.appSidebar {
+    position: relative;
 }
 
 .module {
@@ -40,14 +42,31 @@
     }
 }
 
+.module-appIcon {
+    background: #fff !important;
+    border-radius: 50%;
+    padding: 8px;
+    color: #2b50a1 !important;
+    font-size: 20px;
+    transition: background 0.2s, color 0.2s;
+}
+
 .module:hover .module-appIcon,
 .module-active .module-appIcon {
-    color: var(--appTextColor);
+    background: #2b50a1 !important;
+    color: #fff !important;
 }
 
 .appVersion {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    width: 100%;
     text-align: center;
-    color: var(--bs-gray-600);
+    color: #fff !important;
+    font-weight: bold;
+    font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+    letter-spacing: 1px;
 }
 
 .sidebar-profile-section {

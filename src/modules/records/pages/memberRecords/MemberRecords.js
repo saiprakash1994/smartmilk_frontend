@@ -32,7 +32,7 @@ import { roles } from "../../../../shared/utils/appRoles";
 import { useGetMemberCodewiseReportQuery, useLazyGetMemberCodewiseReportQuery } from "../../store/recordEndPoint";
 import { skipToken } from "@reduxjs/toolkit/query";
 import InputGroup from "react-bootstrap/esm/InputGroup";
-import '../deviceRecords/DeviceRecords.scss';
+import './MemberRecords.scss';
 import ExportButtonsSection from "../ExportButtonsSection";
 import DeviceRecordsTotalsSection from '../../DeviceRecordsTotalsSection';
 
@@ -429,23 +429,19 @@ const MemberRecords = () => {
               ) : (
                 <>
                   {/* Modern Gradient Header Section */}
-                  <Card className="records-card mb-4 shadow">
-                    <div className="d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0 records-header-section">
-                      <div style={{ minWidth: 120 }}>
-                        <div className="fw-semibold" >
-                          Device Code: <span >{deviceCode}</span>
-                          <span className="mx-2">|</span>
-                          Member Code: <span >{String(memberCode || '').padStart(4, '0')}</span>
-                        </div>
-                      </div>
-                      <div className="flex-grow-1 text-center " >
-                        MEMBERWISE REPORT
-                      </div>
-                      <div className="fw-semibold text-end" >
-                        From: <span >{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span >{formatDateDMY(toDate)}</span>
-                      </div>
+                  <div className="records-header-section d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0">
+                    <div className="fw-semibold" >
+                      Device Code: <span >{deviceCode}</span>
+                      <span className="mx-2">|</span>
+                      Member Code: <span >{String(memberCode || '').padStart(4, '0')}</span>
                     </div>
-                  </Card>
+                    <div className="flex-grow-1 text-center " >
+                      MEMBERWISE REPORT
+                    </div>
+                    <div className="fw-semibold text-end" >
+                      From: <span >{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span >{formatDateDMY(toDate)}</span>
+                    </div>
+                  </div>
                   <hr />
                   {viewMode !== "TOTALS" && (
                     <Card className="records-card mb-4">
@@ -465,6 +461,8 @@ const MemberRecords = () => {
                               <th>Amount</th>
                               <th>Incentive</th>
                               <th>Grand Total</th>
+                              <th>Analyzer Mode</th>
+                              <th>Weight Mode</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -483,6 +481,8 @@ const MemberRecords = () => {
                                   <td>₹{record?.AMOUNT?.toFixed(2) || 0}</td>
                                   <td>₹{record?.INCENTIVEAMOUNT?.toFixed(2) || 0}</td>
                                   <td>₹{record?.TOTAL?.toFixed(2)}</td>
+                                  <td>{record?.ANALYZERMODE}</td>
+                                  <td>{record?.WEIGHTMODE}</td>
                                 </tr>
                               ))
                             ) : (

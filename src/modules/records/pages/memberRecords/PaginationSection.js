@@ -10,6 +10,10 @@ const modernBtnStyle = {
     padding: '8px 22px',
     fontSize: '1rem',
     transition: 'background 0.2s, box-shadow 0.2s',
+    background: '#2b50a1',
+    color: '#fff',
+    border: '1.5px solid #2b50a1',
+    fontFamily: 'Roboto, Segoe UI, Arial, sans-serif',
 };
 
 const PaginationSection = ({

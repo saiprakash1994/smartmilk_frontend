@@ -1,12 +1,4 @@
-import {
-    faFileCsv,
-    faFilePdf,
-    faSearch,
-    faDesktop,
-    faUser,
-    faCalendar,
-    faClock,
-} from "@fortawesome/free-solid-svg-icons";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -17,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { errorToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
     useGetDeviceByCodeQuery,
@@ -30,7 +21,6 @@ import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { InputGroup } from "react-bootstrap";
 import './DatewiseSummaryRecords.scss';
 import ExportButtonsSection from "../ExportButtonsSection";
 import FilterSection from "./FilterSection";
@@ -371,17 +361,22 @@ const DatewiseSummaryRecords = () => {
                     ) : (
                         records?.map((record, index) => (
                             <Card key={index} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                                 
+                                <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
+                                  <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.00rem' }}>
+                                    Device Code: <span>{deviceCode}</span>
+                                  </div>
+                                  <div className="flex-grow-1 text-center">
+                                    SUMMARY REPORT
+                                  </div>
+                                  <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.00rem' }}>
+                                    Date: <span>{record.date}</span>
+                                    <span className="mx-2">|</span>
+                                    Shift: <span>{record.shift}</span>
+                                  </div>
+                                </div>
                                 <table className="section-table" style={{ padding: 10, width: '100%' }}>
-                                    <tbody>
-                                        <tr className="table-group-header">
-                                            <td colSpan="9">
-                                                <div className="group-header-card d-flex justify-content-between align-items-center">
-                                                    <span className="group-header-title">Date: {record.date}</span>
-                                                    <span className="group-header-title">Summary Report</span>
-                                                    <span className="group-header-title">Shift: {record.shift}</span>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    <tbody>                                      
 
                                         {record?.milktypeStats?.length > 0 && (
                                             <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : {}}>

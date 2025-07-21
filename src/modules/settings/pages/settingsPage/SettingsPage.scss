@@ -46,7 +46,8 @@
 
 // Modern Settings Page Styles
 .settings-page {
-  background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  background: #fff !important;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
   min-height: 100vh;
   padding: 20px 0;
 
@@ -106,9 +107,9 @@
         font-weight: 600;
         padding: 8px 16px;
         border-radius: 20px;
-        background: rgba(255, 255, 255, 0.2) !important;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: white;
+        background: #f7faff !important;
+        color: #2b50a1 !important;
+        border: 2px solid #2b50a1 !important;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
@@ -554,4 +555,57 @@
 
 .milk-analyzer-btn:last-child {
   margin-right: 0;
+}
+
+.change-device-btn {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+  font-size: 1.15rem !important;
+  padding: 8px 16px !important;
+  margin-left: 8px !important;
+}
+
+.change-device-btn:hover, .change-device-btn:focus {
+  background: #e3f0fd !important;
+  color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
+}
+
+.device-id-badge, .change-device-btn {
+  background: #f7faff !important;
+  color: #2b50a1 !important;
+}
+
+.change-device-btn svg {
+  margin-right: 4px !important;
+}
+
+.change-device-badge {
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.change-device-badge:hover, .change-device-badge:focus {
+  background: #e3f0fd !important;
+  color: #2b50a1 !important;
+}
+
+.setting-switch .form-check-input:checked {
+  background-color: #2b50a1 !important;
+  border-color: #2b50a1 !important;
+}
+
+.save-settings-card .save-button {
+  background: #2b50a1 !important;
+  color: #fff !important;
+  border: 2px solid #2b50a1 !important;
+}
+
+.save-settings-card .save-button:hover, .save-settings-card .save-button:focus {
+  background: #1a3570 !important;
+  color: #fff !important;
+  border-color: #1a3570 !important;
+}
+
+.setting-switch .form-check-input,
+.save-settings-card .save-button {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
 }

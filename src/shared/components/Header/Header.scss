@@ -14,7 +14,9 @@ img {
     width: 100%;
     justify-content: space-between;
     height: 100%;
+    background: #2b50a1 !important;
     // background: var(--appTheam);
+    color: #fff !important;
 }
 
 .brand {
@@ -73,4 +75,19 @@ img {
     background: transparent;
     border: 0px;
     color: var(--appTheam);
+}
+
+.brand, .profileName, .notification, #dropdown-split-basic {
+    color: #fff !important;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #2b50a1 !important;
+    font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+    font-weight: 500;
+}
+
+.dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
+    background: #e3f0fd !important;
+    color: #2b50a1 !important;
 }

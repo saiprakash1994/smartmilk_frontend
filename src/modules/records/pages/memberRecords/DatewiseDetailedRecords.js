@@ -1,27 +1,12 @@
 import React from "react";
-import {
-    faFileCsv,
-    faFilePdf,
-    faSearch,
-    faCalendar,
-    faList,
-    faDesktop,
-    faPerson,
-    faTimesCircle,
-    faClock,
-    faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
-import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/esm/Form";
 import Spinner from "react-bootstrap/esm/Spinner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { errorToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import {
     useGetDeviceByCodeQuery,
@@ -34,7 +19,6 @@ import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { skipToken } from "@reduxjs/toolkit/query";
-import InputGroup from "react-bootstrap/esm/InputGroup";
 import './DatewiseDetailedRecords.scss';
 import ExportButtonsSection from "../ExportButtonsSection";
 import FilterSection from "./FilterSection";
@@ -463,19 +447,27 @@ const DatewiseDetailedRecords = () => {
                     records.map((record, groupIdx) => (
                         <Card key={`${record.date}-${record.shift}`} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
                             <div className="table-responsive">
+                              
+                                <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
+                                <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
+                                    Device Code: <span>{deviceCode}</span>
+                                </div>
+                                <div className="flex-grow-1 text-center">
+                                    DETAILED REPORT
+                                </div>
+                                <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.08rem' }}>
+                                    Date: <span>{record.date}</span>
+                                    <span className="mx-2">|</span>
+                                    Shift: <span>{record.shift}</span>
+                                </div>
+  
+
+                                </div>
                                 <Table className="records-table" hover responsive>
                                     <tbody>
-                                        <tr className="table-group-header">
-                                            <td colSpan="9">
-                                                <div className="group-header-card d-flex justify-content-between align-items-center">
-                                                    <span className="group-header-title">Date: {record.date}</span>
-                                                    <span className="group-header-title">Detailed Report</span>
-                                                    <span className="group-header-title">Shift: {record.shift}</span>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                       
                                         <tr>
-                                            {/* <th>#</th> */}
+                                            <th>#</th>
                                             <th>Code</th>
                                             <th>Milk Type</th>
                                             <th>Fat</th>
@@ -486,6 +478,8 @@ const DatewiseDetailedRecords = () => {
                                             <th>Amount</th>
                                             <th>Incentive</th>
                                             <th>Total</th>
+                                            <th>Analyzer Mode</th>
+                                            <th>Weight Mode</th>
 
                                         </tr>
                                         {record?.records?.length > 0 ? (
@@ -493,6 +487,7 @@ const DatewiseDetailedRecords = () => {
                                                 .sort((a, b) => Number(a.CODE) - Number(b.CODE))
                                                 .map((stat, statIndex) => (
                                                     <tr key={`${record.date}-${record.shift}-${stat.CODE}-${statIndex}`}>
+                                                        <td>{statIndex+1}</td>
                                                         <td>{String(stat.CODE).padStart(4, "0")}</td>
                                                         <td>{stat?.MILKTYPE}</td>
                                                         <td>{stat?.FAT?.toFixed(1)}</td>
@@ -503,6 +498,8 @@ const DatewiseDetailedRecords = () => {
                                                         <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
                                                         <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
                                                         <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
+                                                        <td>{stat?.ANALYZERMODE}</td>
+                                                        <td>{stat?.WEIGHTMODE}</td>
                                                     </tr>
                                                 ))
                                         ) : (
@@ -510,16 +507,24 @@ const DatewiseDetailedRecords = () => {
                                                 <td colSpan="9" className="text-center text-muted">No member records for this group.</td>
                                             </tr>
                                         )}
+                                        
+                                    </tbody>
+                                </Table>
+                                {record?.milktypeStats?.length > 0 && ( <table className="section-table" style={{ padding: 10, width: '100%' }}>
+                                    <tbody>                                      
+
                                         {record?.milktypeStats?.length > 0 && (
-                                            <tr>
+                                            <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : {}}>
                                                 <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
-                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={true} />
+                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false} />
                                                 </td>
                                             </tr>
                                         )}
                                     </tbody>
-                                </Table>
+                                </table>)}
                             </div>
+                            
+                            
                         </Card>
                     ))
                 )}
