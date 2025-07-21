@@ -433,16 +433,16 @@ const PriceTableGenerator = () => {
               <div className="d-flex align-items-center gap-3 ms-auto">
                 <button
                   type="button"
-                  className="btn btn-light btn-sm rounded-pill"
-                  style={{ fontWeight: 600, fontSize: '1rem', minWidth: 80 }}
-                  disabled
+                  className="btn btn-sm rounded-pill"
+                  style={{ background: 'whitesmoke', color: '#2b50a1', fontWeight: 600, fontSize: '1rem', minWidth: 80 }}
+                  
                 >
                   {selectedDeviceId}
                 </button>
                 <button
                   type="button"
-                  className="btn btn-outline-light btn-sm rounded-pill"
-                  style={{ fontWeight: 600, fontSize: '1rem' }}
+                  className="btn btn-sm rounded-pill"
+                  style={{ background: 'whitesmoke', color: '#2b50a1', fontWeight: 600, fontSize: '1rem' }}
                   onClick={() => setSelectedDeviceId("")}
                 >
                   Change Device

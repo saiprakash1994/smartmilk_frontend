@@ -477,7 +477,7 @@ const DatewiseDetailedRecords = () => {
                                             <th>Rate</th>
                                             <th>Amount</th>
                                             <th>Incentive</th>
-                                            <th>Total</th>
+                                            <th>Grand Total</th>
                                             <th>Analyzer Mode</th>
                                             <th>Weight Mode</th>
 
@@ -498,8 +498,8 @@ const DatewiseDetailedRecords = () => {
                                                         <td>₹{stat?.TOTALAMOUNT?.toFixed(2)}</td>
                                                         <td>₹{stat?.INCENTIVEAMOUNT?.toFixed(2)}</td>
                                                         <td>₹{(Number(stat?.TOTALAMOUNT) + Number(stat.INCENTIVEAMOUNT)).toFixed(2)}</td>
-                                                        <td>{stat?.ANALYZERMODE}</td>
-                                                        <td>{stat?.WEIGHTMODE}</td>
+                                                        <td className="text-center">{stat?.ANALYZERMODE}</td>
+                                                        <td className="text-center">{stat?.WEIGHTMODE}</td>
                                                     </tr>
                                                 ))
                                         ) : (

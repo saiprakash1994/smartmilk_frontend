@@ -32,7 +32,7 @@ const Header = () => {
             <div className="h-100 appNav d-flex justify-content-between w-100">
                 <div className="d-flex appbrand align-items-center">
                     <a href='/'>
-                        <img src={sunimpex} width={80} height={50} alt="Logo" />
+                        <img src={sunimpex} width={60} height={38} alt="Logo" />
 
                     </a>
                     <p className="brand m-0 px-2">SUN IMPEX</p>
