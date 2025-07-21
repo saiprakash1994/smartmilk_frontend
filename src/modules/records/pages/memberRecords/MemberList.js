@@ -13,6 +13,9 @@ import ExportButtonsSection from "../ExportButtonsSection";
 import '../deviceRecords/DeviceRecords.scss';
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
+import { FaTint, FaUsers, FaHorse } from "react-icons/fa";
+import cowImg from '../../../../assets/cow.png';
+import buffaloImg from '../../../../assets/buf.png';
 
 const initialMemberState = {
   CODE: "",
@@ -274,56 +277,92 @@ const MemberList = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="table-responsive">
-                  <Table className="records-table" hover responsive>
-                    <thead>
-                      <tr style={{ background: '#2b50a1', color: 'whitesmoke' }}>
-                        <th style={{ color: 'whitesmoke' }}>#</th>
-                        <th style={{ color: 'whitesmoke' }}>CODE</th>
-                        <th style={{ color: 'whitesmoke' }}>MILKTYPE</th>
-                        <th style={{ color: 'whitesmoke' }}>MEMBERNAME</th>
-                        <th style={{ color: 'whitesmoke' }}>COMMISSIONTYPE</th>
-                        <th style={{ color: 'whitesmoke' }}>CONTACTNO</th>
-                        <th style={{ color: 'whitesmoke' }}>STATUS</th>
-                        <th style={{ color: 'whitesmoke' }}>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {members.length > 0 ? (
-                        members.map((member, idx) => (
-                          <tr key={idx}>
-                            <td>{idx + 1}</td>
-                            <td>{member.CODE}</td>
-                            <td>{member.MILKTYPE}</td>
-                            <td>{member.MEMBERNAME}</td>
-                            <td>{member.COMMISSIONTYPE}</td>
-                            <td>{member.CONTACTNO}</td>
-                            <td>{member.STATUS}</td>
-                            <td>
-                              <Button size="sm" variant="outline-info" className="me-2" onClick={() => openEditModal(member)}><FaEdit /></Button>
-                              <Button size="sm" variant="outline-danger" onClick={() => handleDelete(member)}><FaTrash /></Button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="7" className="text-center">No members found for this device.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </Table>
-                  {/* Totals Row */}
-                  {members.length > 0 && (
-                    <div className="d-flex justify-content-end mt-2">
-                      <div className="fw-semibold" style={{ background: '#f5f7fa', borderRadius: 8, padding: '8px 24px', fontSize: '1.08rem', boxShadow: '0 2px 8px rgba(102,126,234,0.07)' }}>
-                        Total Cow Members: <span style={{ color: '#667eea', fontWeight: 700 }}>{cowCount}</span>
-                        <span className="mx-3">|</span>
-                        Total Buffalo Members: <span style={{ color: '#764ba2', fontWeight: 700 }}>{bufCount}</span>
-                        <span className="mx-3">|</span>
-                        Total Members: <span style={{ color: '#2c3e50', fontWeight: 700 }}>{totalCount}</span>
-                      </div>
+                {/* Totals Cards Row */}
+                {members.length > 0 && (
+                  <div className="row g-4 mb-4 justify-content-center">
+                    <div className="col-12 col-md-4 col-lg-3">
+                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                        <Card.Body className="d-flex align-items-center p-4">
+                          <div style={{ background: '#2b50a1', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                            <div style={{ background: 'white', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <img src={cowImg} alt="Cow" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{cowCount}</div>
+                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Cow Members</div>
+                          </div>
+                        </Card.Body>
+                      </Card>
                     </div>
-                  )}
+                    <div className="col-12 col-md-4 col-lg-3">
+                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                        <Card.Body className="d-flex align-items-center p-4">
+                          <div style={{ background: '#764ba2', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                            <div style={{ background: 'white', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <img src={buffaloImg} alt="Buffalo" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{bufCount}</div>
+                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Buffalo Members</div>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </div>
+                    <div className="col-12 col-md-4 col-lg-3">
+                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                        <Card.Body className="d-flex align-items-center p-4">
+                          <div style={{ background: '#20c997', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                            <FaUsers style={{ color: 'white', fontSize: 28 }} />
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{totalCount}</div>
+                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Members</div>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <div className="row g-4">
+                    {members.length > 0 ? (
+                      members.map((member, idx) => (
+                        <div className="col-12 col-md-6 col-lg-3" key={idx}>
+                          <Card className="h-100 shadow-sm member-card" style={{ borderRadius: 16, border: '1.5px solid #eaf1fb', background: '#fff', fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif", color: '#111' }}>
+                            <Card.Body>
+                              <div className="d-flex align-items-center justify-content-between mb-2">
+                                <span className="badge" style={{
+                                  background: '#2b50a1',
+                                  color: 'whitesmoke',
+                                  fontSize: '1rem',
+                                  borderRadius: 8,
+                                  padding: '6px 14px',
+                                  letterSpacing: 1
+                                }}>
+                                  #{member.CODE}
+                                </span>
+                                <span className="badge bg-secondary text-uppercase" style={{ fontSize: '0.95rem', borderRadius: 8 }}>{member.MILKTYPE === 'C' ? 'Cow' : 'Buffalo'}</span>
+                              </div>
+                              <div className="fw-bold mb-1" style={{ fontSize: '1.15rem', color: '#111' }}>{member.MEMBERNAME}</div>
+                              <div className="mb-2" style={{ fontSize: '0.98rem', color: '#111' }}>Commission: <b>{member.COMMISSIONTYPE}</b></div>
+                              <div className="mb-2" style={{ fontSize: '0.98rem', color: '#111' }}>Contact: <span>{member.CONTACTNO ? member.CONTACTNO : <span className="text-muted">N/A</span>}</span></div>
+                              <div className="mb-2" style={{ color: '#111' }}>Status: <span style={member.STATUS === 'A' ? { color: '#2b50a1', fontWeight: 700 } : { color: '#dc3545', fontWeight: 700 }}>{member.STATUS === 'A' ? 'Active' : 'Deactive'}</span></div>
+                              <div className="d-flex justify-content-end gap-2 mt-3">
+                                <Button size="sm" variant="outline-info" className="rounded-pill" onClick={() => openEditModal(member)}><FaEdit /></Button>
+                                <Button size="sm" variant="outline-danger" className="rounded-pill" onClick={() => handleDelete(member)}><FaTrash /></Button>
+                              </div>
+                            </Card.Body>
+                          </Card>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-12">
+                        <div className="text-center text-muted py-4">No members found for this device.</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}

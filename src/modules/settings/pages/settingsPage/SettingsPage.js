@@ -303,7 +303,7 @@ const SettingsPage = () => {
                       {selectedDeviceId}
                     </Badge>
                   )}
-                  {selectedDeviceId && (
+                  {selectedDeviceId && isDairy && (
                     <span
                       className="device-id-badge change-device-badge"
                       style={{ cursor: 'pointer' }}
