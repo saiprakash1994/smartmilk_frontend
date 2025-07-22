@@ -1,6 +1,7 @@
 // Modern Uploads Page Styles
 .uploads-page {
   background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  
   min-height: 100vh;
   padding: 20px 0;
   font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
@@ -26,7 +27,7 @@
       align-items: center;
       justify-content: center;
       margin: 0 auto 20px;
-      color: white;
+      color: whitesmoke;
       font-size: 2rem;
       box-shadow: 0 8px 25px rgba(43, 80, 161, 0.13);
     }
@@ -49,25 +50,29 @@
 
   .uploads-header-card {
     background: #2b50a1 !important;
-    color: #fff !important;
+    // color: #fff !important;
   }
 
   .uploads-header-card .uploads-title,
   .uploads-header-card .uploads-subtitle {
-    color: #fff !important;
+    // color: #fff !important;
   }
 
   // Category Cards
   .upload-category-card {
     border: none;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.95);
+    // background: rgba(255, 255, 255, 0.95);
+    background: #f7faff;
+
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 
     .category-header {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      // background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: #f7faff;
+
       border: none;
       padding: 25px;
 
@@ -114,7 +119,9 @@
     .device-selection-card {
       border: none;
       border-radius: 12px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+     // background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+     background: #f7faff;
+
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       margin-bottom: 20px;
 
@@ -187,7 +194,9 @@
   }
 
   .upload-category-card {
-    background: #ffffff !important;
+    // background: #ffffff !important;
+    background: #f7faff;
+
   }
 
   // Guidelines Card

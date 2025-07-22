@@ -96,8 +96,8 @@ const DevicePage = () => {
         const statusConfig = {
             'active': { variant: 'success', text: 'Active' },
             'deactive': { variant: 'dark', text: 'Inactive' },
-            'maintenance': { variant: 'warning', text: 'Maintenance' },
-            'offline': { variant: 'danger', text: 'Offline' }
+            // 'maintenance': { variant: 'warning', text: 'Maintenance' },
+            // 'offline': { variant: 'danger', text: 'Offline' }
         };
 
         const config = statusConfig[status] || { variant: 'secondary', text: status };
@@ -168,8 +168,8 @@ const DevicePage = () => {
                                 <option value="all">All</option>
                                 <option value="active">Active</option>
                                 <option value="deactive">Inactive</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="offline">Offline</option>
+                                {/* <option value="maintenance">Maintenance</option> */}
+                                {/* <option value="offline">Offline</option> */}
                             </Form.Select>
                         </Form.Group>
                     </div>
