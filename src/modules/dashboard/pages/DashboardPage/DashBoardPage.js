@@ -192,7 +192,7 @@ const DashboardPage = () => {
   };
   console.log(deviceCodes, 'sai')
   return (
-    <div className="dashboard-page">
+    <div className="dashboard-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '20px 0' }}>
       <Container fluid className="dashboard-container">
         {/* Filters Section */}
         <Card className="filters-card mb-4">

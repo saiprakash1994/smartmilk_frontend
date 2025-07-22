@@ -122,7 +122,7 @@ const DevicePage = () => {
     }, [devicesByCode, isdevicesByCodeLoading, isdevicesByCodeError, userType, dispatch]);
 
     return (
-        <div className="device-page">
+        <div className="device-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif", background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '20px 0' }}>
             <Container fluid className="device-container">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div className="device-header">
@@ -247,15 +247,15 @@ const DevicePage = () => {
                 </Card>
 
                 {/* Devices Grid */}
-                <Card className="devices-grid-card">
-                    <Card.Header className="grid-header">
+                <Card className="devices-grid-card" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)' }}>
+                    <Card.Header className="grid-header" style={{ background: '#2b50a1', color: 'whitesmoke', borderTopLeftRadius: 18, borderTopRightRadius: 18, fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
                         <div className="d-flex justify-content-between align-items-center">
-                            <h5 className="grid-title">
+                            <h5 className="grid-title" style={{ color: 'whitesmoke', fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
                                 <FaDesktop className="me-2" />
                                 Device List
                             </h5>
                             <div className="grid-actions">
-                                <Badge bg="info" className="device-count-badge">
+                                <Badge bg="light" className="device-count-badge">
                                     {filteredDevices.length} Devices
                                 </Badge>
                             </div>

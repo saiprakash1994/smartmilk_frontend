@@ -106,7 +106,7 @@ const Login = () => {
     }, [userInfo, navigate]);
 
     return (
-        <div className="modern-login-container">
+        <div className="modern-login-container" style={{ background: '#2b50a1', minHeight: '100vh' }}>
             <div className="login-background">
                 <div className="login-background-overlay"></div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Card, Form, InputGroup, Table, Spinner, Button, Modal, ToastContainer, Toast } from "react-bootstrap";
+import { Card, Form, InputGroup, Spinner, Button, Modal, ToastContainer } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useGetDeviceByCodeQuery, useGetDeviceByIdQuery, useAddMemberMutation, useEditMemberMutation, useDeleteMemberMutation } from "../../../device/store/deviceEndPoint";
@@ -13,7 +13,7 @@ import ExportButtonsSection from "../ExportButtonsSection";
 import '../deviceRecords/DeviceRecords.scss';
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
-import { FaTint, FaUsers, FaHorse } from "react-icons/fa";
+import {  FaUsers} from "react-icons/fa";
 import cowImg from '../../../../assets/cow.png';
 import buffaloImg from '../../../../assets/buf.png';
 
@@ -201,15 +201,17 @@ const MemberList = () => {
   const totalCount = members.length;
 
   return (
-    <div className="device-records-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
+    <div className="device-records-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif", background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '20px 0' }}>
       <div className="records-container">
         {/* Filter Section: Only for Dairy users, no Card wrapper */}
         {isDairy && (
-          <Form className="row g-3 align-items-end mb-4">
+          <Form className="row g-3 align-items-end mb-1">
             <Form.Group className="col-md-3">
               <Form.Label>Device Code</Form.Label>
               <InputGroup>
-                <InputGroup.Text>
+                <InputGroup.Text
+                  style={{ background: '#2b50a1', color: 'whitesmoke', border: 'none' }}
+                >
                   <FontAwesomeIcon icon={faDesktop} />
                 </InputGroup.Text>
                 <Form.Select
@@ -236,7 +238,7 @@ const MemberList = () => {
           />
           {/* The Add Member button is now moved into the header */}
         </div>
-        <Card>
+        <Card style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)' }}>
           <Card.Body>
             {((isDairy && isDairyLoading) || (isDevice && isDeviceLoading)) ? (
               <div className="text-center my-5">
@@ -253,7 +255,7 @@ const MemberList = () => {
                   style={{ background: '#2b50a1', color: 'whitesmoke', borderRadius: 12, padding: '12px' }}
                   >
                   <div className="fw-semibold mb-2 mb-md-0" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                    Device Code: <span style={{ color: '#fff', fontWeight: 700 }}>{deviceCode}</span>
+                    Device Code: <span style={{ color: 'whitesmoke', fontWeight: 700 }}>{deviceCode}</span>
                   </div>
                   <div className="flex-grow-1 text-center mb-2 mb-md-0" style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
                     MEMBERS LIST
@@ -279,46 +281,46 @@ const MemberList = () => {
                 </div>
                 {/* Totals Cards Row */}
                 {members.length > 0 && (
-                  <div className="row g-4 mb-4 justify-content-center">
-                    <div className="col-12 col-md-4 col-lg-3">
-                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                  <div className="row g-4 mb-4 justify-content-center align-items-center" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
+                      <Card style={{ border: 'none', borderRadius: 15, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', height: '100%' }}>
                         <Card.Body className="d-flex align-items-center p-4">
-                          <div style={{ background: '#2b50a1', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
-                            <div style={{ background: 'white', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div className="summary-flex" style={{ background: '#2b50a1', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                            <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <img src={cowImg} alt="Cow" style={{ width: 38, height: 38, objectFit: 'contain' }} />
                             </div>
                           </div>
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{cowCount}</div>
-                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Cow Members</div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: 'black', lineHeight: 1, textAlign: 'center', width: '100%' }}>{cowCount}</div>
+                            <div style={{ color: 'black', fontSize: '1.1rem', fontWeight: 500, textAlign: 'center', width: '100%' }}>Total Cow Members</div>
                           </div>
                         </Card.Body>
                       </Card>
                     </div>
-                    <div className="col-12 col-md-4 col-lg-3">
-                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                    <div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
+                      <Card style={{ border: 'none', borderRadius: 15, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', height: '100%' }}>
                         <Card.Body className="d-flex align-items-center p-4">
-                          <div style={{ background: '#764ba2', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
-                            <div style={{ background: 'white', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div className="summary-flex" style={{ background: '#764ba2', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                            <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <img src={buffaloImg} alt="Buffalo" style={{ width: 38, height: 38, objectFit: 'contain' }} />
                             </div>
                           </div>
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{bufCount}</div>
-                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Buffalo Members</div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: 'black', lineHeight: 1, textAlign: 'center', width: '100%' }}>{bufCount}</div>
+                            <div style={{ color: 'black', fontSize: '1.1rem', fontWeight: 500, textAlign: 'center', width: '100%' }}>Total Buffalo Members</div>
                           </div>
                         </Card.Body>
                       </Card>
                     </div>
-                    <div className="col-12 col-md-4 col-lg-3">
-                      <Card style={{ border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)', background: '#fff', height: '100%' }}>
+                    <div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
+                      <Card style={{ border: 'none', borderRadius: 15, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', height: '100%' }}>
                         <Card.Body className="d-flex align-items-center p-4">
-                          <div style={{ background: '#20c997', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
+                          <div className="summary-flex" style={{ background: '#20c997', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
                             <FaUsers style={{ color: 'white', fontSize: 28 }} />
                           </div>
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: '2rem', color: '#2c3e50', lineHeight: 1 }}>{totalCount}</div>
-                            <div style={{ color: '#6c757d', fontSize: '1.1rem', fontWeight: 500 }}>Total Members</div>
+                            <div style={{ fontWeight: 700, fontSize: '2rem', color: 'black', lineHeight: 1, textAlign: 'center', width: '100%' }}>{totalCount}</div>
+                            <div style={{ color: 'black', fontSize: '1.1rem', fontWeight: 500, textAlign: 'center', width: '100%' }}>Total Members</div>
                           </div>
                         </Card.Body>
                       </Card>
