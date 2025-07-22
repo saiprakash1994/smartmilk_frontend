@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Form, Button, Table, InputGroup, Alert,ToggleButton,Col,Row,ButtonGroup } from "react-bootstrap";
 import Papa from "papaparse";
-import { FaDownload, FaFileCsv, FaFileUpload, FaPlus, FaRupeeSign, FaSyncAlt, FaTable, FaTrash, FaUpload, FaTint, FaVial, FaExclamationTriangle } from "react-icons/fa";
+import {  FaFileCsv, FaFileUpload, FaPlus, FaRupeeSign,  FaSyncAlt,FaTable, FaTrash, FaUpload, FaTint, FaVial, FaExclamationTriangle } from "react-icons/fa";
 import './PriceTableGenerator.scss';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
@@ -96,17 +96,17 @@ const PriceTableGenerator = () => {
   const [basePrice, setBasePrice] = useState('0.00');
   const [fatStart, setFatStart] = useState('2.5');
   const [fatEnd, setFatEnd] = useState('4.9');
-  const [fatStep, setFatStep] = useState(0.1);
+  const [fatStep] = useState(0.1);
   const [fatRules, setFatRules] = useState([...defaultFatRules]);
   const [snfStart, setSnfStart] = useState('7.5');
   const [snfEnd, setSnfEnd] = useState('8.6');
-  const [snfStep, setSnfStep] = useState(0.1);
+  const [snfStep] = useState(0.1);
   const [snfRules, setSnfRules] = useState([...defaultSnfRules]);
   const [matrixTable, setMatrixTable] = useState([]);
   const [error, setError] = useState("");
   const [fatRuleError, setFatRuleError] = useState("");
   const [snfRuleError, setSnfRuleError] = useState("");
-  const [showDeviceUpload, setShowDeviceUpload] = useState(false);
+  // const [showDeviceUpload] = useState(false);
 
   // Add user and device selection state
   const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
@@ -272,8 +272,8 @@ const PriceTableGenerator = () => {
   };
 
   // Remove validation from handleFatRuleChange and handleSnfRuleChange
-  const handleFatRuleChange = () => {};
-  const handleSnfRuleChange = () => {};
+  // const handleFatRuleChange = () => {};
+  // const handleSnfRuleChange = () => {};
 
   const handleAddFatRule = () => {
     setFatRules(rules => {
@@ -416,7 +416,7 @@ const PriceTableGenerator = () => {
   const canAddSnfRule = snfRules.length === 0 || Number(Number(snfRules[snfRules.length - 1].to).toFixed(1)) < Number(Number(snfEnd).toFixed(1));
 
   return (
-    <>
+    <div className="ratetable-page" style={{padding:"20px"}} >
       
       <Card className="price-table-generator-card mx-auto" style={{ maxWidth: 900, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', borderRadius: 18 }}>
         <Card.Header className="position-relative" style={{ borderRadius: '18px 18px 0 0', padding: '0.75rem', background: '#2b50a1', color: 'whitesmoke' }}>
@@ -473,7 +473,7 @@ const PriceTableGenerator = () => {
           {/* Only show the rest of the UI if not dairy, or if dairy and a device is selected or All Devices is selected */}
           {(!isDairy || (isDairy && (selectedDeviceId !== undefined))) && (
             <Form onSubmit={handleGenerate}>
-              <Card className="selection-section-card mb-4">
+              <Card className="ratetable-page selection-section-card mb-4">
                 <Card.Header className="selection-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                   <FaTable className="me-2" /> Milk Rate Table Options
                 </Card.Header>
@@ -553,7 +553,7 @@ const PriceTableGenerator = () => {
               <div className="row justify-content-center g-4">
                 {/* FAT Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
-                  <Card className="config-section-card fat-config-card mb-4 w-100">
+                  <Card className=" ratetable-page config-section-card fat-config-card mb-4 w-100">
                     <Card.Header className="config-section-header fat-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                       <FaTint className="me-2" /> FAT Configuration
                     </Card.Header>
@@ -583,13 +583,13 @@ const PriceTableGenerator = () => {
                               }}
                               required
                             />
-                            <InputGroup.Text>%</InputGroup.Text>
+                            {/* <InputGroup.Text>%</InputGroup.Text> */}
                           </InputGroup>
                         </div>
                         <div className="col-6">
                           <Form.Label className="fw-bold text-center w-100">FAT Maximum</Form.Label>
-                          <InputGroup>
-                            <Form.Control
+                          <InputGroup style={{ margin: 0, borderRadius: 0 }}>
+                          <Form.Control
                               type="text"
                               inputMode="decimal"
                               step="0.1"
@@ -608,7 +608,7 @@ const PriceTableGenerator = () => {
                               }}
                               required
                             />
-                            <InputGroup.Text>%</InputGroup.Text>
+                            {/* <InputGroup.Text>%</InputGroup.Text> */}
                           </InputGroup>
                         </div>
                       </div>
@@ -655,7 +655,7 @@ const PriceTableGenerator = () => {
                 </div>
                 {/* SNF/CLR Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
-                  <Card className="config-section-card snf-config-card mb-4 w-100">
+                  <Card className="ratetable-page config-section-card snf-config-card mb-4 w-100">
                     <Card.Header className="config-section-header snf-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
                       <FaVial className="me-2" /> {snfOrClrLabel} Configuration
                     </Card.Header>
@@ -685,7 +685,7 @@ const PriceTableGenerator = () => {
                               }}
                               required
                             />
-                            <InputGroup.Text>%</InputGroup.Text>
+                            {/* <InputGroup.Text>%</InputGroup.Text> */}
                           </InputGroup>
                         </div>
                         <div className="col-6">
@@ -710,7 +710,7 @@ const PriceTableGenerator = () => {
                               }}
                               required
                             />
-                            <InputGroup.Text>%</InputGroup.Text>
+                            {/* <InputGroup.Text>%</InputGroup.Text> */}
                           </InputGroup>
                         </div>
                       </div>
@@ -773,19 +773,21 @@ const PriceTableGenerator = () => {
           )}
         </Card.Body>
       </Card>
+     
       {matrixTable.length > 0 && (
-        <Card>
+        <div style={{padding:"20px"}} >
+        <Card className="ratetable-page" >
           <Card.Body>
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between align-items-center">
               <Card.Title>Generated Rate Table</Card.Title>
               {/* Removed Download and Upload buttons from here */}
             </div>
             <div style={{ maxHeight: 500, overflow: "auto" }}>
-              <Table striped bordered hover responsive size="sm">
+              <Table style={{border: '2px solid #2b50a1' }} striped bordered hover responsive size="sm">
                 <thead className="sticky-header">
-                  <tr style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                  <tr>
                   {matrixTable[0].map((col, idx) => (
-                    <th key={idx} style={{ color: 'whitesmoke' }}>{
+                    <th key={idx} style={{ color: "black", fontWeight: "bold", textAlign: "center" }}>{
                       idx === 0 ? `${snfOrClrLabel === 'CLR' ?'f/c':'f/s'}` :
                       idx > 0 ? `${snfOrClrLabel === 'CLR' ? parseFloat(col).toFixed(1) : col}` : col
                     }</th>
@@ -796,7 +798,7 @@ const PriceTableGenerator = () => {
                   {matrixTable.slice(1).map((row, ridx) => (
                     <tr key={ridx}>
                       {row.map((cell, cidx) => (
-                        cidx === 0 ? <td key={cidx}><b>{cell}</b></td> : <td key={cidx}>{cell}</td>
+                        cidx === 0 ? <td key={cidx} style={{ textAlign: "center" }}><b>{cell}</b></td> : <td key={cidx} style={{ textAlign: "center" }}>{cell}</td>
                       ))}
                     </tr>
                   ))}
@@ -805,8 +807,10 @@ const PriceTableGenerator = () => {
             </div>
           </Card.Body>
         </Card>
+        </div>
       )}
-    </>
+     
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 // Modern Device Page Styles
 .device-page {
   background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  font-family: "'Roboto', 'Segoe UI', 'Arial', sans-serif";
   min-height: 100vh;
   padding: 20px 0;
 
@@ -49,7 +50,7 @@
   .stats-row {
     display: flex;
     justify-content: center;
-    gap: 32px;
+    // gap: 32px;
     flex-wrap: wrap;
   }
   .stats-card {
@@ -93,8 +94,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+      background: #2b50a1 !important;
       color: #fff !important;
+      position: relative;
     }
     .stats-content {
       text-align: left;
@@ -119,9 +121,45 @@
     &.total-devices .stats-icon,
     &.active-devices .stats-icon,
     &.inactive-devices .stats-icon {
-      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+      background: #2b50a1 !important;
+      // color: white !important;
       box-shadow: 0 4px 16px rgba(43, 80, 161, 0.18);
     }
+    &.active-devices .stats-icon {
+      background: #2b50a1 !important;
+      // color: white !important;
+      .circle-bg {
+         color:#2b50a1;
+
+      }
+      .check-fg {
+        color: white;
+        font-size: 1em; /* Make check smaller than circle */
+      }
+      .circle-bg, .check-fg {
+        position: absolute;
+      }
+    }
+    
+    &.inactive-devices .stats-icon {
+      background: #2b50a1 !important;
+      .circle-bg {
+        color: #2b50a1;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .times-fg {
+        color: white;
+        font-size: 1  em;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+    
     &:hover {
       box-shadow: 0 12px 40px rgba(43, 80, 161, 0.18);
       transform: translateY(-5px) scale(1.01);
@@ -129,9 +167,9 @@
   }
 
   // Reduce padding for compact stats cards
-  .stats-card .p-4 {
-    padding: 1rem !important;
-  }
+  // .stats-card .p-4 {
+  //   // padding: 1rem !important;
+  // }
 
   // Filters Card
   .filters-card {
@@ -399,6 +437,8 @@
             svg { font-size: 1em; }
             span { display: inline !important; font-size: 0.97em; }
           }
+          
+          
           .action-btn.primary {
             color: #fff;
             background: #2b50a1;

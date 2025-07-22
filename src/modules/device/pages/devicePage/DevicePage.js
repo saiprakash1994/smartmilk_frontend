@@ -16,13 +16,10 @@ import {
     Tooltip
 } from "react-bootstrap";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import { useDeleteDeviceMutation, useGetAllDevicesQuery, useGetDeviceByCodeQuery } from "../../store/deviceEndPoint";
-import { useGetAllDairysQuery } from "../../../dairy/store/dairyEndPoint";
 import { UserTypeHook } from "../../../../shared/hooks/userTypeHook";
 import { roles } from "../../../../shared/utils/appRoles";
 import { deleteDevice, setDevices } from "../../store/deviceSlice";
-import DairySkeletonRow from "../../../../shared/utils/skeleton/DairySkeletonRow";
 import {
     FaPlus,
     FaEdit,
@@ -31,18 +28,20 @@ import {
     FaDesktop,
     FaEnvelope,
     FaCircle,
-    FaFilter,
+    
     FaSort,
-    FaEye,
+    
     FaCog,
     FaBuilding,
-    FaIndustry,
+    
     FaRegClock,
     FaMapMarkerAlt,
     FaQuestionCircle,
     FaServer,
     FaCheckCircle,
-    FaTimesCircle
+    FaCheck,
+    FaTimesCircle,
+    FaTimes
 } from "react-icons/fa";
 import './DevicePage.scss';
 
@@ -124,35 +123,72 @@ const DevicePage = () => {
     return (
         <div className="device-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif", background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '20px 0' }}>
             <Container fluid className="device-container">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-4" style={{ background: '#2b50a1', padding: '12px', borderRadius: '18px', color: 'whitesmoke' }}>
                     <div className="device-header">
                         <div className="d-flex align-items-center">
                             <div>
-                                <h4 className="device-title">
+                                <h4 className="device-title" style={{ color: 'whitesmoke' }}>
                                     <FaDesktop className="me-2" />
                                     Device Management
                                 </h4>
-                                <p className="device-subtitle">
+                                <p className="device-subtitle" style={{ color: 'whitesmoke', opacity: 0.9 }}>
                                     Manage and monitor your dairy devices
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <Button variant="primary" onClick={createDevice} className="add-device-btn">
+
+                    {/* Filters Section */}
+                    <div className="d-flex align-items-end gap-3">
+                        <Form.Group>
+                            <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
+                                <FaSearch className="me-1" />
+                                Search
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Search..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="filter-control"
+                                style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '200px' }}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
+                                <FaSort className="me-1" />
+                                Status
+                            </Form.Label>
+                            <Form.Select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="filter-control"
+                                style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '150px' }}
+                            >
+                                <option value="all">All</option>
+                                <option value="active">Active</option>
+                                <option value="deactive">Inactive</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="offline">Offline</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </div>
+
+                    <Button variant="light" onClick={createDevice} className="add-device-btn" style={{ background: 'whitesmoke', color: '#2b50a1', fontWeight: 600 }}>
                         <FaPlus className="me-2" />
                         Add Device
                     </Button>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="stats-row mb-4">
+                <div className="stats-row justify-content-center" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
                     <Card className="stats-card total-devices">
-                        <Card.Body className="p-4">
-                            <div className="stats-flex">
-                                <div className="stats-icon">
-                                    <FaServer />
+                        <Card.Body >
+                            <div className="stats-flex" style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className="stats-icon" >
+                                    <FaDesktop />
                                 </div>
-                                <div className="stats-content">
+                                <div className="stats-content" style={{ flexGrow: 1, textAlign: 'center' }}>
                                     <h3 className="stats-value">{statsDevices.length}</h3>
                                     <p className="stats-label">Total Devices</p>
                                 </div>
@@ -160,30 +196,28 @@ const DevicePage = () => {
                         </Card.Body>
                     </Card>
                     <Card className="stats-card active-devices">
-                        <Card.Body className="p-4">
-                            <div className="stats-flex">
-                                <div className="stats-icon">
-                                    <FaCheckCircle style={{ color: '#28a745' }} />
+                        <Card.Body >
+                            <div className="stats-flex" style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className="stats-icon" >
+                                    <FaCircle className="circle-bg" />
+                                    <FaCheck className="check-fg" />
                                 </div>
-                                <div className="stats-content">
-                                    <h3 className="stats-value">
-                                        {statsDevices.filter(d => d.status === 'active').length}
-                                    </h3>
+                                <div className="stats-content" style={{ flexGrow: 1, textAlign: 'center' }}>
+                                    <h3 className="stats-value">{statsDevices.filter(d => d.status === 'active').length}</h3>
                                     <p className="stats-label">Active Devices</p>
                                 </div>
                             </div>
                         </Card.Body>
                     </Card>
                     <Card className="stats-card inactive-devices">
-                        <Card.Body className="p-4">
-                            <div className="stats-flex">
-                                <div className="stats-icon">
-                                    <FaTimesCircle style={{ color: '#6c757d' }} />
+                        <Card.Body >
+                            <div className="stats-flex" style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className="stats-icon" >
+                                    <FaCircle className="circle-bg" />
+                                    <FaTimes className="times-fg" />
                                 </div>
-                                <div className="stats-content">
-                                    <h3 className="stats-value">
-                                        {statsDevices.filter(d => d.status === 'deactive').length}
-                                    </h3>
+                                <div className="stats-content" style={{ flexGrow: 1, textAlign: 'center' }}>
+                                    <h3 className="stats-value">{statsDevices.filter(d => d.status === 'deactive').length}</h3>
                                     <p className="stats-label">Inactive Devices</p>
                                 </div>
                             </div>
@@ -191,77 +225,10 @@ const DevicePage = () => {
                     </Card>
                 </div>
 
-                {/* Filters Section */}
-                <Card className="filters-card mb-4">
-                    <Card.Body className="p-4">
-                        <div className="filters-header mb-3">
-                            <h6 className="filters-title">
-                                <FaFilter className="me-2" />
-                                Filter & Search
-                            </h6>
-                        </div>
-                        <Row className="g-3">
-                            <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label className="filter-label">
-                                        <FaSearch className="me-2" />
-                                        Search Devices
-                                    </Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Search by device ID, email, or dairy code..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="filter-control"
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group>
-                                    <Form.Label className="filter-label">
-                                        <FaSort className="me-2" />
-                                        Status Filter
-                                    </Form.Label>
-                                    <Form.Select
-                                        value={statusFilter}
-                                        onChange={(e) => setStatusFilter(e.target.value)}
-                                        className="filter-control"
-                                    >
-                                        <option value="all">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="deactive">Inactive</option>
-                                        <option value="maintenance">Maintenance</option>
-                                        <option value="offline">Offline</option>
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <div className="d-flex align-items-end h-100">
-                                    <Badge bg="light" text="dark" className="filter-badge">
-                                        {filteredDevices.length} of {devices.length} devices
-                                    </Badge>
-                                </div>
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
-
                 {/* Devices Grid */}
                 <Card className="devices-grid-card" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', border: 'none', borderRadius: 18, boxShadow: '0 8px 32px rgba(43,80,161,0.10)' }}>
-                    <Card.Header className="grid-header" style={{ background: '#2b50a1', color: 'whitesmoke', borderTopLeftRadius: 18, borderTopRightRadius: 18, fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <h5 className="grid-title" style={{ color: 'whitesmoke', fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif" }}>
-                                <FaDesktop className="me-2" />
-                                Device List
-                            </h5>
-                            <div className="grid-actions">
-                                <Badge bg="light" className="device-count-badge">
-                                    {filteredDevices.length} Devices
-                                </Badge>
-                            </div>
-                        </div>
-                    </Card.Header>
-                    <Card.Body className="p-4">
+                    
+                    <Card.Body >
                         {isLoading ? (
                             <div className="loading-section">
                                 <Spinner animation="border" variant="primary" />
@@ -298,7 +265,7 @@ const DevicePage = () => {
                                             <Card.Body className="p-4">
                                                 <div className="device-card-header">
                                                     <div className="device-icon-container">
-                                                        <div className="device-icon device-image">
+                                                        <div className="device-icon device-image" style={{ background: '#2b50a1' }}>
                                                             <FaDesktop size={32} />
                                                         </div>
                                                         <div className="device-info">
@@ -318,31 +285,13 @@ const DevicePage = () => {
                                                 <div className="device-card-content">
                                                     <div className="device-details">
                                                         <div className="detail-item">
-                                                            <FaEnvelope className="detail-icon" />
+                                                            <FaEnvelope className="detail-icon" style={{ color: '#2b50a1' }} />
                                                             <div className="detail-content">
                                                                 <span className="detail-label">Email</span>
                                                                 <span className="detail-value">{device.email}</span>
                                                             </div>
                                                         </div>
-                                                        {/* Example: Last Active and Location (if available) */}
-                                                        {device.lastActive && (
-                                                            <div className="detail-item">
-                                                                <FaRegClock className="detail-icon" />
-                                                                <div className="detail-content">
-                                                                    <span className="detail-label">Last Active</span>
-                                                                    <span className="detail-value">{device.lastActive}</span>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        {device.location && (
-                                                            <div className="detail-item">
-                                                                <FaMapMarkerAlt className="detail-icon" />
-                                                                <div className="detail-content">
-                                                                    <span className="detail-label">Location</span>
-                                                                    <span className="detail-value">{device.location}</span>
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                        
                                                     </div>
                                                 </div>
                                                 <div className="device-card-footer">

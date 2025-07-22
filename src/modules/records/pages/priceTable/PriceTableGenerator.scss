@@ -1,3 +1,8 @@
+.ratetable-page {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  
+
+
 .sticky-header th {
   position: sticky;
   top: 0;
@@ -47,7 +52,7 @@
 }
 
 .generate-reset-btn.btn-secondary {
-  background: #fff !important;
+  background: whitesmoke !important;
   color: #2b50a1 !important;
   border: 2px solid #2b50a1 !important;
   font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
@@ -119,7 +124,9 @@
 }
 
 .price-table-generator-card > .card-header {
-  background: linear-gradient(135deg, #2b50a1 0%, #3e6cd1 100%);
+  //background: linear-gradient(135deg, #2b50a1 0%, #3e6cd1 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
 //var(--bs-primary) !important;
   color: whitesmoke !important;
   border: none !important;
@@ -171,6 +178,8 @@
 
 .step-table th, .step-table td {
   vertical-align: middle;
+    // background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+// 
 }
 
 .limits-section-card {
@@ -421,4 +430,4 @@
     max-width: 100%;
   }
 } 
-
+}

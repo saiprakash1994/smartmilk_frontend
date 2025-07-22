@@ -205,10 +205,10 @@ const MemberList = () => {
       <div className="records-container">
         {/* Filter Section: Only for Dairy users, no Card wrapper */}
         {isDairy && (
-          <Form className="row g-3 align-items-end mb-1">
+         <Form className="row g-3 align-items-end mb-1">
             <Form.Group className="col-md-3">
               <Form.Label>Device Code</Form.Label>
-              <InputGroup>
+            <InputGroup>
                 <InputGroup.Text
                   style={{ background: '#2b50a1', color: 'whitesmoke', border: 'none' }}
                 >
@@ -286,7 +286,7 @@ const MemberList = () => {
                       <Card style={{ border: 'none', borderRadius: 15, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', height: '100%' }}>
                         <Card.Body className="d-flex align-items-center p-4">
                           <div className="summary-flex" style={{ background: '#2b50a1', borderRadius: 16, width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 24 }}>
-                            <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ background: 'rgba(255, 255, 255, 0.95)', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <img src={cowImg} alt="Cow" style={{ width: 38, height: 38, objectFit: 'contain' }} />
                             </div>
                           </div>

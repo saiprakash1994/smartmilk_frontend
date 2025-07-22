@@ -1,6 +1,7 @@
 // Modern Dairy Add Page Styles
 .dairy-add-page {
-  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  
   min-height: 100vh;
   padding: 20px 0;
   position: relative;
@@ -131,7 +132,7 @@
 
     // Edit Mode Badge
     .edit-badge {
-      background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%) !important;
+      background: linear-gradient(135deg, #121314 0%, #20c997 100%) !important;
       border: none;
       border-radius: 15px;
       padding: 12px 20px;
@@ -181,7 +182,9 @@
   .dairy-form-card {
     border: none;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    // background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+
     backdrop-filter: blur(20px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
@@ -193,10 +196,13 @@
     }
 
     .card-header {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      //background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      // background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+
       border: none;
-      padding: 25px 30px;
+      padding: 4px 10px;
       position: relative;
+      color: whitesmoke;
 
       &::before {
         content: '';
@@ -328,6 +334,22 @@
         font-size: 0.75rem;
       }
     }
+  }
+}
+
+.form-header {
+  background: #2b50a1;
+  border: none;
+  padding: 20px 25px;
+}
+
+.save-btn {
+  background: #2b50a1;
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   }
 }
 

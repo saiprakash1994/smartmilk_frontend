@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { errorToast, successToast } from "../../../../shared/utils/appToaster";
-import { PageTitle } from "../../../../shared/components/PageTitle/PageTitle";
 import {
     Button,
     Card,
@@ -26,7 +25,6 @@ import {
     FaLock,
     FaSave,
     FaTimes,
-    FaArrowLeft,
     FaUserShield,
     FaKey,
     FaCheckCircle
@@ -365,7 +363,7 @@ const DairyAdd = () => {
                                                 Cancel
                                             </Button>
                                             <Button
-                                                variant="primary"
+                                                //variant="primary"
                                                 onClick={onSave}
                                                 disabled={saving}
                                                 className="save-btn ms-3"

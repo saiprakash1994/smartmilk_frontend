@@ -76,13 +76,15 @@
     overflow: hidden;
     animation: slideInUp 0.6s ease-out;
 
+  
+
     .form-header {
-      background: #eaf1fb;
+      background: #2b50a1;
       border: none;
       padding: 20px 25px;
 
       .form-title {
-        color: #2b50a1;
+        color: whitesmoke;
         font-weight: 700;
         margin: 0;
         font-size: 1.3rem;
@@ -159,7 +161,7 @@
     }
 
     .save-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #2b50a1;
       border: none;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 
