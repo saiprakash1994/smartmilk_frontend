@@ -169,19 +169,17 @@ const FileUploadCard = forwardRef(({
 
     return (
         <Card className={`file-upload-card ${dragActive ? 'drag-active' : ''}`}>
+           <Card.Header className="upload-card-header" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                {Icon && <span className="upload-card-icon"><Icon /></span>}
+                <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <span className="upload-card-title">{title}</span>
+                  {description && (
+                    <span className="upload-card-description">{description}</span>
+                  )}
+                </span>
+           </Card.Header>
             <Card.Body className="p-4">
-                {/* Header */}
-                <div className="upload-card-header mb-4">
-                    <div className="upload-card-icon">
-                        {Icon && <Icon />}
-                    </div>
-                    <div className="upload-card-info">
-                        <h5 className="upload-card-title">{title}</h5>
-                        {description && (
-                            <p className="upload-card-description">{description}</p>
-                        )}
-                    </div>
-                </div>
+               
 
                 {/* File Upload Area */}
                 {!hideFileInputArea && (

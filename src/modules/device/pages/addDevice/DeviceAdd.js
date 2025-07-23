@@ -153,8 +153,10 @@ const DeviceAdd = () => {
         const config = statusConfig[status] || { variant: 'secondary', text: status };
         return <Badge bg={config.variant}>{config.text}</Badge>;
     };
+    console.log("dairy code",selectedDairyCode)
 
     return (
+        
         <div className="device-add-page">
             {/* <div className="d-flex justify-content-between align-items-center pageTitleSpace">
                 {id && (
@@ -175,7 +177,7 @@ const DeviceAdd = () => {
                                     Device Information
                                 </h5>
                             </Card.Header>
-                            <Card.Body className="p-4">
+                            <Card.Body className="p-3">
                                 {/* {isAllError && (
                                     <Alert variant="danger" className="mb-4">
                                         Error loading dairy data. Please refresh the page.
@@ -183,7 +185,7 @@ const DeviceAdd = () => {
                                 )} */}
 
                                 <Form onSubmit={submitForm}>
-                                    <Row className="g-4">
+                                    <Row className="g-2">
                                         {/* Dairy Code */}
                                         <Col md={6}>
                                             <Form.Group>
@@ -284,12 +286,12 @@ const DeviceAdd = () => {
                                     </Row>
 
                                     {/* Password Section */}
-                                    <div className="password-section mt-4">
+                                    <div className="password-section mt-3">
                                         <h6 className="section-title">
-                                            <FaLock className="me-2" />
+                                            {/* <FaLock className="me-2" /> */}
                                             Password Configuration
                                         </h6>
-                                        <Row className="g-4">
+                                        <Row className="g-2">
                                             {id && (
                                                 <Col md={6}>
                                                     <Form.Group>
@@ -364,7 +366,7 @@ const DeviceAdd = () => {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="action-buttons mt-5">
+                                    <div className="action-buttons mt-3">
                                         <div className="d-flex justify-content-end gap-3">
                                             <Button
                                                 variant="outline-secondary"

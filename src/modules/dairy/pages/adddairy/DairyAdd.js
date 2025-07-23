@@ -204,10 +204,7 @@ const DairyAdd = () => {
                                     <Form className="dairy-form">
                                         {/* Dairy Information Section */}
                                         <div className="form-section mb-4">
-                                            <h6 className="section-title">
-                                                <FaBuilding className="me-2" />
-                                                Dairy Information
-                                            </h6>
+                                          
                                             <Row className="g-3">
                                                 {!id && (
                                                     <Col md={6}>
@@ -280,7 +277,7 @@ const DairyAdd = () => {
                                         </div>
 
                                         {/* Password Section */}
-                                        <div className="form-section mb-4">
+                                        <div className="form-section mb-5">
                                             <h6 className="section-title">
                                                 <FaLock className="me-2" />
                                                 {id ? "Update Password (Optional)" : "Set Password"}
@@ -352,14 +349,14 @@ const DairyAdd = () => {
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="form-actions d-flex justify-content-end">
+                                        <div className="form-actions d-flex justify-content-end gap-2 ">
                                             <Button
                                                 variant="outline-secondary"
                                                 onClick={() => navigate("/")}
                                                 disabled={saving}
                                                 className="cancel-btn"
                                             >
-                                                <FaTimes className="me-2" />
+                                                <FaTimes className="me-1" />
                                                 Cancel
                                             </Button>
                                             <Button
@@ -375,7 +372,7 @@ const DairyAdd = () => {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <FaSave className="me-2" />
+                                                        <FaSave className="me-1" />
                                                         {id ? "Update Dairy" : "Create Dairy"}
                                                     </>
                                                 )}

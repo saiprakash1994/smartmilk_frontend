@@ -16,6 +16,7 @@ import { errorToast, successToast } from "../../../../shared/utils/appToaster";
 import {  FaUsers} from "react-icons/fa";
 import cowImg from '../../../../assets/cow.png';
 import buffaloImg from '../../../../assets/buf.png';
+import './MemberList.scss';
 
 const initialMemberState = {
   CODE: "",
@@ -345,7 +346,16 @@ const MemberList = () => {
                                 }}>
                                   #{member.CODE}
                                 </span>
-                                <span className="badge bg-secondary text-uppercase" style={{ fontSize: '0.95rem', borderRadius: 8 }}>{member.MILKTYPE === 'C' ? 'Cow' : 'Buffalo'}</span>
+                                <span
+                                  className="badge bg-secondary text-uppercase"
+                                  style={{
+                                    fontSize: '0.95rem',
+                                    borderRadius: 8,
+                                    background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                                  }}
+                                >
+                                  {member.MILKTYPE === 'C' ? 'Cow' : 'Buf'}
+                                </span>
                               </div>
                               <div className="fw-bold mb-1" style={{ fontSize: '1.15rem', color: '#111' }}>{member.MEMBERNAME}</div>
                               <div className="mb-2" style={{ fontSize: '0.98rem', color: '#111' }}>Commission: <b>{member.COMMISSIONTYPE}</b></div>
@@ -372,11 +382,26 @@ const MemberList = () => {
         </Card>
       </div>
       {/* Add/Edit Member Modal */}
-      <Modal show={showAddEditModal} onHide={closeAddEditModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{isEdit ? "Edit Member" : "Add Member"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Modal show={showAddEditModal} onHide={closeAddEditModal} centered className="rounded-modal">
+      <Modal.Header className="modal-header"  >
+      {/* Custom circular close button */}
+      <button
+      type="button"
+      onClick={closeAddEditModal}
+      className="modal-close-btn"
+    >
+      ×
+    </button>
+
+      <Modal.Title
+        className="modal-title"
+      >
+        {isEdit ? 'Edit Member' : 'Add Member'}
+      </Modal.Title>
+    </Modal.Header>
+
+
+        <Modal.Body className="modal-body">
           <Form onSubmit={handleAddEditSubmit}>
             <div className="row">
               <div className="col-md-6 mb-3">
@@ -404,7 +429,7 @@ const MemberList = () => {
                 <Form.Label>Milk Type</Form.Label>
                 <Form.Select name="MILKTYPE" value={memberForm.MILKTYPE} onChange={handleFormChange} required>
                   <option value="C">Cow</option>
-                  <option value="B">Buffalo</option>
+                  <option value="B">Buf</option>
                 </Form.Select>
               </div>
               <div className="col-md-6 mb-3">
@@ -468,9 +493,13 @@ const MemberList = () => {
                 <Form.Text muted>Optional, 10 digits</Form.Text>
               </div>
             </div>
-            <div className="d-flex justify-content-end mt-3">
-              <Button variant="secondary" onClick={closeAddEditModal} className="me-2">Cancel</Button>
-              <Button variant="primary" type="submit" disabled={formLoading || isAdding || isEditing}>
+            <div className="d-flex justify-content-end mt-3 gap-2">
+              <Button 
+              
+              onClick={closeAddEditModal} className="modal-cancel-btn me-2">Cancel</Button>
+              <Button 
+              className="modal-save-btn"
+              type="submit" disabled={formLoading || isAdding || isEditing}>
                 {(formLoading || isAdding || isEditing) ? "Saving..." : isEdit ? "Update" : "Add"}
               </Button>
             </div>
@@ -479,13 +508,13 @@ const MemberList = () => {
       </Modal>
       {/* Delete Confirmation Modal */}
       <Modal show={!!deleteTarget} onHide={cancelDelete} centered>
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Delete Member</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Are you sure you want to delete member <b>{deleteTarget?.CODE}</b>?
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="modal-body">
           <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
           <Button variant="danger" onClick={confirmDelete} disabled={deleteLoading || isDeleting}>
             {(deleteLoading || isDeleting) ? "Deleting..." : "Delete"}

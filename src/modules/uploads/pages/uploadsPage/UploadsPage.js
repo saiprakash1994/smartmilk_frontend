@@ -261,13 +261,15 @@ const UploadsPage = () => {
 
     return (
       <div className="uploads-page settings-page">
-        <Container fluid className="uploads-container settings-container">
+        <Container fluid className="uploads-container">
           <Card className="settings-main-card">
-            <Card.Header className="settings-header">
-              <FaCloudUploadAlt className="me-2" />
-              <span>Uploads</span>
+            <Card.Header className="settings-header ">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <FaCloudUploadAlt style={{ fontSize: '1.8rem' }} />
+                <span style={{ fontSize: '1.8rem', fontWeight: 700 }}>Uploads</span>
+              </div>
             </Card.Header>
-            <Card.Body className="p-0">
+            <Card.Body className="p-0   ">
               <Tab.Container id="uploads-tabs" activeKey={activeKey} onSelect={setActiveKey}>
                 <Row className="g-0">
                   <Col md={3} className="settings-sidebar">

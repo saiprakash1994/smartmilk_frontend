@@ -121,64 +121,72 @@ const DevicePage = () => {
     }, [devicesByCode, isdevicesByCodeLoading, isdevicesByCodeError, userType, dispatch]);
 
     return (
-        <div className="device-page" style={{ fontFamily: "'Roboto', 'Segoe UI', 'Arial', sans-serif", background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '20px 0' }}>
+        <div className="device-page"  >
             <Container fluid className="device-container">
-                <div className="d-flex justify-content-between align-items-center mb-4" style={{ background: '#2b50a1', padding: '12px', borderRadius: '18px', color: 'whitesmoke' }}>
-                    <div className="device-header">
-                        <div className="d-flex align-items-center">
-                            <div>
-                                <h4 className="device-title" style={{ color: 'whitesmoke' }}>
-                                    <FaDesktop className="me-2" />
-                                    Device Management
-                                </h4>
-                                <p className="device-subtitle" style={{ color: 'whitesmoke', opacity: 0.9 }}>
-                                    Manage and monitor your dairy devices
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap  device-header-search">
+                   
+  <div className="device-header">
+    {/* <div className="d-flex align-items-center"> */}
+      
+        <h4 className="device-title" style={{ color: 'whitesmoke', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FaDesktop  />
+            Device Management
+          </span>
+          <span className="device-subtitle" style={{ color: 'whitesmoke', opacity: 0.9, fontWeight: 400, fontSize: '1rem', marginLeft: '40px' }}>
+            Manage and monitor your dairy devices
+          </span>
+        </h4>
+      
+    {/* </div> */}
+  </div>
 
-                    {/* Filters Section */}
-                    <div className="d-flex align-items-end gap-3">
-                        <Form.Group>
-                            <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
-                                <FaSearch className="me-1" />
-                                Search
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Search..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="filter-control"
-                                style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '200px' }}
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
-                                <FaSort className="me-1" />
-                                Status
-                            </Form.Label>
-                            <Form.Select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="filter-control"
-                                style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '150px' }}
-                            >
-                                <option value="all">All</option>
-                                <option value="active">Active</option>
-                                <option value="deactive">Inactive</option>
-                                {/* <option value="maintenance">Maintenance</option> */}
-                                {/* <option value="offline">Offline</option> */}
-                            </Form.Select>
-                        </Form.Group>
-                    </div>
+  {/* Filters Section */}
+  <div className="d-flex align-items-end gap-3 device-filters-section">
+    <Form.Group>
+      <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
+        <FaSearch className="me-1" />
+        Search
+      </Form.Label>
+      <Form.Control
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="filter-control"
+        style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '200px' }}
+      />
+    </Form.Group>
+    <Form.Group>
+      <Form.Label className="filter-label mb-1" style={{ color: 'whitesmoke', fontSize: '0.85rem', fontWeight: 500 }}>
+        <FaSort className="me-1" />
+        Status
+      </Form.Label>
+      <Form.Select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+        className="filter-control"
+        style={{ background: 'rgba(255,255,255,0.9)', color: '#2b50a1', border: 'none', height: '38px', width: '150px' }}
+      >
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="deactive">Inactive</option>
+        {/* <option value="maintenance">Maintenance</option> */}
+        {/* <option value="offline">Offline</option> */}
+      </Form.Select>
+    </Form.Group>
+    </div>
 
-                    <Button variant="light" onClick={createDevice} className="add-device-btn" style={{ background: 'whitesmoke', color: '#2b50a1', fontWeight: 600 }}>
-                        <FaPlus className="me-2" />
-                        Add Device
-                    </Button>
-                </div>
+    <Button
+        variant="light"
+        onClick={createDevice}
+        className="add-device-btn"
+        // style={{ background: 'whitesmoke', borderRadius:"12px",padding:"5px",color: '#2b50a1', fontSize:'1.21em',fontWeight: 700 }}
+    >
+        <FaPlus className="me-1" />
+        Add Device
+    </Button>
+    </div>
 
                 {/* Stats Cards */}
                 <div className="stats-row justify-content-center" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -199,7 +207,7 @@ const DevicePage = () => {
                         <Card.Body >
                             <div className="stats-flex" style={{ display: 'flex', alignItems: 'center' }}>
                                 <div className="stats-icon" >
-                                    <FaCircle className="circle-bg" />
+                                    {/* <FaCircle className="circle-bg" /> */}
                                     <FaCheck className="check-fg" />
                                 </div>
                                 <div className="stats-content" style={{ flexGrow: 1, textAlign: 'center' }}>
@@ -213,7 +221,7 @@ const DevicePage = () => {
                         <Card.Body >
                             <div className="stats-flex" style={{ display: 'flex', alignItems: 'center' }}>
                                 <div className="stats-icon" >
-                                    <FaCircle className="circle-bg" />
+                                    {/* <FaCircle className="circle-bg" /> */}
                                     <FaTimes className="times-fg" />
                                 </div>
                                 <div className="stats-content" style={{ flexGrow: 1, textAlign: 'center' }}>
@@ -265,7 +273,7 @@ const DevicePage = () => {
                                             <Card.Body className="p-4">
                                                 <div className="device-card-header">
                                                     <div className="device-icon-container">
-                                                        <div className="device-icon device-image" style={{ background: '#2b50a1' }}>
+                                                        <div className="device-icon device-image" >
                                                             <FaDesktop size={32} />
                                                         </div>
                                                         <div className="device-info">
@@ -285,9 +293,9 @@ const DevicePage = () => {
                                                 <div className="device-card-content">
                                                     <div className="device-details">
                                                         <div className="detail-item">
-                                                            <FaEnvelope className="detail-icon" style={{ color: '#2b50a1' }} />
+                                                            <FaEnvelope className="detail-icon" style={{ fontSize:'1.2em',color: '#2b50a1' }} />
                                                             <div className="detail-content">
-                                                                <span className="detail-label">Email</span>
+                                                                {/* <span className="detail-label">Email</span> */}
                                                                 <span className="detail-value">{device.email}</span>
                                                             </div>
                                                         </div>
@@ -297,20 +305,50 @@ const DevicePage = () => {
                                                 <div className="device-card-footer">
                                                     <div className="device-actions btn-group">
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Edit Device</Tooltip>}>
+                                                        
+                                                        <div >
                                                             <Button
                                                                 size="sm"
-                                                                variant="outline-primary"
-                                                                className="action-btn primary"
+                                                                // variant="info"
+                                                                style={{
+                                                                width: '36px',
+                                                                height: '36px',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '1.2rem',
+                                                                padding: 0,
+                                                                // marginRight:'30px',
+                                                                color: 'whitesmoke',
+                                                                background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                                                                }}
                                                                 onClick={() => navigate(`edit/${device.deviceid}`)}
                                                             >
                                                                 <FaEdit />
                                                             </Button>
+                                                            </div>
+
+
                                                         </OverlayTrigger>
+                                                        
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Device Settings</Tooltip>}>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-info"
-                                                                className="action-btn secondary"
+                                                            <div className="gap-4"><Button
+                                                                 size="sm"
+                                                                 // variant="info"
+                                                                 style={{
+                                                                 width: '36px',
+                                                                 height: '36px',
+                                                                 borderRadius: '50%',
+                                                                 display: 'flex',
+                                                                 alignItems: 'center',
+                                                                 justifyContent: 'center',
+                                                                 fontSize: '1.2rem',
+                                                                 padding: 0,
+                                                                //  marginRight:'30px',
+                                                                 color: 'whitesmoke',
+                                                                 background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',                                                                }}
+                                                                // className="action-btn secondary"
                                                                 onClick={() => {
                                                                     navigate('/settings', {
                                                                         state: {
@@ -322,16 +360,29 @@ const DevicePage = () => {
                                                             >
                                                                 <FaCog />
                                                             </Button>
+                                                            </div>
                                                         </OverlayTrigger>
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Delete Device</Tooltip>}>
+                                                            <div>
                                                             <Button
-                                                                size="sm"
-                                                                variant="outline-danger"
-                                                                className="action-btn danger"
+                                                                style={{
+                                                                    width: '36px',
+                                                                    height: '36px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '1.2rem',
+                                                                    padding: 0,
+                                                                    // marginRight:'30px',
+                                                                    color: 'whitesmoke',
+                                                                    background: 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)',
+                                                                }}
                                                                 onClick={() => handleDelete(device.deviceid)}
                                                             >
                                                                 <FaTrash />
                                                             </Button>
+                                                            </div>
                                                         </OverlayTrigger>
                                                     </div>
                                                 </div>
@@ -349,3 +400,32 @@ const DevicePage = () => {
 };
 
 export default DevicePage;
+
+<style>
+{`
+@media (max-width: 768px) {
+  .device-header-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    row-gap: 0 !important;
+  }
+  .device-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .device-filters-section {
+    width: 100%;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-bottom: 12px;
+  }
+  .add-device-btn {
+    width: 100%;
+    margin-top: 8px;
+    display: block;
+  }
+}
+`}
+</style>

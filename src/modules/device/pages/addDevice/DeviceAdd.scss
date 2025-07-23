@@ -1,6 +1,9 @@
 // Modern Device Add Page Styles
 .device-add-page {
-  background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  //background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Roboto', 'Segoe UI', 'Arial', 'sans-serif';
+
   min-height: 100vh;
   padding: 20px 0;
 
@@ -12,7 +15,9 @@
   .pageTitleSpace {
     padding: 20px 0;
     margin: 20px 0 30px 0;
-    background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+    //background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     border-radius: 15px;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
@@ -20,8 +25,8 @@
 
   .back-btn {
     border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 600;
+    padding: 10px 10px;
+    font-weight: 700;
     transition: all 0.3s ease;
     background: #2b50a1;
     border: 1.5px solid #2b50a1;
@@ -48,7 +53,9 @@
   }
 
   .device-preview {
-    background: #f7faff;
+    // background: #f7faff;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     border-radius: 10px;
     padding: 15px 20px;
     text-align: center;
@@ -71,7 +78,9 @@
   .device-form-card {
     border: 1.5px solid #2b50a1;
     border-radius: 20px;
-    background: #f7faff;
+   // background: #f7faff;
+   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
     overflow: hidden;
     animation: slideInUp 0.6s ease-out;
@@ -79,15 +88,17 @@
   
 
     .form-header {
-      background: #2b50a1;
+      // background: #2b50a1;
+      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+
       border: none;
-      padding: 20px 25px;
+      padding: 10px 15px;
 
       .form-title {
         color: whitesmoke;
         font-weight: 700;
         margin: 0;
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
       }
@@ -96,25 +107,33 @@
 
   // Form Controls
   .form-label-modern {
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: 500;
+    color: black;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
     font-size: 0.95rem;
-  }
+    margin-right: 5px;
+    font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;  }
+
+  // .form-icon-modern{
+  //   color: #2b50a1;
+  //   margin-right: 5px;
+  // }
 
   .form-control-modern {
     border: 2px solid #e9ecef;
     border-radius: 12px;
-    padding: 12px 15px;
+    padding: 10px;
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    background: #ffffff;
+    background: #fff;
+    bORDER-color: #e0e0e0;
+
 
     &:focus {
       border-color: #667eea;
-      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.25);
       outline: none;
     }
 
@@ -130,29 +149,36 @@
 
   // Password Section
   .password-section {
-    background: #f8f9fa;
+    //background: #f7faff;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     border-radius: 15px;
-    padding: 25px;
-    border: 1px solid #e9ecef;
+    padding: 10px;
+    // border: 1px solid #979b9f;
 
     .section-title {
-      color: #2c3e50;
+      color: #2b50a1;
       font-weight: 700;
       margin-bottom: 20px;
       display: flex;
       align-items: center;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
     }
   }
 
+
+
   // Action Buttons
   .action-buttons {
+    
     .action-btn {
-      border-radius: 12px;
-      padding: 12px 24px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-size: 0.95rem;
+      
+      background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+      color: whitesmoke;
+      font-size:1em;
+      font-weight:700;
+      padding:5px 10px;
+
 
       &:hover {
         transform: translateY(-2px);
@@ -161,9 +187,12 @@
     }
 
     .save-btn {
-      background: #2b50a1;
-      border: none;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+      // background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+      color: 'whitesmoke';
+      font-size:1em;
+      font-weight:700;
+      padding:5px 10px;
 
       &:hover {
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
@@ -220,7 +249,7 @@
     }
 
     .password-section {
-      padding: 20px;
+      padding: 5px;
 
       .section-title {
         font-size: 1rem;
@@ -229,7 +258,7 @@
 
     .action-buttons {
       .action-btn {
-        padding: 10px 20px;
+        padding: 10px;
         font-size: 0.9rem;
       }
     }
