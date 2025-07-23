@@ -67,7 +67,7 @@
       color: white;
       border-radius: 15px 15px 0 0;
       border: none;
-      padding: 20px 25px;
+      padding: 10px 15px;
       font-weight: 600;
       font-size: 1.1rem;
     }
@@ -143,17 +143,19 @@
 
   // Settings Sidebar
   .settings-sidebar {
-    background: #eaf1fb;
+    //background: #eaf1fb;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     border-right: 1.5px solid #2b50a1;
     padding: 0;
 
     .settings-nav {
-      padding: 20px 0;
+      padding: 10px 0;
 
       .settings-nav-link {
         border: none;
         border-radius: 0;
-        padding: 15px 20px;
+        padding: 10px 10px;
         margin: 5px 15px;
         color: #4f8fe8;
         font-weight: 500;
@@ -181,10 +183,10 @@
       .settings-tab-pane {
         padding: 30px;
 
-        .tab-header {
-          margin-bottom: 30px;
-          padding-bottom: 20px;
-          border-bottom: 2px solid #eaf1fb;
+        .tab-header2 {
+          // margin-bottom: 30px;
+          // padding-bottom: 20px;
+          // border-bottom: 2px solid #eaf1fb;
 
           h5 {
             color: #2b50a1;
@@ -306,7 +308,9 @@
 
   // Special Commission Section
   .special-commission-section {
-    background: #f7faff;
+    // background: #f7faff;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     padding: 20px;
     border-radius: 12px;
     border: 1.5px solid #2b50a1;
@@ -413,6 +417,7 @@
     }
 
     .settings-content {
+      
       .settings-tab-content {
         .settings-tab-pane {
           padding: 20px;
@@ -489,7 +494,9 @@
     border: none;
     border-radius: 15px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.95);
+    // background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
     backdrop-filter: blur(10px);
     border-left: 4px solid #28a745;
 
@@ -537,7 +544,8 @@
 }
 
 .milk-analyzer-btn {
-  background-color: #f5f7fa;
+  //background-color: #f5f7fa;
+  
   border: 1px solid #d1d5db;
   color: #333;
   margin-right: 8px;

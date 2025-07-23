@@ -1,5 +1,5 @@
 :root {
-  --primary: #1a73e8;
+  --primary: #2b50a1;
   --primary-dark: #185abc;
   --primary-light: #e3f0fd;
   --card-radius: 10px;
@@ -14,7 +14,9 @@
     justify-content: center;
     position: relative;
     font-family: var(--font-stack);
-    background: #2b50a1;
+    // background: #2b50a1;
+    background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+
 }
 
 .login-background,
@@ -105,12 +107,17 @@
     }
     .input-icon.email {
         color: #1a73e8;
+        // color: #fbbc04;
+
     }
     .input-icon.password {
-        color: #fbbc04;
+        //color: #fbbc04;
+        color: #1a73e8;
     }
     .input-icon.eye {
-        color: #34a853;
+        //color: #34a853;
+        color: #434543;
+
     }
     .custom-floating-label {
         flex: 1;
@@ -166,7 +173,9 @@
         font-weight: 500;
         border-radius: 6px;
         border: none;
-        background: #2b50a1;
+        //background: #2b50a1;
+        background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
+
         color: #fff;
         transition: background 0.2s, box-shadow 0.2s;
         margin-top: 8px;
@@ -197,7 +206,7 @@
     border-top: none;
     .footer-text {
         font-size: 1.05rem;
-        color: #fff;
+        color: whitesmoke;
         margin: 0;
         font-weight: 700;
         text-shadow: 0 2px 6px rgba(0,0,0,0.35);

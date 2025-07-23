@@ -3,10 +3,10 @@ import toast from 'react-hot-toast';
 export const successToast = (message) => {
     toast.remove();
     toast.success(message, {
-        duration: 3000,
+        duration: 1200,
         position: 'top-center',
         style: {
-            background: '#10B981',
+            background: '#2b50a1',
             color: '#ffffff',
             fontWeight: '600',
             borderRadius: '12px',

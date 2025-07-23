@@ -184,7 +184,7 @@ const DashboardPage = () => {
   }, [deviceCodes, formattedDate, selectedShift]); // Removed refetch from dependencies
 
   const getMilkTypeIcon = (milkType) => {
-    return milkType === "COW" ? FaServer : FaTint;
+    return milkType === "TOTAL" ? FaChartBar : FaTint;
   };
 
   const getMilkTypeColor = (milkType) => {

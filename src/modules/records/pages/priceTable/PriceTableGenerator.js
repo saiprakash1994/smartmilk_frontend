@@ -416,10 +416,16 @@ const PriceTableGenerator = () => {
   const canAddSnfRule = snfRules.length === 0 || Number(Number(snfRules[snfRules.length - 1].to).toFixed(1)) < Number(Number(snfEnd).toFixed(1));
 
   return (
-    <div className="ratetable-page" style={{padding:"20px"}} >
+    <div className="ratetable-page" style={{padding:"18px"}} >
       
       <Card className="price-table-generator-card mx-auto" style={{ maxWidth: 900, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', borderRadius: 18 }}>
-        <Card.Header className="position-relative" style={{ borderRadius: '18px 18px 0 0', padding: '0.75rem', background: '#2b50a1', color: 'whitesmoke' }}>
+        <Card.Header className="position-relative" 
+        style={{ 
+          borderRadius: '18px 18px 0 0', 
+          padding: '0.75rem', 
+          background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)',
+          color: 'whitesmoke' 
+          }}>
           <div className="d-flex w-100 align-items-center justify-content-between position-relative">
             <div className="d-flex flex-column">
               <span className="d-flex align-items-center mb-1">
@@ -454,7 +460,7 @@ const PriceTableGenerator = () => {
         <Card.Body>
           {/* Device selection for dairy users - only show if not selected */}
           {isDairy && !selectedDeviceId && (
-            <div className="d-flex flex-row align-items-center gap-2 mb-4" style={{ maxWidth: 400, margin: '0 auto' }}>
+            <div className="d-flex flex-row align-items-center gap-2 mb-3" style={{ maxWidth: 400, margin: '0 auto' }}>
               <Form.Label className="fw-bold mb-0" style={{ minWidth: 70 }}>Device</Form.Label>
               <Form.Select
                 value={selectedDeviceId}
@@ -474,13 +480,17 @@ const PriceTableGenerator = () => {
           {(!isDairy || (isDairy && (selectedDeviceId !== undefined))) && (
             <Form onSubmit={handleGenerate}>
               <Card className="ratetable-page selection-section-card mb-4">
-                <Card.Header className="selection-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
-                  <FaTable className="me-2" /> Milk Rate Table Options
+                <Card.Header className="selection-section-header d-flex align-items-center" 
+                style={{ 
+                  background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)', 
+                  color: 'whitesmoke' 
+                  }}>
+                  <FaTable className="me-2" /> Options
                 </Card.Header>
                 <Card.Body>
                   <Row className="gx-4 gy-3 align-items-end justify-content-center">
-                    <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
-                      <div className="fw-bold mb-2">Milk Type</div>
+                    <Col md={4} xs={12} className="mb-2 mb-md-0 text-center">
+                      <div className="fw-bold mb-1">Milk Type</div>
                       <ButtonGroup className="w-auto mx-auto" size="sm">
                         {['Cow', 'Buffalo'].map(type => (
                           <ToggleButton
@@ -501,7 +511,7 @@ const PriceTableGenerator = () => {
                       </ButtonGroup>
                     </Col>
                     <Col md={4} xs={12} className="text-center">
-                      <div className="fw-bold mb-2">Step Type</div>
+                      <div className="fw-bold mb-1">Step Type</div>
                       <ButtonGroup className="w-auto mx-auto" size="sm">
                         {['FAT + SNF', 'FAT + CLR'].map(type => (
                           <ToggleButton
@@ -521,8 +531,8 @@ const PriceTableGenerator = () => {
                         ))}
                       </ButtonGroup>
                     </Col>
-                    <Col md={4} xs={12} className="mb-3 mb-md-0 text-center">
-                      <Form.Label className="fw-bold">Base Price</Form.Label>
+                    <Col md={4} xs={12} className="mb-1 mb-md-0 text-center">
+                      <Form.Label className="mb-1 fw-bold">Base Price</Form.Label>
                       <div className="d-flex justify-content-center">
                         <InputGroup className="rupee-group w-auto">
                           <InputGroup.Text className="fs-6 rupee-toggle-color">₹</InputGroup.Text>
@@ -554,15 +564,19 @@ const PriceTableGenerator = () => {
                 {/* FAT Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
                   <Card className=" ratetable-page config-section-card fat-config-card mb-4 w-100">
-                    <Card.Header className="config-section-header fat-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                    <Card.Header className="config-section-header fat-section-header d-flex align-items-center" 
+                    style={{ 
+                      background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)',
+                      color: 'whitesmoke', 
+                      }}>
                       <FaTint className="me-2" /> FAT Configuration
                     </Card.Header>
                     <Card.Body>
                       {/* Limits Section Label */}
-                      <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
-                      <div className="row g-3 mb-3">
-                        <div className="col-6">
-                          <Form.Label className="fw-bold text-center w-100">FAT Minimum</Form.Label>
+                      <div className="fw-bold mb-1" style={{fontSize: '1.08rem', color:'#2b50a1', letterSpacing: '0.5px'}}>Limits:</div>
+                      <div className="row ">
+                        <div className="col-6" >
+                          <Form.Label className="fw-bold text-center w-100" style={{margin:'2px'}}>Minimum</Form.Label>
                           <InputGroup>
                             <Form.Control
                               type="text"
@@ -587,7 +601,7 @@ const PriceTableGenerator = () => {
                           </InputGroup>
                         </div>
                         <div className="col-6">
-                          <Form.Label className="fw-bold text-center w-100">FAT Maximum</Form.Label>
+                          <Form.Label className="fw-bold text-center w-100" style={{margin:'2px'}}>Maximum</Form.Label>
                           <InputGroup style={{ margin: 0, borderRadius: 0 }}>
                           <Form.Control
                               type="text"
@@ -613,7 +627,7 @@ const PriceTableGenerator = () => {
                         </div>
                       </div>
                       {/* Steps Section Label */}
-                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps:</div>
                       {fatRuleError && (
                         <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
                           <FaExclamationTriangle className="me-2" /> {fatRuleError}
@@ -646,7 +660,12 @@ const PriceTableGenerator = () => {
                         </div>
                       )}
                       <div className="d-flex justify-content-center">
-                        <Button variant="success" onClick={e => { e.preventDefault(); handleAddFatRule(); }} disabled={!canAddFatRule} className="d-flex align-items-center gap-2">
+                        <Button 
+                        style={{ 
+                          background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)',
+                          color: 'whitesmoke', 
+                          }}
+                        onClick={e => { e.preventDefault(); handleAddFatRule(); }} disabled={!canAddFatRule} className="d-flex align-items-center gap-2">
                           <FaPlus className="me-1" /> Add FAT Step
                         </Button>
                       </div>
@@ -656,15 +675,19 @@ const PriceTableGenerator = () => {
                 {/* SNF/CLR Section */}
                 <div className="col-12 col-md-6 d-flex flex-column align-items-center">
                   <Card className="ratetable-page config-section-card snf-config-card mb-4 w-100">
-                    <Card.Header className="config-section-header snf-section-header d-flex align-items-center" style={{ background: '#2b50a1', color: 'whitesmoke' }}>
+                    <Card.Header className="config-section-header snf-section-header d-flex align-items-center" 
+                    style={{ 
+                      background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)',
+                      color: 'whitesmoke', 
+                      }}>
                       <FaVial className="me-2" /> {snfOrClrLabel} Configuration
                     </Card.Header>
                     <Card.Body>
                       {/* Limits Section Label */}
-                      <div className="fw-bold text-secondary mb-2 mt-1" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>Limits</div>
-                      <div className="row g-3 mb-3">
+                      <div className="fw-bold  mb-1" style={{fontSize: '1.08rem', color:'#2b50a1', letterSpacing: '0.5px'}}>Limits:</div>
+                      <div className="row g-3 mb-2">
                         <div className="col-6">
-                          <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Mimimum</Form.Label>
+                          <Form.Label className="fw-bold text-center w-100" style={{margin:'2px'}}>Minimum</Form.Label>
                           <InputGroup>
                             <Form.Control
                               type="text"
@@ -689,7 +712,7 @@ const PriceTableGenerator = () => {
                           </InputGroup>
                         </div>
                         <div className="col-6">
-                          <Form.Label className="fw-bold text-center w-100">{snfOrClrLabel} Maximum</Form.Label>
+                          <Form.Label className="fw-bold text-center w-100" style={{margin:'2px'}}> Maximum</Form.Label>
                           <InputGroup>
                             <Form.Control
                               type="text"
@@ -715,7 +738,7 @@ const PriceTableGenerator = () => {
                         </div>
                       </div>
                       {/* Steps Section Label */}
-                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps</div>
+                      <div className="fw-bold  mb-2 mt-3" style={{color:'#2b50a1',fontSize: '1.08rem', letterSpacing: '0.5px'}}>Steps:</div>
                       {snfRuleError && (
                         <Alert variant="danger" className="py-1 px-2 mb-2 d-flex align-items-center">
                           <FaExclamationTriangle className="me-2" /> {snfRuleError}
@@ -748,7 +771,12 @@ const PriceTableGenerator = () => {
                         </div>
                       )}
                       <div className="d-flex justify-content-center">
-                        <Button variant="success" onClick={e => { e.preventDefault(); handleAddSnfRule(); }} disabled={!canAddSnfRule} className="d-flex align-items-center gap-2">
+                        <Button 
+                        style={{ 
+                          background: 'linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)',
+                          color: 'whitesmoke', 
+                          }}
+                           onClick={e => { e.preventDefault(); handleAddSnfRule(); }} disabled={!canAddSnfRule} className="d-flex align-items-center gap-2">
                           <FaPlus className="me-1" /> Add {snfOrClrLabel} Step
                         </Button>
                       </div>
@@ -757,14 +785,54 @@ const PriceTableGenerator = () => {
                 </div>
               </div>
               {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-              <div className="row justify-content-center mt-4">
+              <div className="row d-flex justify-content-center mt-2">
                 <div className="col-auto d-flex gap-4 align-items-center">
-                  <Button className="generate-reset-btn" type="submit"><FaTable className="me-1" />Generate Table</Button>
-                  <Button variant="secondary" onClick={handleReset} className="generate-reset-btn"><FaSyncAlt className="me-1" />Reset</Button>
+                  <Button  
+                  style={{
+                    background: 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%) ! important',
+                    color:'whitesmoke',
+                    fontSize:'1.0em',
+                    fontWeight:'500',
+                    }} 
+                    type="submit">
+                    <FaTable className="me-1" />
+                    Generate Table
+                    </Button>
+                  <Button 
+                  style={{
+                    background: 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)',
+                    color:'whitesmoke',
+                    fontSize:'1.0em',
+                    fontWeight:'500',
+                  }} 
+                    onClick={handleReset} >
+                  <FaSyncAlt className="me-1" />
+                  Reset
+                  </Button>
                   {matrixTable.length > 0 && (
                     <>
-                      <Button variant="success" className="me-1" onClick={handleDownloadCSV}><FaFileCsv  className="me-1" />Download CSV</Button>
-                      <Button variant="info" className="me-1" onClick={handleUploadCSV}><FaFileUpload className="me-1" />Upload CSV</Button>
+                      <Button 
+                        style={{
+                          background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                          color:'whitesmoke',
+                          fontSize:'1.0em',
+                        fontWeight:'500',
+                        }}
+                        className="me-1" 
+                        onClick={handleDownloadCSV}><FaFileCsv  className="me-1" />
+                        Download CSV
+                        </Button>
+                      <Button  
+                        style={{
+                          background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',
+                          color:'whitesmoke',
+                          fontSize:'1.0em',
+                          fontWeight:'500',
+                        }}
+                        className="me-1" 
+                        onClick={handleUploadCSV}><FaFileUpload  />
+                        Upload CSV
+                        </Button>
                     </>
                   )}
                 </div>

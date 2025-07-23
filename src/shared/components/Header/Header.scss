@@ -14,7 +14,9 @@ img {
     width: 100%;
     justify-content: space-between;
     height: 100%;
-    background: #2b50a1 !important;
+    // background: #2b50a1 !important;
+    background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+
     // background: var(--appTheam);
     color: #fff !important;
 }

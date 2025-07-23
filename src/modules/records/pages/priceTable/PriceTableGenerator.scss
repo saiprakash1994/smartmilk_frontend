@@ -1,6 +1,7 @@
 .ratetable-page {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  
+  font-family: 'Roboto', 'Segoe UI', 'Arial', 'sans-serif';
+
 
 
 .sticky-header th {
@@ -21,7 +22,7 @@
 
 
 .rupee-toggle-color {
-  background-color: #2b50a1 !important;
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
   color: #fff !important;
   border-color: #2b50a1 !important;
   font-size: 1.5rem; // Increased font size for rupee symbol
@@ -139,7 +140,7 @@
 }
 
 .fat-section-header {
-  background: linear-gradient(90deg, #0d6efd 0%, #6f42c1 100%);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: #fff;
   font-weight: 600;
   font-size: 1.1rem;
@@ -162,8 +163,8 @@
 
 .step-badge {
   display: inline-block;
-  background: #0d6efd;
-  color: #fff;
+  background: #ffc107;
+  color: whitesmoke;
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
@@ -198,7 +199,7 @@
 }
 
 .fat-limits-card .limits-section-header {
-  background: linear-gradient(90deg, #0d6efd 0%, #6f42c1 100%);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: #fff;
 }
 
@@ -225,7 +226,7 @@
 }
 
 .selection-section-header {
-  background: linear-gradient(90deg, #0d6efd 0%, #6f42c1 100%);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: #fff;
   font-weight: 600;
   font-size: 1.1rem;
@@ -251,12 +252,12 @@
 }
 
 .fat-config-card .config-section-header {
-  background: linear-gradient(90deg, #2b50a1 0%, #3e6cd1,100%);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: whitesmoke;
 }
  
 .snf-config-card .config-section-header {
-  background: linear-gradient(90deg, #2b50a1 0%, #3e6cd1,100%);
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: whitesmoke;
 }
 
@@ -331,17 +332,17 @@
   box-shadow: 0 0 0 0.2rem rgba(13,110,253,.15) !important;
 }
 
-.btn-primary, .btn-primary:active, .btn-primary:focus, .btn-primary:checked {
-  background: #2b50a1 !important;
-  color: whitesmoke !important;
-  border-color: #2b50a1 !important;
-}
+// .btn-primary, .btn-primary:active, .btn-primary:focus, .btn-primary:checked {
+//   background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+//   color: whitesmoke !important;
+//   border-color: #2b50a1 !important;
+// }
 
-.btn-success, .btn-success:active, .btn-success:focus, .btn-success:checked {
-  background: #2b50a1 !important;
-  color: #fff !important;
-  border-color: #2b50a1 !important;
-}
+// .btn-success, .btn-success:active, .btn-success:focus, .btn-success:checked {
+//   background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+//   color: #fff !important;
+//   border-color: #2b50a1 !important;
+// }
 
 .btn-info {
   background: #fff !important;
@@ -361,7 +362,7 @@
 .price-table-generator-card textarea,
 .price-table-generator-card .form-control,
 .price-table-generator-card .form-select {
-  border: 1.5px solid #2b50a1 !important;
+  border: 1.5px solid #3b3d42 !important;
   font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
 }
 .price-table-generator-card input[type="text"]:focus,

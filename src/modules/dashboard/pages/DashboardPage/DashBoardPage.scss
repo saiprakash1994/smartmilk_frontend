@@ -1,6 +1,8 @@
 // Modern Dashboard Page Styles
 .dashboard-page {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Roboto', 'Segoe UI', 'Arial', 'sans-serif';
+
   min-height: 100vh;
   padding: 20px 0;
 
@@ -133,7 +135,7 @@
     }
 
     &.total-quantity .summary-icon {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
     }
 
     &.total-amount .summary-icon {
@@ -154,6 +156,7 @@
     border: none;
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.95);
+    
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -173,7 +176,7 @@
       .milk-type-icon {
         width: 50px;
         height: 50px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -188,13 +191,13 @@
         .milk-type-title {
           color: #2c3e50;
           font-weight: 700;
-          margin-bottom: 5px;
+          margin-bottom: 2px;
           font-size: 1.3rem;
         }
 
         .milk-type-subtitle {
           color: #6c757d;
-          font-size: 0.85rem;
+          font-size: 1.0rem;
           margin: 0;
         }
       }

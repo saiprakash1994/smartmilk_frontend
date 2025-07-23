@@ -238,7 +238,7 @@ const SettingsPage = () => {
       <Container fluid className="settings-container">
         {/* Device Selection Card - Only show when no device is selected */}
         {isDairy && !selectedDeviceId && (
-          <Card className="device-selection-card mb-4">
+          <Card className="device-selection-card mb-2">
             <Card.Header className="device-selection-header">
               <FaDesktop className="me-2" />
               <span>Device Selection</span>
@@ -316,7 +316,9 @@ const SettingsPage = () => {
                 </div>
               </div>
             </Card.Header>
-            <Card.Body className="p-0">
+            <Card.Body className="p-0"
+            style={{  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            }}>
               <Tab.Container id="settings-tabs" defaultActiveKey="general">
                 <Row className="g-0">
                   <Col md={3} className="settings-sidebar">
@@ -576,7 +578,7 @@ const SettingsPage = () => {
 
                       {/* Commission Tab */}
                       <Tab.Pane eventKey="commission" className="settings-tab-pane">
-                        <div className="tab-header">
+                        <div className="tab-header1">
                           <h5><FaCalculator className="me-2" />Commission Settings</h5>
                           <p>Configure commission rates and calculations</p>
                         </div>
@@ -589,7 +591,7 @@ const SettingsPage = () => {
                             description="Enable or disable commission calculations"
                           />
 
-                          <Row>
+                          {/* <Row>
                             <Col md={6}>
                               <Form.Group className="mb-3">
                                 <Form.Label className="form-label-modern">
@@ -614,8 +616,32 @@ const SettingsPage = () => {
                                 />
                               </Form.Group>
                             </Col>
-                          </Row>
+                          </Row> */}
                           <div className={`special-commission-section ${!settings.commissionType ? 'disabled-section' : ''}`}>
+                          <Col md={4}>
+                              <Form.Group className="mb-3">
+                                <Form.Label className="form-label-modern">
+                                  <FaCalculator className="me-2" />
+                                  Normal Commission
+                                </Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="00.00"
+                                  value={settings.normalCommission}
+                                  onChange={(e) =>
+                                    handleChange("normalCommission", e.target.value)
+                                  }
+                                  onBlur={(e) =>
+                                    handleChange(
+                                      "normalCommission",
+                                      formatCommission(e.target.value)
+                                    )
+                                  }
+                                  className="form-control-modern"
+                                  disabled={!settings.commissionType}
+                                />
+                              </Form.Group>
+                            </Col>
                             <Form.Label className="form-label-modern">
                               <FaCalculator className="me-2" />
                               Special Commissions
