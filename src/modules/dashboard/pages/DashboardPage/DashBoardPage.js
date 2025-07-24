@@ -399,36 +399,41 @@ const DashboardPage = () => {
                         </Col>
                       </Row>
 
-                      <div className="milk-quality-metrics mt-4">
+                      <div className="milk-quality-metrics mt-2 mb-2">
                         <Row>
                           <Col md={3}>
                             <div className="quality-item">
-                              <span className="quality-label">Fat:</span>
-                              <span className="quality-value">{item?.averageFat}</span>
+                              <span className="quality-label me-2">FAT:</span>
+                              <span
+                              
+                              className="quality-value">{item?.averageFat}</span>
                             </div>
                           </Col>
                           <Col md={3}>
                             <div className="quality-item">
-                              <span className="quality-label">SNF:</span>
+                              <span className="quality-label me-2">SNF:</span>
                               <span className="quality-value">{item?.averageSNF}</span>
                             </div>
                           </Col>
                           <Col md={3}>
                             <div className="quality-item">
-                              <span className="quality-label">CLR:</span>
+                              <span className="quality-label me-2">CLR:</span>
                               <span className="quality-value">{item?.averageCLR}</span>
                             </div>
                           </Col>
                           <Col md={3}>
                             <div className="quality-item">
-                              <span className="quality-label">Rate:</span>
+                              <span className="quality-label me-2">RATE:</span>
                               <span className="quality-value">₹{item?.averageRate}</span>
                             </div>
                           </Col>
                         </Row>
                       </div>
                       <div className="milk-grand-total mt-3">
-                        <strong>Grand Total: ₹{(Number(item?.totalAmount || 0) + Number(item?.totalIncentive || 0)).toFixed(2)}</strong>
+                        <h5>
+                          Grand Total: ₹{(Number(item?.totalAmount || 0) + 
+                          Number(item?.totalIncentive || 0)).toFixed(2)}
+                          </h5>
                       </div>
                     </Card.Body>
                   </Card>

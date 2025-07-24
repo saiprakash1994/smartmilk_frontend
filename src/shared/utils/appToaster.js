@@ -37,7 +37,7 @@ export const errorToast = (message) => {
 export const infoToast = (message, options = {}) => {
     toast.remove();
     toast(message, {
-        duration: 3000,
+        duration: 1800,
         position: 'top-right',
         style: {
             background: '#3B82F6',

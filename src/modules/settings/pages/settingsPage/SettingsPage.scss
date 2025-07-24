@@ -60,7 +60,8 @@
     border: 1.5px solid #2b50a1;
     border-radius: 15px;
     box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
-    background: #f7faff;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
 
     .device-selection-header {
       background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
@@ -144,7 +145,7 @@
   // Settings Sidebar
   .settings-sidebar {
     //background: #eaf1fb;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);  
 
     border-right: 1.5px solid #2b50a1;
     padding: 0;
@@ -330,7 +331,9 @@
     }
 
     &.disabled-section {
-      background: #f7faff;
+      //background: #f7faff;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
       opacity: 0.6;
       border-color: #eaf1fb;
     }

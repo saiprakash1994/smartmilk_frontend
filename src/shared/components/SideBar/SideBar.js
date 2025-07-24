@@ -39,7 +39,7 @@ const SideBar = () => {
                     <React.Fragment key={title}>
                         <OverlayTrigger
                             placement="right"
-                            delay={{ show: 250, hide: 400 }}
+                            // delay={{ show: 120, hide: 400 }}
                             overlay={<Tooltip id={`tooltip-${title}`}>{tooltip}</Tooltip>}
                         >
                             <p
