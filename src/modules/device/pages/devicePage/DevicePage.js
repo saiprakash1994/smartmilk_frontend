@@ -270,11 +270,11 @@ const DevicePage = () => {
                                                     {getStatusIcon(device.status)}
                                                 </div>
                                             </div>
-                                            <Card.Body className="p-4">
+                                            <Card.Body className="p-2">
                                                 <div className="device-card-header">
                                                     <div className="device-icon-container">
                                                         <div className="device-icon device-image" >
-                                                            <FaDesktop size={32} />
+                                                            <FaDesktop size={24} />
                                                         </div>
                                                         <div className="device-info">
                                                             <h6 className="device-name">{device.deviceid}</h6>
@@ -311,18 +311,21 @@ const DevicePage = () => {
                                                                 size="sm"
                                                                 // variant="info"
                                                                 style={{
-                                                                width: '36px',
-                                                                height: '36px',
-                                                                borderRadius: '50%',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                fontSize: '1.2rem',
-                                                                padding: 0,
-                                                                // marginRight:'30px',
-                                                                color: 'whitesmoke',
-                                                                background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
-                                                                }}
+                                                                    width: '24px',
+                                                                    height: '24px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '0.8rem',
+                                                                    padding: 0,
+                                                                    
+                                                                    background: 'whitesmoke',
+                                                                    color:'#28a745',
+                                                                    borderColor: '#28a745',
+                                                                 }}
+                                                                // background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                                                                // }}
                                                                 onClick={() => navigate(`edit/${device.deviceid}`)}
                                                             >
                                                                 <FaEdit />
@@ -337,17 +340,20 @@ const DevicePage = () => {
                                                                  size="sm"
                                                                  // variant="info"
                                                                  style={{
-                                                                 width: '36px',
-                                                                 height: '36px',
-                                                                 borderRadius: '50%',
-                                                                 display: 'flex',
-                                                                 alignItems: 'center',
-                                                                 justifyContent: 'center',
-                                                                 fontSize: '1.2rem',
-                                                                 padding: 0,
-                                                                //  marginRight:'30px',
-                                                                 color: 'whitesmoke',
-                                                                 background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',                                                                }}
+                                                                    width: '24px',
+                                                                    height: '24px',
+                                                                    borderRadius: '50%',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '0.8rem',
+                                                                    padding: 0,
+                                                                    
+                                                                    background: 'whitesmoke',
+                                                                    color:'#2b50a1',
+                                                                    borderColor: '#2b50a1',
+                                                                 }}
+                                                                //  background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',                                                                }}
                                                                 // className="action-btn secondary"
                                                                 onClick={() => {
                                                                     navigate('/settings', {
@@ -365,18 +371,20 @@ const DevicePage = () => {
                                                         <OverlayTrigger placement="top" overlay={<Tooltip>Delete Device</Tooltip>}>
                                                             <div>
                                                             <Button
+                                                           // className="rounded-pill"
                                                                 style={{
-                                                                    width: '36px',
-                                                                    height: '36px',
+                                                                    width: '24px',
+                                                                    height: '24px',
                                                                     borderRadius: '50%',
                                                                     display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'center',
-                                                                    fontSize: '1.2rem',
+                                                                    fontSize: '0.8rem',
                                                                     padding: 0,
-                                                                    // marginRight:'30px',
-                                                                    color: 'whitesmoke',
-                                                                    background: 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)',
+                                                                    
+                                                                    background: 'whitesmoke',
+                                                                    color:'#dc3545',
+                                                                    borderColor: '#dc3545',
                                                                 }}
                                                                 onClick={() => handleDelete(device.deviceid)}
                                                             >

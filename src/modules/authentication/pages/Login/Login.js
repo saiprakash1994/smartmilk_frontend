@@ -115,7 +115,7 @@ const Login = () => {
                 <div className="login-card">
                     <div className="login-header">
                         <div className="logo-container">
-                            <img src={sunimpexLogo} alt="SmartChip Logo" className="logo" />
+                            <img src={sunimpexLogo} alt="Sunimpex Logo" className="logo" />
                         </div>
                         <h1 className="welcome-text">Welcome Back</h1>
                         <p className="subtitle">Sign in to your Sun Impex account</p>

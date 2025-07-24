@@ -172,7 +172,7 @@ const FileUploadCard = forwardRef(({
            <Card.Header className="upload-card-header" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 {Icon && <span className="upload-card-icon"><Icon /></span>}
                 <span style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <span className="upload-card-title">{title}</span>
+                  <span style={{margin:'0px',padding:'0px'}} className="upload-card-title">{title}</span>
                   {description && (
                     <span className="upload-card-description">{description}</span>
                   )}

@@ -168,7 +168,7 @@
     }
     .login-button {
         width: 100%;
-        padding: 13px;
+        padding: 15px;
         font-size: 1.08rem;
         font-weight: 500;
         border-radius: 6px;
@@ -213,6 +213,7 @@
     }
 }
 
+
 @media (max-width: 768px) {
     .login-content {
         padding: 0 8px;
@@ -250,6 +251,26 @@
     }
 }
 
+@media (max-width: 767.98px) {
+    .custom-input {
+      font-size: 0.85rem;
+      padding: 0.45rem 0.75rem;
+    }
+  
+    .welcome-text {
+      font-size: 1.4rem;
+    }
+  
+    .subtitle {
+      font-size: 0.85rem;
+    }
+  
+    .logo {
+      max-width: 130px;
+    }
+  }
+  
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -260,6 +281,8 @@
         transform: translateY(0);
     }
 }
+
+  
 
 ::-webkit-scrollbar,
 ::-webkit-scrollbar-track,

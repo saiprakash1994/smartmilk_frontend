@@ -293,9 +293,9 @@ const SettingsPage = () => {
           <Card className="settings-main-card">
             <Card.Header className="settings-header">
               <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <FaCog className="me-2" />
-                  <span>Device Configuration</span>
+                <div className="d-flex align-items-center">
+                  <FaCog className="me-1" />
+                  <span style={{fontSize:'1.2em',fontWeight:'700'}}>Device Configuration</span>
                 </div>
                 <div className="d-flex align-items-center">
                   {selectedDeviceId && (
@@ -304,18 +304,22 @@ const SettingsPage = () => {
                     </Badge>
                   )}
                   {selectedDeviceId && isDairy && (
-                    <span
+                    <Badge
                       className="device-id-badge change-device-badge"
                       style={{ cursor: 'pointer' }}
                       onClick={() => setSelectedDeviceId("")}
                     >
                       <FaDesktop className="me-1" />
                       Change Device
-                    </span>
+                    </Badge>
                   )}
                 </div>
               </div>
             </Card.Header>
+      
+
+
+
             <Card.Body className="p-0"
             style={{  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
             }}>
@@ -367,8 +371,8 @@ const SettingsPage = () => {
                       {/* General Settings Tab */}
                       <Tab.Pane eventKey="general" className="settings-tab-pane">
                         <div className="tab-header">
-                          <h5><FaCog className="me-2" />General Settings</h5>
-                          <p>Configure basic device settings and controls</p>
+                          <h5 style={{margin:'0px'}}><FaCog className="me-2" />General Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure basic device settings and controls</p>
                         </div>
                         <div className="settings-section">
                           <SwitchControl
@@ -398,8 +402,8 @@ const SettingsPage = () => {
                       {/* Milk Analysis Tab */}
                       <Tab.Pane eventKey="milk-analysis" className="settings-tab-pane">
                         <div className="tab-header">
-                          <h5><FaTint className="me-2" />Milk Analysis Settings</h5>
-                          <p>Configure milk analysis parameters and modes</p>
+                          <h5 style={{margin:'0px'}}><FaTint className="me-2" />Milk Analysis Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure milk analysis parameters and modes</p>
                         </div>
                         <div className="settings-section">
                           {/* 1. Milk Analyzer - Card UI */}
@@ -524,8 +528,8 @@ const SettingsPage = () => {
                       {/* DPU Settings Tab */}
                       <Tab.Pane eventKey="dpu" className="settings-tab-pane">
                         <div className="tab-header">
-                          <h5><FaUsers className="me-2" />DPU Settings</h5>
-                          <p>Configure Dairy Processing Unit settings</p>
+                          <h5 style={{margin:'0px'}}><FaUsers  className="me-2" />DPU Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure Dairy Processing Unit settings</p>
                         </div>
                         <div className="settings-section">
                           <SwitchControl
@@ -555,8 +559,8 @@ const SettingsPage = () => {
                       {/* Automation Tab */}
                       <Tab.Pane eventKey="automation" className="settings-tab-pane">
                         <div className="tab-header">
-                          <h5><FaSync className="me-2" />Automation Settings</h5>
-                          <p>Configure automated processes and transfers</p>
+                          <h5 style={{margin:'0px'}}><FaSync className="me-2" />Automation Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure automated processes and transfers</p>
                         </div>
                         <div className="settings-section">
                           <SwitchControl
@@ -579,8 +583,8 @@ const SettingsPage = () => {
                       {/* Commission Tab */}
                       <Tab.Pane eventKey="commission" className="settings-tab-pane">
                         <div className="tab-header1">
-                          <h5><FaCalculator className="me-2" />Commission Settings</h5>
-                          <p>Configure commission rates and calculations</p>
+                          <h5 style={{margin:'0px'}}><FaCalculator  className="me-2" />Commission Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure commission rates and calculations</p>
                         </div>
                         <div className="settings-section">
                           <SwitchControl
@@ -684,8 +688,8 @@ const SettingsPage = () => {
                       {/* Security Tab */}
                       <Tab.Pane eventKey="security" className="settings-tab-pane">
                         <div className="tab-header">
-                          <h5><FaShieldAlt className="me-2" />Security Settings</h5>
-                          <p>Configure security and access control settings</p>
+                          <h5 style={{margin:'0px'}}><FaShieldAlt className="me-2" />Security Settings</h5>
+                          <p style={{marginLeft:'28px'}}>Configure security and access control settings</p>
                         </div>
                         <div className="settings-section">
                           <SwitchControl
@@ -712,7 +716,7 @@ const SettingsPage = () => {
               <div className="d-flex align-items-center justify-content-between">
                 <div className="save-settings-info">
                   <h6 className="save-settings-title">
-                    <FaSave className="me-2" />
+                    <FaSave className="me-1" />
                     Save Configuration
                   </h6>
                   <p className="save-settings-description">
@@ -728,7 +732,7 @@ const SettingsPage = () => {
                     size="lg"
                     onClick={handleSave}
                     disabled={areSettingsEqual(settings, originalSettings)}
-                    className="save-button"
+                    className="d-flex align-items-center save-button"
                   >
                     <FaSave className="me-2" />
                     Save Settings

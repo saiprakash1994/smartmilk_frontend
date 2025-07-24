@@ -264,9 +264,9 @@ const UploadsPage = () => {
         <Container fluid className="uploads-container">
           <Card className="settings-main-card">
             <Card.Header className="settings-header ">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <FaCloudUploadAlt style={{ fontSize: '1.8rem' }} />
-                <span style={{ fontSize: '1.8rem', fontWeight: 700 }}>Uploads</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FaCloudUploadAlt style={{ fontSize: '1.5rem' }} />
+                <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>Uploads</span>
               </div>
             </Card.Header>
             <Card.Body className="p-0   ">

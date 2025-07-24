@@ -103,9 +103,9 @@
       font-size: 1.1rem;
 
       .device-id-badge {
-        font-size: 1.1rem;
-        font-weight: 600;
-        padding: 8px 16px;
+        font-size: 1.0rem;
+        font-weight: 500;
+         padding: 8px;
         border-radius: 20px;
         background: #f7faff !important;
         color: #2b50a1 !important;
@@ -177,11 +177,19 @@
     }
   }
 
+  .tab-header{
+    // padding:0px;
+    margin:0px;
+  }
+
   // Settings Content
   .settings-content {
     .settings-tab-content {
       .settings-tab-pane {
-        padding: 30px;
+        padding: 15px;
+        margin:0px;
+
+       
 
         .tab-header2 {
           // margin-bottom: 30px;
@@ -366,19 +374,19 @@
   // Save Button
   .save-button-container {
     text-align: center;
-    margin-top: 30px;
-    padding: 20px;
+    margin-top: 20px;
+    padding: 10px;
 
     .save-button {
       background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
       border: none;
       border-radius: 12px;
       padding: 15px 40px;
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: 700;
+      font-size: 1.5rem;
       box-shadow: 0 8px 25px rgba(43, 80, 161, 0.13);
       transition: all 0.3s ease;
-      color: #fff;
+      color: whitesmoke;
 
       &:hover {
         transform: translateY(-2px);
@@ -444,7 +452,7 @@
     .save-button-container {
       .save-button {
         width: 100%;
-        padding: 15px 20px;
+        // padding: 15px 20px;
       }
     }
   }
@@ -491,12 +499,12 @@
 
   // Save Settings Card
   .save-settings-card {
-    border: none;
-    border-radius: 15px;
+    // border: none;
+    border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     // background: rgba(255, 255, 255, 0.95);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-
+    border-color: #2b50a1;
     backdrop-filter: blur(10px);
     border-left: 4px solid #28a745;
 
@@ -516,20 +524,23 @@
     }
 
     .save-settings-actions {
+      align-items: center;
       .save-button {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        // background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        background:  linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%)      !important;
+
         border: none;
         border-radius: 12px;
-        padding: 12px 24px;
+        padding: 8px 12px;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 1.1rem;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-          background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+          background:  linear-gradient(135deg, #5380e0 0%, #4f8fe8 100%)      !important;
         }
 
         &:disabled {
@@ -616,4 +627,25 @@
 .setting-switch .form-check-input,
 .save-settings-card .save-button {
   font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif !important;
+}
+
+.settings-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* important for wrapping */
+}
+
+@media (max-width: 767.98px) {
+  .settings-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .device-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
 }
