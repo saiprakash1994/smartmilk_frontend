@@ -588,26 +588,39 @@ const CumilativeRecords = () => {
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
                     <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
-                      <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                        Device Code: <span>{deviceCode}</span>
+                      <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem',fontWeight:700, }}>
+                        <span style={{fontSize: '1.1em',fontWeight:700, marginLeft:'5px'}}>
+                          Device Code: {searchParams?.deviceCode}
+                        </span>
+
                       </div>
-                      <div className="flex-grow-1 text-center">
+                      <div 
+                      className="text-center"
+                      style={{fontSize: '1.5em',fontWeight:700}}
+                      >
                         PAYMENT REGISTER
                       </div>
                       <div className="fw-semibold text-end" style={{ minWidth: 320, fontSize: '1.08rem' }}>
-                        <div>
-                          Members From: <span>{String(fromCode || '').padStart(4, '0')}</span>
-                          <span className="mx-1">to</span>
-                          <span>{String(toCode || '').padStart(4, '0')}</span>
+                        <div>                          
+                          <span
+                          style={{fontSize: '1.1em',fontWeight:600}}
+                          >Members From: {String(fromCode || '').padStart(4, '0')}</span>
+                          {/* <span className="mx-1">to</span> */}
+                          <span
+                          style={{fontSize: '1.1em',fontWeight:600}}
+                          > to {String(toCode || '').padStart(4, '0')}</span>
                         </div>
-                        <div>
-                          Dates: <span className="ms-1">{fromDate ? formatDateDMY(fromDate) : ''}</span>
-                          <span className="mx-1">to</span>
-                          <span>{toDate ? formatDateDMY(toDate) : ''}</span>
+                        <div> 
+                          <span className="ms-1"
+                          style={{fontSize: '1.1em',fontWeight:500}}>Date: {fromDate ? formatDateDMY(fromDate) : ''}</span>
+                          {/* <span className="mx-1">to</span> */}
+                          <span
+                          style={{fontSize: '1.1em',fontWeight:500}}
+                          > to {toDate ? formatDateDMY(toDate) : ''}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="table-responsive">
+                    <div className="table-responsive mt-4">
                       <Table className="records-table" hover responsive>
                         <thead>
                           <tr>

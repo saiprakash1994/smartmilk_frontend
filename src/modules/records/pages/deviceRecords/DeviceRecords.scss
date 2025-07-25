@@ -32,7 +32,9 @@
     border: 1.5px solid #2b50a1;
     border-radius: 15px;
     box-shadow: 0 8px 32px rgba(43, 80, 161, 0.10);
-    background: #f7faff;
+    //background: #f7faff;
+    background: linear-gradient(135deg, #f7faff 0%, #e3f0fd 100%);
+
     margin-bottom: 2rem;
   }
   .filters-card {
@@ -88,12 +90,12 @@
 }
 
 .records-header-bar {
-  background: #2b50a1;
+  background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%);
   color: whitesmoke;
-  border-radius: 12px;
-  padding: 5px 10px;
-  font-weight: 600;
-  font-size: 1.12rem;
+  border-radius: 18px;
+  // padding: 5px 5px;
+  font-weight: 700;
+  font-size: 1.2rem;
   width: 100%;
 }
 

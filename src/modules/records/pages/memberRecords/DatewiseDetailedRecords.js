@@ -155,19 +155,19 @@ const DatewiseDetailedRecords = () => {
         searchParams
             ? {
                 params: {
-                    deviceId: deviceCode,
-                    fromCode,
-                    toCode,
+                    deviceId: searchParams.deviceCode,
+                    fromCode: searchParams.fromCode,
+                    toCode: searchParams.toCode,
                     fromDate: formattedFromDate,
                     toDate: formattedToDate,
-                    shift,
+                    shift: searchParams.shift,
                     page: currentPage,
                     limit: recordsPerPage,
-
                 },
             }
             : skipToken
     );
+    
 
     const records = resultData?.data || [];
     const totalCount = resultData?.totalCount;
@@ -448,9 +448,10 @@ const DatewiseDetailedRecords = () => {
                         <Card key={`${record.date}-${record.shift}`} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
                             <div className="table-responsive">
                               
-                                <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
+                                <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-4">
                                 <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.08rem' }}>
-                                    Device Code: <span>{deviceCode}</span>
+                                Device Code: <span>{searchParams?.deviceCode}</span>
+
                                 </div>
                                 <div className="flex-grow-1 text-center">
                                     DETAILED REPORT
@@ -463,7 +464,7 @@ const DatewiseDetailedRecords = () => {
   
 
                                 </div>
-                                <Table className="records-table" hover responsive>
+                                <Table className="records-table" hover responsive mt-4>
                                     <tbody>
                                        
                                         <tr>

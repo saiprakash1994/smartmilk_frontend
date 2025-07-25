@@ -429,17 +429,36 @@ const MemberRecords = () => {
               ) : (
                 <>
                   {/* Modern Gradient Header Section */}
-                  <div className="records-header-section d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0">
-                    <div className="fw-semibold" >
-                      Device Code: <span >{deviceCode}</span>
+                  <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
+                    <div className="fw-semibold" 
+                    style={{fontSize:"1.1em",fontWeight:500,}}>
+                      <span 
+                      style={{fontSize:"1.1em",fontWeight:500}}
+                      > Device Code: {searchParams?.deviceCode}</span>
                       <span className="mx-2">|</span>
-                      Member Code: <span >{String(memberCode || '').padStart(4, '0')}</span>
+                      <span 
+                      style={{fontSize:"1.1em",fontWeight:500}}
+                    >Member Code: {String(searchParams?.memberCode || '').padStart(4, '0')}</span>
                     </div>
-                    <div className="flex-grow-1 text-center " >
+                    <div 
+                    
+                    className="flex-grow-1 text-center " 
+                      style={{fontWeight:"700",fontSize:'1.5em'}}>
                       MEMBERWISE REPORT
                     </div>
                     <div className="fw-semibold text-end" >
-                      From: <span >{formatDateDMY(fromDate)}</span> <span className="mx-1">to</span> <span >{formatDateDMY(toDate)}</span>
+                      <span 
+                      style={{fontSize:"1.1em",fontWeight:500}}
+                      >From: {formatDateDMY(searchParams?.fromDate)}
+                      </span> 
+                      {/* <span
+                        className="mx-1"
+                        style={{fontSize:"1.1em",fontWeight:500}}
+                        >to</span>  */}
+                        <span 
+                        style={{fontSize:"1.1em",fontWeight:500}}
+                        > to {formatDateDMY(searchParams?.toDate)}
+                        </span>
                     </div>
                   </div>
                   <hr />

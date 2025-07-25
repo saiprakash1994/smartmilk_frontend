@@ -311,18 +311,26 @@ const AbsentMemberRecords = () => {
                   <Card className="records-card mb-4">
                     {/* Modern Gradient Header Section */}
                     <Card className=" mb-4">
-                      <div className="records-header-section d-flex table-header justify-content-between align-items-center px-3 py-3 mb-0">
+                      <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
                         <div className="fw-semibold">
-                          Device Code: <span>{deviceCode}</span>
+                          <span
+                          style={{fontSize:"1.2em",fontWeight:600,}}
+                          >Device Code: {deviceCode}
+                          </span>
                           
                         </div>
                         <div className="flex-grow-1 text-center">
                           ABSENT MEMBERS REPORT
                         </div>
-                        <div className="fw-semibold text-end">
-                          Date: <span>{formatDateDMY(date)}</span>
+                        <div className="fw-semibold text-end">                          
+                          <span
+                          style={{fontSize:"1.2em",fontWeight:600,}}
+                          >Date: {formatDateDMY(date)}</span>
                           <span className="mx-2">|</span>
-                          Shift: <span>{shift}</span>
+                          
+                          <span
+                          style={{fontSize:"1.2em",fontWeight:600,}}
+                          >Shift: {shift}</span>
                         </div>
                       </div>
                     </Card>

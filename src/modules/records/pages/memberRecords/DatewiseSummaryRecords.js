@@ -1,4 +1,3 @@
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "react-bootstrap/esm/Table";
 import Card from "react-bootstrap/esm/Card";
@@ -42,11 +41,9 @@ const DatewiseSummaryRecords = () => {
     const deviceid = userInfo?.deviceid;
     const dairyCode = userInfo?.dairyCode;
 
-    // Queries for Dairy
     const { data: dairyDevices = [], isLoading: isDairyLoading } =
         useGetDeviceByCodeQuery(dairyCode, { skip: !isDairy || !dairyCode });
 
-    // Query for Device role to fetch its own data
     const { data: deviceData, isLoading: isDeviceLoading } =
         useGetDeviceByIdQuery(deviceid, { skip: !isDevice });
 
@@ -67,11 +64,20 @@ const DatewiseSummaryRecords = () => {
         if (isDevice && deviceid) setDeviceCode(deviceid);
     }, [isDevice, deviceid]);
 
-    // Get selected device and member list
     const selectedDevice = isDevice
         ? deviceData
         : deviceList.find((dev) => dev.deviceid === deviceCode);
     const memberCodes = selectedDevice?.members || [];
+
+    useEffect(() => {
+        if (memberCodes.length > 0) {
+            setFromCode(memberCodes[0].CODE);
+            setToCode(memberCodes[memberCodes.length - 1].CODE);
+        } else {
+            setFromCode("");
+            setToCode("");
+        }
+    }, [deviceCode, memberCodes]);
 
     const handleSearch = () => {
         if (!deviceCode || !fromCode || !toCode || !fromDate || !toDate || !shift) {
@@ -84,11 +90,8 @@ const DatewiseSummaryRecords = () => {
         }
         const fromCodeNum = parseInt(fromCode, 10);
         const toCodeNum = parseInt(toCode, 10);
-
         if (fromCodeNum > toCodeNum) {
-            errorToast(
-                "Start Member Code should not be greater than End Member Code"
-            );
+            errorToast("Start Member Code should not be greater than End Member Code");
             return;
         }
         setSearchParams({
@@ -100,11 +103,10 @@ const DatewiseSummaryRecords = () => {
             shift
         });
         setCurrentPage(1);
-
     };
+
     useEffect(() => {
         if (searchParams) {
-            // Only update if the page or limit actually changed
             setSearchParams((prev) => ({
                 ...prev,
                 page: currentPage,
@@ -112,18 +114,7 @@ const DatewiseSummaryRecords = () => {
             }));
         }
     }, [currentPage, recordsPerPage]);
-    useEffect(() => {
-        if (memberCodes.length > 0) {
-            const firstMember = memberCodes[0];
-            const lastMember = memberCodes[memberCodes.length - 1];
 
-            setFromCode(firstMember.CODE);
-            setToCode(lastMember.CODE);
-        } else {
-            setFromCode("");
-            setToCode("");
-        }
-    }, [deviceCode, memberCodes]);
     const formattedFromDate = searchParams?.fromDate?.split("-").reverse().join("/");
     const formattedToDate = searchParams?.toDate?.split("-").reverse().join("/");
 
@@ -131,12 +122,12 @@ const DatewiseSummaryRecords = () => {
         searchParams
             ? {
                 params: {
-                    deviceId: searchParams?.deviceCode,
-                    fromCode: searchParams?.fromCode,
-                    toCode: searchParams?.toCode,
+                    deviceId: searchParams.deviceCode,
+                    fromCode: searchParams.fromCode,
+                    toCode: searchParams.toCode,
                     fromDate: formattedFromDate,
                     toDate: formattedToDate,
-                    shift: searchParams?.shift,
+                    shift: searchParams.shift,
                     page: currentPage,
                     limit: recordsPerPage,
                 },
@@ -147,12 +138,13 @@ const DatewiseSummaryRecords = () => {
     const records = resultData?.data || [];
     const totalCount = resultData?.totalCount;
 
+    const [triggerGetAllSummary, { isLoading: isExporting }] = useLazyGetDatewiseDetailedReportQuery();
+
     const handleExportCSV = async () => {
         if (!searchParams) {
             alert("Please search and select filters first.");
             return;
         }
-        // Prepare params for full export
         const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
         const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
         let allData;
@@ -166,7 +158,7 @@ const DatewiseSummaryRecords = () => {
                     toDate: formattedToDate,
                     shift: searchParams.shift,
                     page: 1,
-                    limit: 10000, // Large number to get all data
+                    limit: 10000,
                 }
             }).unwrap();
             allData = result?.data || [];
@@ -196,22 +188,17 @@ const DatewiseSummaryRecords = () => {
                     "Grand Total": stat?.grandTotal?.toFixed(2),
                 });
             });
-            // Add a blank row after each date's group
             csvData.push({});
         });
         const csvContent = Papa.unparse(csvData);
         saveAs(new Blob([csvContent], { type: "text/csv;charset=utf-8" }), `${getToday()}_${searchParams.deviceCode}_milktype_summary.csv`);
     };
 
-    // Add lazy query for export
-    const [triggerGetAllSummary, { isLoading: isExporting }] = useLazyGetDatewiseDetailedReportQuery();
-
     const handleExportPDF = async () => {
         if (!searchParams) {
             alert("Please search and select filters first.");
             return;
         }
-        // Prepare params for full export
         const formattedFromDate = searchParams.fromDate.split("-").reverse().join("/");
         const formattedToDate = searchParams.toDate.split("-").reverse().join("/");
         let allData;
@@ -225,7 +212,7 @@ const DatewiseSummaryRecords = () => {
                     toDate: formattedToDate,
                     shift: searchParams.shift,
                     page: 1,
-                    limit: 10000, // Large number to get all data
+                    limit: 10000,
                 }
             }).unwrap();
             allData = result?.data || [];
@@ -278,7 +265,6 @@ const DatewiseSummaryRecords = () => {
                 styles: { fontSize: 9 },
                 theme: "grid",
                 didParseCell: function (data) {
-                    // Make the 'ALL' row bold
                     if (data.section === 'body' && data.row.raw[0] && String(data.row.raw[0]).toUpperCase() === 'ALL') {
                         data.cell.styles.fontStyle = 'bold';
                     }
@@ -290,122 +276,109 @@ const DatewiseSummaryRecords = () => {
     };
 
     return (
-        <>
-            {/* <div className="d-flex justify-content-between pageTitleSpace">
-                <PageTitle name="DATEWISE SUMMARY RECORDS" pageItems={0} />
-            </div> */}
+        <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
+            <div className="container" style={{ maxWidth: 1400 }}>
+                <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
+                    <FilterSection
+                        isDairy={isDairy}
+                        isDevice={isDevice}
+                        isDairyLoading={isDairyLoading}
+                        isDeviceLoading={isDeviceLoading}
+                        deviceList={deviceList}
+                        deviceCode={deviceCode}
+                        setDeviceCode={setDeviceCode}
+                        fromCode={fromCode}
+                        setFromCode={setFromCode}
+                        toCode={toCode}
+                        setToCode={setToCode}
+                        fromDate={fromDate}
+                        setFromDate={setFromDate}
+                        toDate={toDate}
+                        setToDate={setToDate}
+                        shift={shift}
+                        setShift={setShift}
+                        memberCodes={memberCodes}
+                        handleSearch={handleSearch}
+                        isFetching={isFetching}
+                    />
+                </Card>
 
-            <div className="datewise-detailed-page" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh', padding: '30px 0' }}>
-                <div className="container" style={{ maxWidth: 1400 }}>
-                    <Card className="mb-4 shadow filters-card" style={{ borderRadius: 16, padding: 24, background: 'rgba(255,255,255,0.97)' }}>
-                        <FilterSection
-                            isDairy={isDairy}
-                            isDevice={isDevice}
-                            isDairyLoading={isDairyLoading}
-                            isDeviceLoading={isDeviceLoading}
-                            deviceList={deviceList}
-                            deviceCode={deviceCode}
-                            setDeviceCode={setDeviceCode}
-                            fromCode={fromCode}
-                            setFromCode={setFromCode}
-                            toCode={toCode}
-                            setToCode={setToCode}
-                            fromDate={fromDate}
-                            setFromDate={setFromDate}
-                            toDate={toDate}
-                            setToDate={setToDate}
-                            shift={shift}
-                            setShift={setShift}
-                            memberCodes={memberCodes}
-                            handleSearch={handleSearch}
+                {totalCount > 0 && (
+                    <div className="mb-3">
+                        <ExportButtonsSection
+                            handleExportCSV={handleExportCSV}
+                            handleExportPDF={handleExportPDF}
                             isFetching={isFetching}
+                            isExporting={isExporting}
                         />
+                    </div>
+                )}
+
+                {!searchParams ? (
+                    <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                        <Card.Body className="cardbodyCss">
+                            <div className="text-center my-5 text-muted">
+                                Please apply filters and click <strong>Search</strong> to view records.
+                            </div>
+                        </Card.Body>
                     </Card>
-
-                    {/* Actions Section: Export and Rows Per Page */}
-                    {totalCount > 0 && (
-                        <div className="mb-3">
-                            {/* <Card className="export-actions-card" style={{ borderRadius: 14, padding: 16, minWidth: 220, background: 'rgba(255,255,255,0.97)' }}> */}
-                            <ExportButtonsSection
-                                handleExportCSV={handleExportCSV}
-                                handleExportPDF={handleExportPDF}
-                                isFetching={isFetching}
-                                isExporting={isExporting}
-                            />
-                            {/* </Card> */}
-
-                        </div>
-                    )}
-                    {!searchParams ? (
-                        <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
-                            <Card.Body className="cardbodyCss">
-                                <div className="text-center my-5 text-muted">
-                                    Please apply filters and click <strong>Search</strong> to view records.
+                ) : isFetching ? (
+                    <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                        <Card.Body className="cardbodyCss">
+                            <div className="text-center my-5">
+                                <Spinner animation="border" variant="primary" />
+                            </div>
+                        </Card.Body>
+                    </Card>
+                ) : records?.length === 0 ? (
+                    <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                        <Card.Body className="cardbodyCss">
+                            <div className="text-center text-muted">No summary data available.</div>
+                        </Card.Body>
+                    </Card>
+                ) : (
+                    records?.map((record, index) => (
+                        <Card key={index} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
+                            <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-4">
+                                <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.00rem' }}>
+                                    Device Code: <span>{searchParams?.deviceCode}</span> {/* ✅ changed */}
                                 </div>
-                            </Card.Body>
-                        </Card>
-                    ) : isFetching ? (
-                        <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
-                            <Card.Body className="cardbodyCss">
-                                <div className="text-center my-5">
-                                    <Spinner animation="border" variant="primary" />
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    ) : records?.length === 0 ? (
-                        <Card className="shadow mb-4 records-card" style={{ borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
-                            <Card.Body className="cardbodyCss">
-                                <div className="text-center text-muted">No summary data available.</div>
-                            </Card.Body>
-                        </Card>
-                    ) : (
-                        records?.map((record, index) => (
-                            <Card key={index} className="mb-4" style={{ padding: 20, borderRadius: 16, background: 'rgba(255,255,255,0.98)' }}>
-                                 
-                                <div className="records-header-section d-flex table-header justify-content-between align-items-center px-1 py-1 mb-0">
-                                  <div className="fw-semibold" style={{ minWidth: 120, fontSize: '1.00rem' }}>
-                                    Device Code: <span>{deviceCode}</span>
-                                  </div>
-                                  <div className="flex-grow-1 text-center">
+                                <div className="flex-grow-1 text-center">
                                     SUMMARY REPORT
-                                  </div>
-                                  <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.00rem' }}>
+                                </div>
+                                <div className="fw-semibold text-end" style={{ minWidth: 220, fontSize: '1.00rem' }}>
                                     Date: <span>{record.date}</span>
                                     <span className="mx-2">|</span>
                                     Shift: <span>{record.shift}</span>
-                                  </div>
                                 </div>
-                                <table className="section-table" style={{ padding: 10, width: '100%' }}>
-                                    <tbody>                                      
+                            </div>
+                            <table className="section-table" style={{ padding: 10, width: '100%' }}>
+                                <tbody>
+                                    {record?.milktypeStats?.length > 0 && (
+                                        <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : {}}>
+                                            <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
+                                                <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false} />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </Card>
+                    ))
+                )}
 
-                                        {record?.milktypeStats?.length > 0 && (
-                                            <tr style={record.milktypeStats[0].milktype === 'ALL' ? { fontWeight: 'bold' } : {}}>
-                                                <td colSpan="9" style={{ padding: 0, background: '#f9fafb' }}>
-                                                    <SummaryTotalsSection milktypeStats={record.milktypeStats} showHeader={false} />
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </Card>
-                        ))
-                    )}
-                    {totalCount > 0 && (
-                        <PaginationSection
-                            totalCount={totalCount}
-                            recordsPerPage={recordsPerPage}
-                            setRecordsPerPage={setRecordsPerPage}
-                            currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
-                        />
-                    )}
-
-                </div>
+                {totalCount > 0 && (
+                    <PaginationSection
+                        totalCount={totalCount}
+                        recordsPerPage={recordsPerPage}
+                        setRecordsPerPage={setRecordsPerPage}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
             </div>
-
-        </>
-
-    )
-}
+        </div>
+    );
+};
 
 export default DatewiseSummaryRecords;

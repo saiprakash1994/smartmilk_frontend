@@ -511,13 +511,16 @@ const DeviceRecords = () => {
                                     <Card className="records-card mb-4 shadow">
                                         <div className="records-header-bar mb-4">
                                             <div className="header-row d-flex flex-column flex-md-row align-items-center w-100 text-center text-md-start" style={{gap: 0, padding: '10px'}}>
-                                                <div className="d-block w-100 d-md-inline header-device-id" style={{fontSize: '1.08rem'}}>
+                                                <div className="d-block w-100 d-md-inline header-device-id" 
+                                                style={{fontWeight: '700',fontSize: '1.1rem',}}>
                                                     Device ID: {deviceCode}
                                                 </div>
-                                                <div className="d-block w-100 d-md-inline header-center text-center" style={{fontWeight: 700, fontSize: '1.15rem', letterSpacing: 1, margin: '2px 0'}}>
+                                                <div className="d-block w-100 d-md-inline header-center text-center" 
+                                                style={{fontWeight: '700', fontSize: '1.3rem', letterSpacing: 1, margin: '2px 0'}}>
                                                     DAYWISE REPORT
                                                 </div>
-                                                <div className="d-block w-100 w-md-auto d-md-inline header-date-shift text-md-end" style={{fontSize: '1.08rem'}}>
+                                                <div className="d-block w-100 w-md-auto d-md-inline header-date-shift text-md-end" 
+                                                style={{fontWeight: '700',fontSize: '1.1rem'}}>
                                                     Date: {formatDateDMY(date)} | Shift: {shift || 'ALL'}
                                                 </div>
                                             </div>
