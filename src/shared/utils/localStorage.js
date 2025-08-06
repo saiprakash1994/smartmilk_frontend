@@ -17,5 +17,6 @@ export const clearLocalStorage = () => {
 
 export const AppConstants = {
   accessToken: "accessToken",
+  refreshToken: "refreshToken",
   userInfo: "userInfo",
 };

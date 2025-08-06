@@ -61,8 +61,8 @@ const Login = () => {
                 errorToast("Invalid credentials. Please try again.");
                 return;
             }
-
-            const { message, token, role, dairyName, dairyCode, deviceName, deviceid } = response.data;
+            console.log(response)
+            const { accessToken, refreshToken, role, dairyName, dairyCode, deviceName, deviceid } = response?.data;
 
             // Simple success message
             let successMessage = "Login successful!";
@@ -77,7 +77,6 @@ const Login = () => {
             successToast(successMessage);
 
             const userInfo = {
-                token,
                 role,
                 ...(role === roles?.ADMIN || role === roles?.DAIRY
                     ? { dairyName, dairyCode }
@@ -85,7 +84,8 @@ const Login = () => {
             };
 
             dispatch(adduserInfo(userInfo));
-            setItemToLocalStorage(AppConstants?.accessToken, token);
+            setItemToLocalStorage(AppConstants?.accessToken, accessToken);
+            setItemToLocalStorage(AppConstants?.refreshToken, refreshToken);
             setItemToLocalStorage(AppConstants?.userInfo, userInfo);
 
             setLoginInfo({ email: "", password: "" });

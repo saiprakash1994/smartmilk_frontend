@@ -6,14 +6,16 @@ import sunimpex from '../../../assets/sunimpexLogo.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { clearUserInfo } from '../../../modules/authentication/store/userInfoSlice';
-import { clearLocalStorage } from '../../utils/localStorage';
+import { AppConstants, clearLocalStorage, getItemFromLocalStorage } from '../../utils/localStorage';
 import { useNavigate } from 'react-router-dom';
+import { useLogoutMutation } from '../../../modules/authentication/store/authenticateEndPoints';
 
 
 
 const Header = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [logout] = useLogoutMutation();
 
     const userInfo = useSelector((state) => state?.userInfoSlice?.userInfo)
     useEffect(() => {
@@ -21,11 +23,19 @@ const Header = () => {
     }, [userInfo])
     const displayLabel = userInfo?.dairyName || userInfo?.deviceName || (userInfo && Object.keys(userInfo).length === 0 ? "" : "User");
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await logout({ refreshToken: getItemFromLocalStorage(AppConstants.refreshToken) }).unwrap();
+
+        } catch (error) {
+
+        }
         clearLocalStorage();
         dispatch(clearUserInfo());
         navigate('/login');
     };
+
+
 
     return (
         <div className="mainHeader text-white">
