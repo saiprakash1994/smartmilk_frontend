@@ -1,0 +1,18 @@
+/* styles.css */
+.device-page {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: "'Roboto', 'Segoe UI', 'Arial', sans-serif";
+    min-height: 100vh;
+    padding: 20px 0;
+    
+  
+    .device-container {
+      max-width: 1400px;
+      
+    }
+}
+.card-header-gradient {
+    background: linear-gradient(135deg, #2b50a1 0%, #4f8fe8 100%) !important;
+    color: white; /* optional, for better contrast */
+  }
+  
