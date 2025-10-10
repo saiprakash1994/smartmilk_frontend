@@ -1,7 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Row, Col, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Button,
+  Row,
+  Col,
+  Alert,
+  InputGroup,
+  Card,
+} from "react-bootstrap";
+import { GiCow, GiBison } from "react-icons/gi";
 import "./Collection.scss";
+
+import {
+  FaRupeeSign,
+  FaGift,
+  FaKeyboard,
+  FaTint,
+  FaUser,
+  FaPercent,
+} from "react-icons/fa";
+import { FaBottleDroplet } from "react-icons/fa6"; // if using FA6
 
 import {
   useAddRecordMutation,
@@ -46,13 +65,13 @@ export default function MilkEntryPage() {
     milktype: "",
     fat: "",
     snf: "",
-    clr: 0,
-    water: 0,
-    rate: 0,
-    qty: 0,
-    incentive: 0,
-    amount: 0,
-    totalAmount: 0,
+    clr: "",
+    water: "",
+    rate: "",
+    qty: "",
+    incentive: "",
+    amount: "",
+    totalAmount: "",
   };
 
   const [form, setForm] = useState(initialState);
@@ -60,15 +79,18 @@ export default function MilkEntryPage() {
   const [addRecord] = useAddRecordMutation();
   const [updateRecord] = useUpdateRecordMutation();
 
-  const { data: shiftData, isSuccess: isShiftSuccess } =
-    useGetRecordsByDateShiftQuery(
-      {
-        devicecode: deviceCode,
-        date: sampleDate,
-        shift: sampleShift,
-      },
-      { skip: !(deviceCode && sampleDate && sampleShift) } // skip if no code entered yet
-    );
+  const {
+    data: shiftData,
+    isSuccess: isShiftSuccess,
+    isFetching: isShiftFetching, // <-- Add this
+  } = useGetRecordsByDateShiftQuery(
+    {
+      devicecode: deviceCode,
+      date: sampleDate,
+      shift: sampleShift,
+    },
+    { skip: !(deviceCode && sampleDate && sampleShift) } // skip if no code entered yet
+  );
 
   const [member, setMember] = useState({});
 
@@ -106,132 +128,6 @@ export default function MilkEntryPage() {
     setSampleShift(hours < 12 ? "MORNING" : "EVENING");
   }, []);
 
-  // useEffect(() => {
-  //   if (isSuccess && recordData && typeof recordData === "object") {
-  //     setForm((prev) => ({
-  //       ...prev,
-  //       ...recordData,
-  //     }));
-  //   }
-  // }, [isSuccess, recordData]);
-
-  // useEffect(() => {
-  //   const { fat, snf, milktype } = form;
-
-  //   if (!fat || !snf || !milktype) {
-  //     setForm((prev) => ({ ...prev, rate: "" }));
-  //     return;
-  //   }
-
-  //   const fatNum = parseFloat(fat);
-  //   const snfNum = parseFloat(snf);
-  //   if (isNaN(fatNum) || isNaN(snfNum)) {
-  //     setForm((prev) => ({ ...prev, rate: "" }));
-  //     return;
-  //   }
-
-  //   const table = milktype === "C" ? snfCowTable : snfBufTable;
-
-  //   console.log("rate Table:", table);
-
-  //   // Get min/max ranges
-  //   const { fatMin, fatMax, snfMin, snfMax } = getFatSnfRange(table);
-
-  //   let lookupFat = fatNum;
-  //   let lookupSnf = snfNum;
-
-  //   if (fatNum < fatMin || snfNum < snfMin) {
-  //     // Below lower bound → use min values for both
-  //     lookupFat = fatMin;
-  //     lookupSnf = snfMin;
-  //   } else if (fatNum > fatMax) {
-  //     // Above upper bound → use max values for both
-  //     lookupFat = fatMax;
-  //   } else if (snfNum > snfMax) {
-  //     // Above upper bound → use max values for both
-
-  //     lookupSnf = snfMax;
-  //   }
-
-  //   const rate = getMilkRate(table, lookupFat, lookupSnf);
-
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     rate: rate !== null ? Number(rate).toFixed(2) : "",
-  //   }));
-  // }, [form.fat, form.snf, form.milktype]);
-
-  // useEffect(() => {
-  //   const { fat, snf, milktype } = form;
-
-  //   if (!fat || !milktype) {
-  //     setForm((prev) => ({ ...prev, rate: "" }));
-  //     return;
-  //   }
-
-  //   const isCow = milktype === "C";
-  //   const useSnf = isCow
-  //     ? serverSettings?.useCowSnf
-  //     : serverSettings?.useBufSnf;
-
-  //   let rate = null;
-
-  //   if (useSnf === "Y") {
-  //     const fatNum = parseFloat(fat);
-  //     const snfNum = parseFloat(snf);
-
-  //     if (isNaN(fatNum) || isNaN(snfNum)) {
-  //       setForm((prev) => ({ ...prev, rate: "" }));
-  //       return;
-  //     }
-
-  //     const table = isCow ? snfCowTable : snfBufTable;
-  //     const { fatMin, fatMax, snfMin, snfMax } = getFatSnfRange(table);
-
-  //     let lookupFat = fatNum;
-  //     let lookupSnf = snfNum;
-
-  //     if (fatNum < fatMin || snfNum < snfMin) {
-  //       lookupFat = fatMin;
-  //       lookupSnf = snfMin;
-  //     } else {
-  //       if (fatNum > fatMax) lookupFat = fatMax;
-  //       if (snfNum > snfMax) lookupSnf = snfMax;
-  //     }
-
-  //     rate = getMilkRate(table, lookupFat, lookupSnf);
-  //   } else {
-  //     const fatNum = parseFloat(fat);
-
-  //     if (isNaN(fatNum)) {
-  //       setForm((prev) => ({ ...prev, rate: "" }));
-  //       return;
-  //     }
-
-  //     const fatTable = isCow ? fatCowTable : fatBufTable;
-
-  //     const fatValues = fatTable.map((row) => row.FAT);
-  //     const fatMin = Math.min(...fatValues);
-  //     const fatMax = Math.max(...fatValues);
-
-  //     let lookupFat = fatNum;
-
-  //     if (fatNum < fatMin) {
-  //       lookupFat = fatMin;
-  //     } else if (fatNum > fatMax) {
-  //       lookupFat = fatMax;
-  //     }
-
-  //     const fatEntry = fatTable.find((row) => row.FAT === lookupFat);
-  //     rate = fatEntry ? fatEntry.RATE : null;
-  //   }
-
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     rate: rate !== null ? Number(rate).toFixed(2) : "",
-  //   }));
-  // }, [form.fat, form.snf, form.milktype]);
-
   useEffect(() => {
     const fatNum = parseFloat(form.fat);
     const snfNum = parseFloat(form.snf);
@@ -250,6 +146,11 @@ export default function MilkEntryPage() {
 
     const cowTable = useSnf ? snfCowTable : fatCowTable;
     const bufTable = useSnf ? snfBufTable : fatBufTable;
+
+    if (!cowTable || !bufTable) {
+      setForm((prev) => ({ ...prev, rate: "" }));
+      return;
+    }
 
     const getRange = (table, isObjectFormat = false) => {
       if (isObjectFormat) {
@@ -352,11 +253,17 @@ export default function MilkEntryPage() {
   }, [form.fat, form.snf, form.milktype]);
 
   const getFatSnfRange = (table) => {
+    if (!table || Object.keys(table).length === 0) {
+      return { fatMin: 0, fatMax: 0, snfMin: 0, snfMax: 0 };
+    }
     const fatKeys = Object.keys(table).map(Number);
     const fatMin = Math.min(...fatKeys);
     const fatMax = Math.max(...fatKeys);
 
     const sampleSnfArr = table[fatMin.toFixed(1)];
+    if (!sampleSnfArr || sampleSnfArr.length === 0) {
+      return { fatMin, fatMax, snfMin: 0, snfMax: 0 };
+    }
     const snfValues = sampleSnfArr.map((item) =>
       parseFloat(Object.keys(item)[0])
     );
@@ -414,7 +321,7 @@ export default function MilkEntryPage() {
 
       setForm((prev) => ({
         ...prev,
-        incentive,
+        incentive: incentive.toFixed(2),
         amount,
       }));
     } else {
@@ -449,8 +356,9 @@ export default function MilkEntryPage() {
   };
 
   const handleDeviceChange = (e) => {
-    setDeviceCode(e.target.value);
-    setForm(initialState); // reset form on device change
+    const newDeviceCode = e.target.value;
+    setDeviceCode(newDeviceCode); // Set device code first
+    setForm(initialState); // Then reset form
     setMember({});
     setCommissionRate(0);
   };
@@ -555,11 +463,11 @@ export default function MilkEntryPage() {
       code: record.CODE || "",
       name: editMember.MEMBERNAME || "",
       milktype: editMember.MILKTYPE || "",
-      fat: record.FAT || "",
-      snf: record.SNF || "",
-      clr: record.CLR || "",
-      rate: record.RATE || "",
-      qty: record.QTY || "",
+      fat: record.FAT?.toFixed(1) || "",
+      snf: record.SNF?.toFixed(1) || "",
+      clr: record.CLR?.toFixed(1) || "",
+      rate: record.RATE?.toFixed(2) || "",
+      qty: record.QTY?.toFixed(2) || "",
       amount: amount || "",
       incentive: record.INCENTIVEAMOUNT || "",
       totalAmount: totalAmount || "",
@@ -575,6 +483,7 @@ export default function MilkEntryPage() {
   };
 
   const handleCodeBlur = () => {
+    if (!form.code) return; // <-- Add this line
     const enteredCode = Number(form.code);
 
     // Check if this code is already loaded
@@ -601,315 +510,529 @@ export default function MilkEntryPage() {
   };
 
   return (
-    <Container className=" device-page m-4">
-      <Card className="m-4">
+    <Container className=" device-page ">
+      <Card className="mx-4  card-header-gradient">
         <Card.Header className="card-header-gradient">
           <h4 className="mb-0">Milk Entry Form</h4>
         </Card.Header>
-        <Card.Body>
-          <Row className="mb-3 ">
-            <Col md={4}>
-              <Form.Group controlId="formDevice">
-                <Form.Label>Select Device</Form.Label>
-                <Form.Select
-                  value={deviceCode}
-                  onChange={handleDeviceChange}
-                  disabled={isDevice}
-                >
-                  <option value="">Select Device</option>
-                  {deviceList.map((dev) => (
-                    <option key={dev.deviceid} value={dev.deviceid}>
-                      {dev.deviceid}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          {members.length === 0 ? (
-            <Alert variant="warning">No members added</Alert>
+        <Card.Body
+          style={{
+            backgroundColor: "#f9f9f9",
+          }}
+        >
+          {isDairy && (
+            <div
+              className="d-flex flex-row align-items-center gap-2 mb-3"
+              style={{ maxWidth: 400, margin: "0 auto" }}
+            >
+              <Form.Label
+                className="fw-bold mb-0"
+                style={{ color: "black", minWidth: 70 }}
+              >
+                Device
+              </Form.Label>
+              <Form.Select
+                value={deviceCode}
+                onChange={isDairy && handleDeviceChange}
+                disabled={isDairyLoading}
+                style={{ flex: 1 }}
+              >
+                <option value="">All Devices</option>
+                {deviceList.map((dev) => (
+                  <option key={dev.deviceid} value={dev.deviceid}>
+                    {dev.deviceid}
+                  </option>
+                ))}
+                ))}
+              </Form.Select>
+              {isDairyLoading && (
+                <div className="text-center text-secondary mt-2">
+                  Loading devices...
+                </div>
+              )}
+            </div>
+          )}
+          {!deviceCode ? (
+            <Alert variant="info">
+              Please select a device to do milk collection
+            </Alert>
+          ) : members?.length === 0 ? (
+            <Alert variant="warning">No members added for this device.</Alert>
           ) : (
             <Form onSubmit={handleSubmit}>
-              <Row className="mb-3">
-                <Col md={4}>
-                  <Form.Group controlId="formCode">
-                    <Form.Label>Code (max 9999)</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="code"
-                      value={form.code}
-                      onChange={handleChange}
-                      disabled={isEditRecord}
-                      onBlur={handleCodeBlur}
-                      placeholder="e.g. 1234"
-                    />
-                  </Form.Group>
-                </Col>
-
-                {form.name && (
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={form.name}
-                        readOnly
-                        plaintext
-                      />
-                    </Form.Group>
-                  </Col>
-                )}
-
-                {form.milktype && (
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Milk Type</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={form.milktype}
-                        readOnly
-                        plaintext
-                      />
-                    </Form.Group>
-                  </Col>
-                )}
-              </Row>
-
-              {form.code && form.milktype && (
-                <Row className="mb-3">
-                  <Col md={4}>
-                    <Form.Group controlId="formFat">
-                      <Form.Label>FAT</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="fat"
-                        value={form.fat}
-                        onChange={handleChange}
-                        onBlur={(e) => {
-                          const num = parseFloat(e.target.value || 0).toFixed(
-                            1
-                          );
-                          setForm((prev) => ({ ...prev, fat: num }));
-                        }}
-                        disabled={!deviceCode}
-                        placeholder="e.g. 04.5"
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  {((serverSettings?.useBufSnf === "Y" &&
-                    member.MILKTYPE === "B") ||
-                    (serverSettings?.useCowSnf === "Y" &&
-                      member.MILKTYPE === "C")) && (
-                    <Col md={4}>
-                      <Form.Group controlId="formSnf">
-                        <Form.Label>SNF</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="snf"
-                          value={form.snf}
-                          onChange={(e) =>
-                            setForm({ ...form, snf: e.target.value })
-                          }
-                          onBlur={(e) => {
-                            const num = parseFloat(e.target.value || 0).toFixed(
-                              1
-                            );
-                            setForm((prev) => ({ ...prev, snf: num }));
-                          }}
-                          placeholder="00.0"
-                        />
+              <Card
+                className="mb-4"
+                style={{
+                  borderRadius: 14,
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                }}
+              >
+                <Card.Body>
+                  <Row className="mb-3 g-4">
+                    <Col
+                      md={3}
+                      className="d-flex flex-column align-items-center"
+                    >
+                      <Form.Group>
+                        <Form.Label className="mb-1 fw-bold text-center d-block">
+                          Code
+                        </Form.Label>
+                        <InputGroup className="code-group w-auto">
+                          <InputGroup.Text className="fs-6 code-toggle-color">
+                            <FaUser />
+                          </InputGroup.Text>
+                          <Form.Control
+                            className="base-code-input base-code-input-sm"
+                            type="text"
+                            name="code"
+                            value={form.code}
+                            onChange={handleChange}
+                            disabled={isEditRecord}
+                            onBlur={() => {
+                              if (form.code) handleCodeBlur();
+                            }}
+                            required
+                          />
+                        </InputGroup>
                       </Form.Group>
                     </Col>
+
+                    {form.milktype && (
+                      <Col
+                        md={3}
+                        className="d-flex flex-column align-items-center"
+                      >
+                        <Form.Group className="w-100 text-center">
+                          <Form.Label className="mb-1 fw-bold d-block">
+                            Milk Type
+                          </Form.Label>
+
+                          <InputGroup className="code-group justify-content-center w-auto">
+                            <InputGroup.Text className="fs-6 code-toggle-color">
+                              <FaTint />
+                            </InputGroup.Text>
+                            <Form.Control
+                              className="base-code-input base-code-input-sm text-muted"
+                              type="text"
+                              name="milktype"
+                              value={form.milktype}
+                              readOnly
+                              disabled
+                            />
+                          </InputGroup>
+                        </Form.Group>
+                      </Col>
+                    )}
+                    {form.name && (
+                      <Col md={3}>
+                        <Form.Group>
+                          <Form.Label className="mb-1 fw-bold text-center d-block">
+                            Member Name
+                          </Form.Label>
+
+                          <InputGroup className="code-group w-auto">
+                            <InputGroup.Text className="  fs-6 code-toggle-color">
+                              <FaUser />
+                            </InputGroup.Text>
+                            <Form.Control
+                              className=" base-code-input text-muted"
+                              type="text"
+                              name="name"
+                              value={form.name}
+                              readOnly
+                              disabled
+                            />
+                          </InputGroup>
+                        </Form.Group>
+                      </Col>
+                    )}
+                  </Row>
+
+                  {form.code && form.milktype && (
+                    <Row className="mb-4 g-4">
+                      <Col
+                        md={3}
+                        className="d-flex flex-column align-items-center"
+                      >
+                        <Form.Group>
+                          <Form.Label className="mb-1 fw-bold text-center d-block">
+                            FAT
+                          </Form.Label>
+                          <InputGroup className="code-group w-auto">
+                            <Form.Control
+                              className="base-fat-input base-code-input-sm"
+                              type="text"
+                              name="fat"
+                              value={form.fat}
+                              onChange={handleChange}
+                              onBlur={(e) => {
+                                const num = parseFloat(
+                                  e.target.value || 0
+                                ).toFixed(1);
+                                setForm((prev) => ({ ...prev, fat: num }));
+                              }}
+                              disabled={!deviceCode}
+                              // placeholder="e.g. 04.5"
+                            />
+                            <InputGroup.Text className="fs-6 code-toggle-color">
+                              <FaPercent />
+                            </InputGroup.Text>
+                          </InputGroup>
+                        </Form.Group>
+                      </Col>
+                      {((serverSettings?.useBufSnf === "Y" &&
+                        member.MILKTYPE === "B") ||
+                        (serverSettings?.useCowSnf === "Y" &&
+                          member.MILKTYPE === "C")) && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group>
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              SNF
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <Form.Control
+                                className="base-fat-input base-code-input-sm"
+                                type="text"
+                                name="snf"
+                                value={form.snf}
+                                onChange={handleChange}
+                                onBlur={(e) => {
+                                  const num = parseFloat(
+                                    e.target.value || 0
+                                  ).toFixed(1);
+                                  setForm((prev) => ({ ...prev, snf: num }));
+                                }}
+                                disabled={!deviceCode}
+                                // placeholder="e.g. 04.5"
+                              />
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                <FaPercent />
+                              </InputGroup.Text>
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
+                      {form.clr && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group>
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              CLR
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <Form.Control
+                                className="base-fat-input base-code-input-sm"
+                                type="text"
+                                name="clr"
+                                value={form.clr}
+                                readOnly
+                                // plaintext
+                              />
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                %
+                              </InputGroup.Text>
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
+                      {form.fat && form.rate && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group>
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              RATE
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                <FaRupeeSign />
+                              </InputGroup.Text>
+                              <Form.Control
+                                className="base-code-input base-code-input-sm"
+                                type="text"
+                                name="rate"
+                                value={form.rate}
+                                readOnly
+                                disabled
+                                // plaintext
+                              />
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
+                    </Row>
                   )}
 
-                  <Col md={4}>
-                    <Form.Group controlId="formRate">
-                      <Form.Label>Rate</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="rate"
-                        value={(parseFloat(form.rate) || 0).toFixed(2)}
-                        readOnly
-                        plaintext
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-              )}
+                  {form.code && form.rate && (
+                    <Row className="align-items-end mb-4 g-4">
+                      <Col
+                        md={commissionRate > 0 ? 3 : 4}
+                        className="d-flex flex-column align-items-center"
+                      >
+                        <Form.Group>
+                          <Form.Label className="mb-1 fw-bold text-center d-block">
+                            QTY
+                          </Form.Label>
+                          <InputGroup className="code-group w-auto">
+                            <InputGroup.Text className="fs-6 code-toggle-color">
+                              <FaBottleDroplet />
+                            </InputGroup.Text>
+                            <Form.Control
+                              className="base-code-input base-code-input-sm"
+                              type="text"
+                              name="qty"
+                              value={form.qty}
+                              onBlur={(e) => {
+                                const num = parseFloat(
+                                  e.target.value || 0
+                                ).toFixed(2);
 
-              {form.code && form.rate && (
-                <Row className="align-items-end">
-                  <Col md={commissionRate > 0 ? 3 : 4}>
-                    <Form.Group controlId="formQty">
-                      <Form.Label>Quantity</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="qty"
-                        value={form.qty}
-                        onBlur={(e) => {
-                          const num = parseFloat(e.target.value || 0).toFixed(
-                            2
-                          );
-                          setForm((prev) => ({ ...prev, qty: num }));
-                        }}
-                        onChange={handleChange}
-                        disabled={!deviceCode}
-                        // placeholder="e.g. 123.45"
-                      />
-                    </Form.Group>
-                  </Col>
+                                setForm((prev) => ({ ...prev, qty: num }));
+                              }}
+                              onChange={handleChange}
+                              disabled={!deviceCode}
+                              // placeholder="e.g. 123.45"
+                            />
+                          </InputGroup>
+                        </Form.Group>
+                      </Col>
 
-                  <Col md={commissionRate > 0 ? 3 : 4}>
-                    <Form.Group controlId="formAmount">
-                      <Form.Label>Amount</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="amount"
-                        value={form.amount}
-                        readOnly
-                      />
-                    </Form.Group>
-                  </Col>
+                      {form.qty && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group controlId="formAmount">
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              AMOUNT
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                <FaRupeeSign />
+                              </InputGroup.Text>
+                              <Form.Control
+                                className="base-code-input base-code-input-sm text-muted  "
+                                type="text"
+                                name="amount"
+                                value={form.amount}
+                                readOnly
+                                disabled
+                              />
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                  {serverSettings?.commissionType === "Y" && (
-                    <Col md={3}>
-                      <Form.Group controlId="formIncentive">
-                        <Form.Label>{`Incentive (${commissionRate.toFixed(
-                          2
-                        )}/Ltr)`}</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="incentive"
-                          value={(parseFloat(form.incentive) || 0).toFixed(2)}
-                          readOnly
-                          placeholder="0.00"
-                        />
-                      </Form.Group>
-                    </Col>
+                      {serverSettings?.commissionType === "Y" && form.qty && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group controlId="formAmount">
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              {`Incentive (${commissionRate.toFixed(2)}/Ltr)`}
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                <FaGift />
+                              </InputGroup.Text>
+                              <Form.Control
+                                className="base-code-input base-code-input-sm text-muted  "
+                                type="text"
+                                name="incentive"
+                                value={form.incentive}
+                                readOnly
+                                disabled
+                              />
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      {parseFloat(form.incentive) > 0 && (
+                        <Col
+                          md={3}
+                          className="d-flex flex-column align-items-center"
+                        >
+                          <Form.Group controlId="formAmount">
+                            <Form.Label className="mb-1 fw-bold text-center d-block">
+                              Grand Total
+                            </Form.Label>
+                            <InputGroup className="code-group w-auto">
+                              <InputGroup.Text className="fs-6 code-toggle-color">
+                                <FaRupeeSign />
+                              </InputGroup.Text>
+                              <Form.Control
+                                className="base-code-input base-code-input-sm text-muted  "
+                                type="text"
+                                name="totalAmount"
+                                value={(
+                                  (parseFloat(form.incentive) || 0) +
+                                  (parseFloat(form.amount) || 0)
+                                ).toFixed(2)}
+                                readOnly
+                                disabled
+                              />
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                      )}
+                    </Row>
                   )}
-
-                  {parseFloat(form.incentive) > 0 && (
-                    <Col md={3}>
-                      <Form.Group controlId="formTotalAmount">
-                        <Form.Label>Total Amount</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="totalAmount"
-                          value={(
-                            (parseFloat(form.incentive) || 0) +
-                            (parseFloat(form.amount) || 0)
-                          ).toFixed(2)}
-                          readOnly
-                          placeholder="0.00"
-                        />
-                      </Form.Group>
-                    </Col>
-                  )}
-                </Row>
-              )}
-
-              <div className="d-flex justify-content-center gap-3 mt-3">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={!form.code || form.amount <= 0}
-                >
-                  {isEditRecord ? "Edit Record" : "Add Record"}
-                </Button>
-                <Button type="button" variant="secondary" onClick={handleReset}>
-                  Reset
-                </Button>
-              </div>
+                </Card.Body>
+                <Card.Footer>
+                  {/* <div className="d-flex justify-content-center gap-3 mt-4"> */}
+                  <div className="d-flex justify-content-center gap-3 mt-2">
+                    <Button
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+                        color: "whitesmoke",
+                        fontWeight: "500",
+                        border: "none",
+                        borderRadius: 8,
+                        boxShadow: "0 2px 8px rgba(40,167,69,0.08)",
+                      }}
+                      type="submit"
+                      variant="primary"
+                      disabled={!form.code || form.amount <= 0}
+                    >
+                      {isEditRecord ? "Edit Record" : "Add Record"}
+                    </Button>
+                    <Button
+                      type="button"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)",
+                        color: "whitesmoke",
+                        fontSize: "1.0em",
+                        fontWeight: "500",
+                      }}
+                      onClick={handleReset}
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                  {/* </div> */}
+                </Card.Footer>
+              </Card>
             </Form>
           )}
         </Card.Body>
       </Card>
-      {isShiftSuccess && shiftData && (
-        <Card
-          className="m-4"
-          style={{
-            background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-          }}
-        >
-          <Card.Header className="d-flex justify-content-between align-items-center card-header-gradient">
-            <div className="text-start flex-grow-1">
-              <strong>Device Code:</strong> {deviceCode}
-            </div>
-            <div className="text-center" style={{ flex: 1 }}>
-              <strong>Date:</strong> {sampleDate}
-            </div>
-            <div className="text-end" style={{ flex: 1 }}>
-              <strong>Shift:</strong> {sampleShift}
-            </div>
-          </Card.Header>
-          <Card.Body className="p-0">
-            <div className="table-responsive d-flex justify-content-center m-4">
-              <table className="table table-bordered table-hover align-middle text-center">
-                <thead className="table-primary">
-                  <tr>
-                    <th>#</th>
-                    <th>CODE</th>
-                    <th>MILK</th>
-                    <th>FAT %</th>
-                    <th>SNF</th>
-                    <th>CLR</th>
-                    <th>Quantity</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                    <th>Incentive</th>
-                    <th>Total Amount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shiftData?.map((record, index) => (
-                    <tr
-                      key={record._id}
-                      className={
-                        record.RECORDTYPE === "E" ? "table-danger" : ""
-                      }
-                    >
-                      <td>{index + 1}</td>
-                      <td>{record.CODE}</td>
-                      <td>{record.MILKTYPE}</td>
-                      <td>{record.FAT.toFixed(1)}</td>
-                      <td>{record.SNF.toFixed(1)}</td>
-                      <td>{record.CLR}</td>
-                      <td>{record.QTY.toFixed(2)}</td>
-                      <td>{record.RATE.toFixed(2)}</td>
-                      <td>{(record.QTY * record.RATE).toFixed(2)}</td>
-                      <td>{record.INCENTIVEAMOUNT.toFixed(2)}</td>
-                      <td>
-                        {(
-                          record.QTY * record.RATE +
-                          record.INCENTIVEAMOUNT
-                        ).toFixed(2)}
-                      </td>
-                      <td className="d-flex align-items-center gap-2">
-                        <button
-                          onClick={() => handleEdit(record)}
-                          disabled={isEditRecord}
-                          className="btn btn-sm btn-primary"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          disabled={isEditRecord}
-                          className="btn btn-sm btn-danger"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card.Body>
-        </Card>
+      {deviceCode && isShiftFetching && (
+        <div className="text-center m-4">
+          <span className="spinner-border spinner-border-sm me-2" />
+          Loading collections...
+        </div>
       )}
+
+      {deviceCode &&
+        !isShiftFetching &&
+        isShiftSuccess &&
+        shiftData?.length > 0 && (
+          <Card
+            className="m-4"
+            style={{
+              background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+              borderRadius: 18,
+            }}
+          >
+            <Card.Header className="card-header-gradient d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start gap-2">
+              <div className="text-center text-md-start flex-grow-1 w-100 w-md-auto">
+                <strong>Device Code:</strong> {deviceCode}
+              </div>
+              <div className="d-flex flex-row justify-content-between w-100 w-md-auto">
+                <div className="text-center me-2">
+                  <strong>Date:</strong> {sampleDate}
+                </div>
+                <div className="text-end">
+                  <strong>Shift:</strong> {sampleShift}
+                </div>
+              </div>
+            </Card.Header>
+            <Card.Body className="p-0">
+              <div className="table-responsive d-flex justify-content-center m-4">
+                <table className="table table-bordered table-hover align-middle text-center">
+                  <thead className="table-primary">
+                    <tr>
+                      <th>#</th>
+                      <th>CODE</th>
+                      <th>MILK</th>
+                      <th>FAT %</th>
+                      <th>SNF</th>
+                      <th>CLR</th>
+                      <th>Quantity</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                      <th>Incentive</th>
+                      <th>Total Amount</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shiftData?.map((record, index) => (
+                      <tr
+                        key={record._id}
+                        className={
+                          record.RECORDTYPE === "E" ? "table-danger" : ""
+                        }
+                      >
+                        <td>{index + 1}</td>
+                        <td>{record.CODE}</td>
+                        <td>{record.MILKTYPE}</td>
+                        <td>{record.FAT.toFixed(1)}</td>
+                        <td>{record.SNF.toFixed(1)}</td>
+                        <td>{record.CLR}</td>
+                        <td>{record.QTY.toFixed(2)}</td>
+                        <td>{record.RATE.toFixed(2)}</td>
+                        <td>{(record.QTY * record.RATE).toFixed(2)}</td>
+                        <td>{record.INCENTIVEAMOUNT.toFixed(2)}</td>
+                        <td>
+                          {(
+                            record.QTY * record.RATE +
+                            record.INCENTIVEAMOUNT
+                          ).toFixed(2)}
+                        </td>
+                        <td className="d-flex align-items-center gap-2">
+                          <button
+                            onClick={() => handleEdit(record)}
+                            disabled={isEditRecord}
+                            className="btn btn-sm btn-primary"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            disabled={isEditRecord}
+                            className="btn btn-sm btn-danger"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
+
+      {deviceCode &&
+        !isShiftFetching &&
+        isShiftSuccess &&
+        shiftData?.length === 0 && (
+          <Alert variant="info" className="m-4">
+            No collections done for this device, date, and shift.
+          </Alert>
+        )}
     </Container>
   );
 }

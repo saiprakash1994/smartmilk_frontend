@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import './Sidebar.scss';
+import "./Sidebar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
 import Tooltip from "react-bootstrap/esm/Tooltip";
@@ -12,62 +12,74 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
 const SideBar = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [sidebarOptions, setSidebarOptions] = useState(Device)
-    const userType = UserTypeHook();
-    const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOptions, setSidebarOptions] = useState(Device);
+  const userType = UserTypeHook();
+  const userInfo = useSelector((state) => state.userInfoSlice.userInfo);
 
-    const isActivePath = useCallback((path) => {
-        return location.pathname.includes(path) ? 'module-active' : '';
-    }, [location.pathname]);
-    useEffect(() => {
-        if (userType === roles.DAIRY) {
-            setSidebarOptions(Dairy);
-            return;
-        }
-        if (userType === roles.DEVICE) {
-            setSidebarOptions(Device);
-            return;
-        }
-    }, [userType])
-    return (
-        <div className="appSidebar text-white h-100">
-            {/* Sidebar Options with Profile Section after Uploads */}
-            <div>
-                {sidebarOptions.map(({ title, icon, tooltip }, idx) => (
-                    <React.Fragment key={title}>
-                        <OverlayTrigger
-                            placement="right"
-                            // delay={{ show: 120, hide: 400 }}
-                            overlay={<Tooltip id={`tooltip-${title}`}>{tooltip}</Tooltip>}
-                        >
-                            <p
-                                className={`module ${isActivePath(title)}`}
-                                onClick={() => {
-                                    if (userType === roles.DAIRY && userInfo?.dairyCode && title === "dairy") {
-                                        navigate(`/dairy/edit/${userInfo.dairyCode}`);
-                                    } else if (userType === roles.DEVICE && userInfo?.deviceid && title === "device") {
-                                        navigate(`/device/edit/${userInfo.deviceid}`);
-                                    } else if (title === "RateTable") {
-                                        navigate('/ratetable');
-                                    } else {
-                                        navigate(`/${title}`);
-                                    }
-                                }}
-                            >
-                                <FontAwesomeIcon icon={icon} className="module-appIcon" />
-                            </p>
-                        </OverlayTrigger>
-                        
-                    </React.Fragment>
-                ))}
-            </div>
-            <div>
-                <p className="appVersion">V 0.0.1</p>
-            </div>
-        </div>
-    );
+  const isActivePath = useCallback(
+    (path) => {
+      return location.pathname.includes(path) ? "module-active" : "";
+    },
+    [location.pathname]
+  );
+  useEffect(() => {
+    if (userType === roles.DAIRY) {
+      setSidebarOptions(Dairy);
+      return;
+    }
+    if (userType === roles.DEVICE) {
+      setSidebarOptions(Device);
+      return;
+    }
+  }, [userType]);
+  return (
+    <div className="appSidebar text-white h-100">
+      {/* Sidebar Options with Profile Section after Uploads */}
+      <div>
+        {sidebarOptions.map(({ title, icon, tooltip }, idx) => (
+          <React.Fragment key={title}>
+            <OverlayTrigger
+              placement="right"
+              // delay={{ show: 120, hide: 400 }}
+              overlay={<Tooltip id={`tooltip-${title}`}>{tooltip}</Tooltip>}
+            >
+              <p
+                className={`module ${isActivePath(title)}`}
+                onClick={() => {
+                  if (
+                    userType === roles.DAIRY &&
+                    userInfo?.dairyCode &&
+                    title === "dairy"
+                  ) {
+                    navigate(`/dairy/edit/${userInfo.dairyCode}`);
+                  } else if (
+                    userType === roles.DEVICE &&
+                    userInfo?.deviceid &&
+                    title === "device"
+                  ) {
+                    navigate(`/device/edit/${userInfo.deviceid}`);
+                  } else if (title === "ratetable") {
+                    navigate("/ratetable");
+                  } else if (title === "collection") {
+                    navigate("/collection");
+                  } else {
+                    navigate(`/${title}`);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={icon} className="module-appIcon" />
+              </p>
+            </OverlayTrigger>
+          </React.Fragment>
+        ))}
+      </div>
+      <div>
+        <p className="appVersion">V 0.0.1</p>
+      </div>
+    </div>
+  );
 };
 
 export default SideBar;

@@ -216,59 +216,162 @@
 
 @media (max-width: 768px) {
     .login-content {
-        padding: 0 8px;
+        padding: 0 16px;
+        max-width: 320px;
     }
     .login-card {
-        padding: 20px 0 12px 0;
+        padding: 24px 20px 20px 20px;
+        margin: 10px 0;
     }
     .login-header {
+        margin-bottom: 20px;
         .welcome-text {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
         }
         .logo {
-            height: 32px;
+            height: 35px;
+        }
+    }
+    .login-form {
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .input-wrapper {
+            border-radius: 6px;
+        }
+        .custom-floating-label {
+            .form-control {
+                padding: 14px 12px 4px;
+                font-size: 0.95rem;
+            }
+            .form-floating > label {
+                padding: 14px 12px 4px;
+                font-size: 0.9rem;
+            }
+        }
+        .input-icon {
+            padding: 0 10px;
+            font-size: 1rem;
+        }
+        .password-toggle {
+            padding: 10px;
+        }
+        .login-button {
+            padding: 12px;
+            font-size: 1rem;
+            margin-top: 6px;
         }
     }
 }
 
 @media (max-width: 480px) {
+    .login-content {
+        padding: 0 12px;
+        max-width: 300px;
+    }
     .login-card {
-        padding: 8px 0 6px 0;
+        padding: 20px 16px 16px 16px;
+        margin: 8px 0;
     }
     .login-header {
+        margin-bottom: 18px;
         .welcome-text {
-            font-size: 1rem;
+            font-size: 1.2rem;
+        }
+        .subtitle {
+            font-size: 0.85rem;
+        }
+        .logo {
+            height: 30px;
         }
     }
     .login-form {
+        .form-group {
+            margin-bottom: 14px;
+        }
         .input-wrapper {
-            border-radius: 4px;
+            border-radius: 5px;
+        }
+        .custom-floating-label {
+            .form-control {
+                padding: 12px 10px 3px;
+                font-size: 0.9rem;
+            }
+            .form-floating > label {
+                padding: 12px 10px 3px;
+                font-size: 0.85rem;
+            }
+        }
+        .input-icon {
+            padding: 0 8px;
+            font-size: 0.9rem;
+        }
+        .password-toggle {
+            padding: 8px;
         }
         .login-button {
             padding: 10px;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
+            margin-top: 4px;
         }
     }
 }
 
-@media (max-width: 767.98px) {
-    .custom-input {
-      font-size: 0.85rem;
-      padding: 0.45rem 0.75rem;
+@media (max-width: 360px) {
+    .login-content {
+        padding: 0 8px;
+        max-width: 280px;
     }
-  
-    .welcome-text {
-      font-size: 1.4rem;
+    .login-card {
+        padding: 16px 12px 12px 12px;
+        margin: 6px 0;
     }
-  
-    .subtitle {
-      font-size: 0.85rem;
+    .login-header {
+        margin-bottom: 16px;
+        .welcome-text {
+            font-size: 1.1rem;
+        }
+        .subtitle {
+            font-size: 0.8rem;
+        }
+        .logo {
+            height: 28px;
+        }
     }
-  
-    .logo {
-      max-width: 130px;
+    .login-form {
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .input-wrapper {
+            border-radius: 4px;
+        }
+        .custom-floating-label {
+            .form-control {
+                padding: 10px 8px 2px;
+                font-size: 0.85rem;
+            }
+            .form-floating > label {
+                padding: 10px 8px 2px;
+                font-size: 0.8rem;
+            }
+        }
+        .input-icon {
+            padding: 0 6px;
+            font-size: 0.85rem;
+        }
+        .password-toggle {
+            padding: 6px;
+        }
+        .login-button {
+            padding: 8px;
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
     }
-  }
+}
   
 
 @keyframes fadeInUp {

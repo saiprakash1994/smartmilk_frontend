@@ -1,14 +1,37 @@
 export const setItemToLocalStorage = (key, data) => {
-  localStorage.setItem(key, JSON.stringify(data));
+  // Avoid storing undefined explicitly; remove the key instead
+  if (data === undefined) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    // Fallback to string storage if JSON serialization fails
+    localStorage.setItem(key, String(data));
+  }
 };
 
 export const getItemFromLocalStorage = (key) => {
-  const getItem = localStorage.getItem(key);
-  console.log("getItem", getItem);
-  if (getItem !== undefined && getItem !== "" && getItem !== null) {
-    return JSON.parse(getItem);
+  const rawValue = localStorage.getItem(key);
+
+  // Treat missing, empty string, or stringified undefined/null as absent
+  if (
+    rawValue === null ||
+    rawValue === "" ||
+    rawValue === "undefined" ||
+    rawValue === "null"
+  ) {
+    return null;
   }
-  return getItem;
+
+  try {
+    return JSON.parse(rawValue);
+  } catch (_error) {
+    // If it's not valid JSON, return the raw string value
+    return rawValue;
+  }
 };
 
 export const clearLocalStorage = () => {

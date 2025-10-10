@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react'
-import { Route, BrowserRouter, Routes } from 'react-router-dom';
-import Login from '../modules/authentication/pages/Login/Login';
+import React, { Suspense } from "react";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import Login from "../modules/authentication/pages/Login/Login";
 import {
   MainLayout,
   DairyLayout,
@@ -18,24 +18,22 @@ import {
   UploadsPage,
   MemberRecords,
   NotFoundPage,
-  RateTableGenerator
-} from './pages';
+  RateTableOptions,
+  RateTableGenerator,
+  NewRateTableGenerator,
+  StdSnfRateTable,
+  CollectionPage,
+} from "./pages";
 
-
-import { Navigate } from 'react-router-dom';
-import { AuthGuard } from '../shared/components/AuthGuard/AuthGuard';
-import RecordLayout from '../modules/records/recordsLayout/RecordLayout';
-
+import { Navigate } from "react-router-dom";
+import { AuthGuard } from "../shared/components/AuthGuard/AuthGuard";
+import RecordLayout from "../modules/records/recordsLayout/RecordLayout";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/login"
-          element={
-            <Login />
-          } ></Route>
+        <Route path="/login" element={<Login />}></Route>
         <Route
           path=""
           element={
@@ -44,111 +42,160 @@ export default function AppRoutes() {
                 <MainLayout />
               </AuthGuard>
             </Suspense>
-          }>
+          }
+        >
           <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard"
+          <Route
+            path="dashboard"
             element={
               <Suspense>
-                < DashBoardLayout />
+                <DashBoardLayout />
               </Suspense>
-            }>
-            <Route path=""
+            }
+          >
+            <Route
+              path=""
               element={
                 <Suspense>
-                  < DashBoardPage />
+                  <DashBoardPage />
                 </Suspense>
-              }></Route>
+              }
+            ></Route>
           </Route>
-
-
 
           <Route path="dairy/edit/:dairyCode" element={<DairyAdd />} />
 
-          <Route path="/device"
+          <Route
+            path="/device"
             element={
               <Suspense>
-                < DeviceLayout />
+                <DeviceLayout />
               </Suspense>
-            }>
-            <Route path=""
+            }
+          >
+            <Route
+              path=""
               element={
                 <Suspense>
-                  < DevicePage />
+                  <DevicePage />
                 </Suspense>
-              }></Route>
-            <Route path="deviceadd"
+              }
+            ></Route>
+            <Route
+              path="deviceadd"
               element={
                 <Suspense>
-                  < DeviceAdd />
+                  <DeviceAdd />
                 </Suspense>
-              }></Route>
+              }
+            ></Route>
             <Route path="edit/:deviceid" element={<DeviceAdd />} />
-
           </Route>
 
-
-          <Route path="/records"
+          <Route
+            path="/records"
             element={
               <Suspense>
-                < RecordLayout />
+                <RecordLayout />
               </Suspense>
-            }>
-            <Route path=""
+            }
+          >
+            <Route
+              path=""
               element={
                 <Suspense>
-                  < RecordsPage />
+                  <RecordsPage />
                 </Suspense>
-              }></Route>
-            <Route path="member"
+              }
+            ></Route>
+            <Route
+              path="member"
               element={
                 <Suspense>
-                  < MemberRecords />
+                  <MemberRecords />
                 </Suspense>
-              }></Route>
-
+              }
+            ></Route>
           </Route>
-          <Route path="settings"
+          <Route
+            path="settings"
             element={
               <Suspense>
-                < SettingsLayout />
+                <SettingsLayout />
               </Suspense>
-            }>
-            <Route path=""
+            }
+          >
+            <Route
+              path=""
               element={
                 <Suspense>
-                  < SettingsPage />
+                  <SettingsPage />
                 </Suspense>
-              }></Route>
-
-
+              }
+            ></Route>
           </Route>
 
-          <Route path="uploads"
+          <Route
+            path="uploads"
             element={
               <Suspense>
-                < UploadsLayout />
+                <UploadsLayout />
               </Suspense>
-            }>
-            <Route path=""
+            }
+          >
+            <Route
+              path=""
               element={
                 <Suspense>
-                  < UploadsPage />
+                  <UploadsPage />
                 </Suspense>
-              }></Route>
-
-
+              }
+            ></Route>
           </Route>
-          <Route path="ratetable"
+          <Route
+            path="ratetable"
+            element={
+              <Suspense>
+                <RateTableOptions />
+              </Suspense>
+            }
+          />
+          <Route
+            path="ratetable-formula"
+            element={
+              <Suspense>
+                <NewRateTableGenerator />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="ratetable-stdsnf"
+            element={
+              <Suspense>
+                <StdSnfRateTable />
+              </Suspense>
+            }
+          />
+          <Route
+            path="ratetable-step-by-step"
             element={
               <Suspense>
                 <RateTableGenerator />
               </Suspense>
             }
           />
+          <Route
+            path="collection"
+            element={
+              <Suspense>
+                <CollectionPage />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
-
         </Route>
       </Routes>
-    </BrowserRouter >
-  )
+    </BrowserRouter>
+  );
 }
