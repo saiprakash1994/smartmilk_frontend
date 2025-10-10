@@ -99,6 +99,10 @@
 
 /* Card Styles */
 .card {
+  // Removed card styles as per suggestion
+}
+
+.device-page .card {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
   border-radius: 18px !important;
