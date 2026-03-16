@@ -22,7 +22,7 @@ import {
   RateTableGenerator,
   NewRateTableGenerator,
   StdSnfRateTable,
-  CollectionPage,
+  // CollectionPage,
 } from "./pages";
 
 import { Navigate } from "react-router-dom";
@@ -185,14 +185,7 @@ export default function AppRoutes() {
               </Suspense>
             }
           />
-          <Route
-            path="collection"
-            element={
-              <Suspense>
-                <CollectionPage />
-              </Suspense>
-            }
-          />
+          
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

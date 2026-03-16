@@ -69,7 +69,7 @@ const UploadsPage = lazy(() =>
   import("../modules/uploads/pages/uploadsPage/UploadsPage")
 );
 
-const CollectionPage = lazy(() => import("../modules/Transactions/Collection"));
+// const CollectionPage = lazy(() => import("../modules/Transactions/Collection"));
 const NotFoundPage = lazy(() =>
   import("../shared/components/pageNotFound/NotFoundPage")
 );
@@ -95,5 +95,4 @@ export {
   RateTableGenerator,
   NewRateTableGenerator,
   StdSnfRateTable,
-  CollectionPage,
 };

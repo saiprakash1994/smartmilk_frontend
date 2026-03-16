@@ -8,7 +8,6 @@ import AbsentMemberRecords from "../memberRecords/AbsentMemberRecords";
 import CumilativeRecords from "../memberRecords/CumilativeRecords";
 import DatewiseDetailedRecords from "../memberRecords/DatewiseDetailedRecords";
 import DatewiseSummaryRecords from "../memberRecords/DatewiseSummaryRecords";
-import Collection from "../../../Transactions/Collection";
 
 const RecordsPage = () => {
   const [activeTab, setActiveTab] = useState("records");
@@ -42,9 +41,7 @@ const RecordsPage = () => {
           <Tab eventKey="memberList" title="Members List">
             <MemberList />
           </Tab>
-          <Tab eventKey="collection" title="Milk Collection">
-            <Collection />
-          </Tab>
+     
         </Tabs>
       </div>
     </>

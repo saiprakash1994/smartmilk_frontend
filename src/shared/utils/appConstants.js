@@ -14,7 +14,7 @@ import { FaCow } from "react-icons/fa6";
 export const perPage = 10;
 export const Dairy = [
   { title: "dashboard", icon: faHouse, tooltip: "Dashboard" },
-  { title: "collection", icon: faTint, tooltip: "Milk Collection" },
+  // { title: "collection", icon: faTint, tooltip: "Milk Collection" },
 
   { title: "device", icon: faMicrochip, tooltip: "Devices" },
   { title: "settings", icon: faCogs, tooltip: "Settings" },
@@ -26,7 +26,7 @@ export const Dairy = [
 
 export const Device = [
   { title: "dashboard", icon: faHouse, tooltip: "Dashboard" },
-  { title: "collection", icon: faTint, tooltip: "Milk Collection" },
+  // { title: "collection", icon: faTint, tooltip: "Milk Collection" },
 
   { title: "settings", icon: faCogs, tooltip: "Device Settings" },
   { title: "records", icon: faChartLine, tooltip: "View Reports" },

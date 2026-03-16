@@ -62,9 +62,7 @@ const SideBar = () => {
                     navigate(`/device/edit/${userInfo.deviceid}`);
                   } else if (title === "ratetable") {
                     navigate("/ratetable");
-                  } else if (title === "collection") {
-                    navigate("/collection");
-                  } else {
+                  }  else {
                     navigate(`/${title}`);
                   }
                 }}
